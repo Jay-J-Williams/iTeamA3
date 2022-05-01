@@ -1,8 +1,8 @@
-<<<<<<< HEAD
+#<<<<<<< HEAD
 #Testing
 
 #testjames2
-=======
+#=======
 import sys, pygame
 
 def display_message(message, number_of_times):
