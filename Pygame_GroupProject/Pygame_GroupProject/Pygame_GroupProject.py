@@ -35,7 +35,7 @@ def display_secret(secret):
     sys.stdout.write("Now everyone knows that you " + secret)
 
 def darkest_secret_manager():
-    secret = get_darkest_secret
+    secret = get_darkest_secret()
     display_secret(secret)
 
     #I don't think secret is spelled right, looks off. Could just be me
