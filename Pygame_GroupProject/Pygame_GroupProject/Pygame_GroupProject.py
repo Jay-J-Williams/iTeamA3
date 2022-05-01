@@ -1,3 +1,8 @@
+<<<<<<< HEAD
+#Testing
+
+#testjames2
+=======
 import sys, pygame
 
 def display_message(message, number_of_times):
@@ -39,3 +44,4 @@ darkest_secret_manager()
 message_manager()
 #Stop writing until we get James in here
 #✔
+>>>>>>> 43f395d620a51ae03557b273c5451fa176a8d9be
