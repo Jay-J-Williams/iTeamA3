@@ -27,7 +27,7 @@ def message_manager():
 
 def get_darkest_secret():
     sys.stdout.write("What's your most shameful secret?\n")
-    secret = sys.stdin.readline()
+    secret = sys.stdin.readline().strip()
     return secret
 
 def display_secret(secret):
