@@ -25,17 +25,17 @@ def get_darkest_secret():
     secret = sys.stdin.readline()
     return secret
 
-def secret_message(secret):
+def display_secret(secret):
     sys.stdout.write("We've sent your secret to your mum, your dad, your grandad, your grandma, your aunty, your uncle, your brother, your sister, and your dog\n") #Diabolical, even the dog?! | Always include the dog
-    sys.stdout.write("Now everyone knows that you "+secret)
+    sys.stdout.write("Now everyone knows that you " + secret)
 
 def darkest_secret_manager():
     secret = get_darkest_secret
-    secret_message(secret)
+    display_secret(secret)
 
     #I don't think secret is spelled right, looks off. Could just be me
     #I think it's fine. I do that sometimes too.
-darkest_secret_manager()    
+darkest_secret_manager()
 message_manager()
 #Stop writing until we get James in here
 #✔
