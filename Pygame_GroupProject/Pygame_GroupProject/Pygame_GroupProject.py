@@ -2,7 +2,6 @@
 #Testing
 
 #testjames2
-#testjames3 from visual studio code
 #=======
 import sys, pygame
 
@@ -33,7 +32,7 @@ def get_darkest_secret():
 
 def display_secret(secret):
     sys.stdout.write("We've sent your secret to your mum, your dad, your grandad, your grandma, your aunty, your uncle, your brother, your sister, and your dog\n") #Diabolical, even the dog?! | Always include the dog
-    sys.stdout.write("Now everyone knows that you " + secret)
+    sys.stdout.write("Now everyone knows that you " + secret +"\n")
 
 def darkest_secret_manager():
     secret = get_darkest_secret()
