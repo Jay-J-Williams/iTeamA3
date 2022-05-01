@@ -1,4 +1,5 @@
 import sys, pygame
+
 def display_message(message, number_of_times):
     i = 0
     while(i < number_of_times):
