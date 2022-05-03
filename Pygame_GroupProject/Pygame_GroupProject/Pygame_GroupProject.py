@@ -1,4 +1,4 @@
-#<<<<<<< HEAD
+#<<<<<<< HEAD I will set up a file called 'Front' use it to do yuor side - Adam
 #Testing
 
 #testjames2
