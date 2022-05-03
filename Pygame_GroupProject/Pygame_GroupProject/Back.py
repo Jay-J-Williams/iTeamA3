@@ -207,18 +207,92 @@ class Bullets():
 
 class Aliens(Characters):
     __target = None
+#I have added the spawn rate into the Aliens class because it will be a
+#necessary value for each alien.
+    __spawn_rate = None
 
-    def __init__(self, x, y, health, speed, damage, target):
+    def __init__(self, x, y, health, speed, damage, target, spawn_rate):
         super().__init__(x, y, health, speed, damage)
         self.target = target
+        self.spawn_rate = spawn_rate
 
     property
     def target(self):
         return self.__target
+
+    property
+    def spawn_rate(self):
+        return self.__spawn_rate
         
     target.setter
     def target(self, value):
         self.__target = value
+
+    spawn_rate.setter
+    def spawn_rate(self, value):
+        self.__spawn_rate = value
+
+#I created this function to convert the int spawn_rate e.g., 10(%) to a range
+#so it can be used to spawn the aliens. I have included first_conversion
+#because it determines if a starting point is needed. I added the previous
+#alien's spawn rate into the parameters because it will be needed to calculate
+#the converted spawn rate for the new alien. If you want to do the first
+#conversion, you will need to enter a value for the previous alien's spawn rate,
+#but you can enter a 0 or "n/a" for readability as it wouldn't be used anyways.
+#I have the list function call on range because range returns a sequence, not a
+#list.
+    def convert_spawn_rate(self, first_conversion: bool, previous_aliens_spawn_rate: list):
+        if first_conversion = False:
+            starting_point = previous_aliens_spawn_rate[-1] + 1
+            end_point = self.spawn_rate + starting_point
+        if first_conversion = True:
+            self.spawn_rate = list(range(1, self.spawn_rate))
+        else:
+            self.spawn_rate = list(range(starting_point, end_point))
+
+#I have made this a static method because it does not impact a single object. I
+#have added each spawn rate into the parameters because this function determines
+#which alien it wants to spawn based on the random integer it provides. The door
+#is chosen by another random integer method which goes into the spawn parameters
+#because the alien's position must be were the chosen door is when it spawns in.
+#I have used the logic "range(alien.spawn_rate[0}, alien.spawn_rate[-1] because
+#all the numbers in the list must be used, and this is the quickest, and most
+#readable way of doing it.
+
+    @staticmethod
+    def random_spawn(shield.spawn_rate, turret.spawn_rate, armoured_wing.spawn_rate, sniper.spawn_rate, bomber.spawn_rate, mosquito.spawn_rate):
+        alien_choice = random.randint(1, 100)
+        door_choice = random.randint(1, 4)
+        if choice == range(shield.spawn_rate[0], shield.spawn_rate[-1]):
+            shield.spawn(door_choice)
+        elif choice == range(turret.spawn_rate[0], turret.spawn_rate[-1]):
+            turret.spawn(door_choice)
+        elif choice == range(armoured_wing.spawn_rate[0], armoured_wing.spawn_rate[-1]):
+            armoured_wing.spawn(door_choice)
+        elif choice == range(sniper.spawn_rate[0], sniper.spawn_rate[-1]):
+            sniper.spawn(door_choice)
+        elif choice == range(bomber.spawn_rate[0], bomber.spawn_rate[-1]):
+            bomber.spawn(door_choice)
+        else:
+            mosquito.spawn(door_choice)
+
+#This function gets the alien's position and the computer's choice of door and
+#uses the door to set the alien's new position. After the position is set,
+#self.alive is set to true because it will be used to show the alien in the
+#frontend.
+
+#Let me know what you think of this alternative Adam. I'd love to hear your
+#thoughts on it.
+    def spawn(self, door):
+        if door = 1:
+            self.character_pos = (0, 1200)
+        elif door = 2:
+            self.character_pos = (0, 100)
+        elif door = 3:
+            self.character_pos = (1200, 50)
+        else:
+            self.character_pos = (1200, 600)
+        self.alive = True
 
 class RangedAliens(Aliens):
     pass
