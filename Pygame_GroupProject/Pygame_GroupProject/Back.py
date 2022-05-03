@@ -1,16 +1,15 @@
 import pygame, random
 
 class Characters():
-    __character_x = 0
-    __character_y = 0
+    __character_pos = pygame.Vector2(0, 0) 
+    #I remembered that pygame uses the vector2() variable to handle positioning, it will help us - Adam 
     __movement_speed = 0
     __health = 0
     __damage = 0
     __alive = False
     __asset = None
     def __init__(self, x, y, health, speed, dmg, alive, asset):
-        self.characterX = x
-        self.characterY = y
+        self.characterPos = pygame.Vector2(x, y)
         self.health = health
         self.movement_speed = speed
         self.damage = dmg
@@ -18,11 +17,8 @@ class Characters():
         self.asset = asset
 
     property
-    def characterX(self):
-        return self.__character_x
-    property
-    def characterY(self):
-        return self.__character_y
+    def characterPos(self):
+        return self.__character_pos
     property
     def health(self):
         return self.__health
@@ -39,12 +35,9 @@ class Characters():
     def asset(self):
         return self.__asset
 
-    characterX.setter
+    characterPos.setter
     def characterX(self, value):
-        self.__character_x = value
-    characterY.setter
-    def characterY(self, value):
-        self.__character_y = value
+        self.__character_pos = value
     health.setter
     def health(self, value):
         self.__health = value
@@ -141,26 +134,32 @@ class Weapons:
     def fire_rate(self, value):
         self.__fire_rate = value
 
-#Only use ints for the fire rate, also positives
-pistol = Weapons("Pistol", 30, 2)
-shotgun = Weapons("Shotgun", 50, 1)
-smg = Weapons("Sub_Machine_Gun", 10, 10)
-rifle = Weapons("Rifle", 40, 3)
+#Only use positive integers for the fire_rate (final input), not decimals or strings
+#pistol = Weapons("Pistol", 30, 2)
+#shotgun = Weapons("Shotgun", 50, 1)
+#smg = Weapons("Sub_Machine_Gun", 10, 10)
+#rifle = Weapons("Rifle", 40, 3)
+
+#The weapons are created in the front-end, because that is where we will put the while loop of a running game
+#We don't have to adjust anything here because it will work either way. This is just to make writing the
+#front-end easier. I know that the user will not interact with it, and that is partly false because the
+#user will be interacting with a specific weapon at a specific time, like walking, which will take the
+#front-end of keyboard inputs, the weapons will take the front-end role as objects to change and gain from
+#drops - Adam
 
 class Bullets():
     __asset = None
     __showing = False
     __speed = 0
     __target = None
-    __bulletX = 0
-    __bulletY = 0
+    __bulletPos = pygame.Vector2(0, 0) #Like player, I have changed this to better suit the code of the game 
+                                        #- Adam
 
     def __init__(self, asset, speed, target, x, y):
         self.asset = asset
         self.speed = speed
         self.target = target
-        self.bulletX = x
-        self.bulletY = y
+        self.bulletPos = pygame.Vector2(x, y)
 
     property
     def asset(self):
@@ -179,12 +178,8 @@ class Bullets():
         return self.__target
 
     property
-    def bulletX(self):
-        return self.__bulletX
-
-    property
-    def bulletY(self):
-        return self.__bulletY
+    def bulletPos(self):
+        return self.__bulletPos
 
     asset.setter
     def asset(self, value):
@@ -202,15 +197,13 @@ class Bullets():
     def target(self, value):
         self.__target = value
 
-    bulletX.setter
-    def bulletX(self, value):
-        self.__bulletX = value
+    bulletPos.setter
+    def bulletPos(self, value):
+        self.__bulletPos = value
 
-    bulletY.setter
-    def bulletY(self, value):
-        self.__bulletY = value
-
-bullet = Bullets()
+#bullet = Bullets()
+#This variable will be created in the front-end, every single time the key "enter" is pressed, because the
+#player has to first interact with the game to spawn a bullet, they are created in the front. - Adam
 
 class Aliens(Characters):
     __target = None
@@ -232,3 +225,29 @@ class RangedAliens(Aliens):
 
 class PhysicalAliens(Aliens):
     pass
+
+class EnemySpawn():
+    def AlienCreator():
+        ListOfAliens = []
+
+        return ListOfAliens
+
+    def AlienDoorSpawn():
+        Door1 = pygame.Vector2(0, 1200)
+        Door2 = pygame.Vector2(0, 100)
+        Door3 = pygame.Vector2(1200, 50)
+        Door4 = pygame.Vector2(1200, 600)
+        
+        rand = random.randint(0, 3)
+        Location = None
+
+        if rand == 0:
+            return Door4
+        elif rand == 1:
+            return Door2
+        elif rand == 2:
+            return Door1
+        elif rand == 3:
+            return Door3
+    #I created this sample class to handle the enemy spawns using the rarity system, as well as handle where
+    #the enemies spawn to. I believe we should use door locations in the way that I have
