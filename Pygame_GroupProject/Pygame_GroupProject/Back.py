@@ -407,9 +407,9 @@ class GameManager():
 
     @staticmethod
     def manage_spawns(round):
-        total_aliens = round * 5
+        aliens_needed = round * 5
         i = 0
-        while(total_aliens < i):
+        while(aliens_needed > i):
             Aliens.random_spawn(shield.spawn_rate, turret.spawn_rate, armoured_wing.spawn_rate, sniper.spawn_rate, bomber.spawn_rate, mosquito.spawn_rate)
             i+= 1
 
