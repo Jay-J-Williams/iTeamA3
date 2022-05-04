@@ -21,8 +21,10 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Aliens.py" />
     <Compile Include="Back.py" />
     <Compile Include="Front.py" />
+    <Compile Include="Player.py" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Assets\" />
