@@ -36,23 +36,33 @@ class Characters():
         return self.__asset
 
     characterPos.setter
-    def characterX(self, value):
-        self.__character_pos = value
+    def character_pos(self, x, y):
+        if type(x) == "int" and type(y) == "int":
+            if x > 0 and y > 0:
+                self.__character_pos = (x, y)
     health.setter
     def health(self, value):
-        self.__health = value
+        if type(value) == "int":
+            if value > 0:
+                self.__health = value
     movement_speed.setter
     def movement_speed(self, value):
-        self.__movement_speed = value
+        if type(value) == "int":
+            if value > 0:
+                self.__movement_speed = value
     damage.setter
     def damage(self, value):
-        self.__damage = value
+        if type(value) == "int":
+            if value > 0:
+                self.__damage = value
     alive.setter
     def alive(self, value):
-        self.__alive = value
+        if type(value) == "bool":
+            self.__alive = value
     asset.setter
     def asset(self, value):
-        self.__asset = value
+        if type(value) == "str":
+            self.__asset = value
 
     @staticmethod
     def move(self, direction, object_x, object_y):
@@ -72,15 +82,6 @@ class Player(Characters):
         self.weapon = weapon
         self.power_up = None
 
-        if weapon == pistol:
-            self.asset = ""
-        elif weapon == shotgun:
-            self.asset = ""
-        elif weapon == rifle:
-            self.asset = ""
-        elif weapon == smg:
-            self.asset = ""
-
         super().__init__(x, y, health, speed, damage, self.asset)
 
     property
@@ -92,10 +93,12 @@ class Player(Characters):
 
     weapon.setter
     def weapon(self, value):
-        self.__weapon = value
+        if type(value) == "str":
+            self.__weapon = value
     power_up.setter
     def power_up(self, value):
-        self.__power_up = value 
+        if type(value) == "str":
+            self.__power_up = value 
 
     def shoot(self, weapon, bullets):
         pass
@@ -126,10 +129,15 @@ class Weapons:
 
     name.setter
     def name(self, value):
-        self.__name = value
+        if value == "Pistol" or value == "Shotgun":
+            self.__name = value
+        elif value == "Sub-machine-gun" or value == "Rifle":
+            self.__name = value
     damage.setter
     def damage(self, value):
-        self.__damage = value
+        if type(value) == "int":
+            if type(value) > 0
+                self.__damage = value
     fire_rate.setter
     def fire_rate(self, value):
         self.__fire_rate = value
