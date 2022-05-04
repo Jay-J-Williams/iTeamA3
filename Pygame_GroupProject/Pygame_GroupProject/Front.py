@@ -9,27 +9,27 @@ class Settings:
     Tilesize = 32
 
     MAP = [
-    ['c','w','w','w','w','w','w','w','w','w','d','w','w','w','w','w','w','w','w','w','c'], #1 | [0]
+    ['c','w','w','w','w','w','d','w','w','w','w','w','w','w','d','w','w','w','w','w','c'], #1 | [0]
     ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #2 | [1]
     ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #3 | [2]
     ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #4 | [3]
     ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #5 | [4]
     ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #6 | [5]
-    ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #7 | [6]
+    ['d','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','d'], #7 | [6]
     ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #8 | [7]
     ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #9 | [8]
     ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #10 | [9]
-    ['d','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','d'], #11 | [10]
+    ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #11 | [10]
     ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #12 | [11]
     ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #13 | [12]
     ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #14 | [13]
-    ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #15 | [14]
+    ['d','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','d'], #15 | [14]
     ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #16 | [15]
     ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #17 | [16]
     ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #18 | [17]
     ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #19 | [18]
     ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #20 | [19]
-    ['c','w','w','w','w','w','w','w','w','w','d','w','w','w','w','w','w','w','w','w','c']  #21 | [20]
+    ['c','w','w','w','w','w','d','w','w','w','w','w','w','w','d','w','w','w','w','w','c']  #21 | [20]
     ]
 #Settings has been updated with some extra comments regarding list placement, also messed with
 #screen and tile size to make 'em work well - Adam
@@ -121,7 +121,7 @@ class Map():
                     image = "Assets/Area/Door.png"
                     AreaSprite((x, y), image, [self.visible_sprites, self.obstacle_sprites])
 
-                elif col == "d" and row_index == 10 and col_index == 0:
+                elif col == "d" and (row_index == 6 or row_index == 14) and col_index == 0:
                     image = ImageTransformer("Assets/Area/Door.png", 90)
                     image = image.ReturnImage()
                     AreaSprite((x, y), image, [self.visible_sprites, self.obstacle_sprites])
@@ -131,7 +131,7 @@ class Map():
                     image = image.ReturnImage()
                     AreaSprite((x, y), image, [self.visible_sprites, self.obstacle_sprites])
 
-                elif col == "d" and row_index == 10 and col_index == 20:
+                elif col == "d" and (row_index == 6 or row_index == 14) and col_index == 20:
                     image = ImageTransformer("Assets/Area/Door.png", 270)
                     image = image.ReturnImage()
                     AreaSprite((x, y), image, [self.visible_sprites, self.obstacle_sprites])
@@ -139,7 +139,7 @@ class Map():
                 #Floor
                 elif col == "f":
                     image = "Assets/Area/Floor.png"
-                    AreaSprite((x, y), image, [self.visible_sprites])               
+                    AreaSprite((x, y), image, [self.visible_sprites])              
 
     def run(self):
         self.visible_sprites.draw(self.display_surface)

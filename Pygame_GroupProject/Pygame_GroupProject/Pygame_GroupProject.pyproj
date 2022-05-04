@@ -23,7 +23,6 @@
   <ItemGroup>
     <Compile Include="Back.py" />
     <Compile Include="Front.py" />
-    <Compile Include="Pygame_GroupProject.py" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Assets\" />

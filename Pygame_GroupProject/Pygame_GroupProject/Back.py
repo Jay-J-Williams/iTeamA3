@@ -284,12 +284,20 @@ class Aliens(Characters):
 #Let me know what you think of this alternative Adam. I'd love to hear your
 #thoughts on it.
     def spawn(self, door):
-        if door = 1:
+        if door == 1:
             self.character_pos = (0, 1200)
-        elif door = 2:
+        elif door == 2:
             self.character_pos = (0, 100)
-        elif door = 3:
+        elif door == 3:
             self.character_pos = (1200, 50)
+        elif door == 4:
+            self.character_pos = (20, 22)
+        elif door == 5:
+            self.character_pos = (20, 22)
+        elif door == 6:
+            self.character_pos = (20, 22)
+        elif door == 7:
+            self.character_pos = (20, 22)
         else:
             self.character_pos = (1200, 600)
         self.alive = True
