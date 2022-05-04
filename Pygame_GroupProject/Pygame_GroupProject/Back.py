@@ -22,17 +22,17 @@ class Characters():
         self.health = health
         self.damage = dmg
 
-    property
+    @property
     def speed(self):
         return self.__speed
-    property
+    @property
     def health(self):
         return self.__health
-    property
+    @property
     def damage(self):
         return self.__damage
 
-    speed.setter
+    @speed.setter
     def speed(self, value):
         try:
             if type(value) == "int":
@@ -40,7 +40,7 @@ class Characters():
                     self.__movement_speed = value
         except:
             raise numErrors("Movement Speed has to be whole numbers, and above 0")
-    health.setter
+    @health.setter
     def health(self, value):
         try:
             if type(value) == "int":
@@ -48,7 +48,7 @@ class Characters():
                     self.__health = value
         except:
             raise numErrors("Health has to be whole numbers, and above 0")
-    damage.setter
+    @damage.setter
     def damage(self, value):
         try:
             if type(value) == "int":
@@ -63,10 +63,10 @@ class Player(Characters):
         super().__init__(health, speed, damage)
         self.power_up = None      
 
-    property
+    @property
     def power_up(self):
         return self.__power_up
-    power_up.setter
+    @power_up.setter
     def power_up(self, value):
         try:
             if type(value) == "str":
@@ -91,17 +91,17 @@ class Weapons:
         self.damage = damage
         self.fire_rate = fire_rate
 
-    property
+    @property
     def name(self):
         return self.__name
-    property
+    @property
     def damage(self):
         return self.__damage
-    property
+    @property
     def fire_rate(self):
         return self.__fire_rate
 
-    name.setter
+    @name.setter
     def name(self, value):
         try:
             if value == "Pistol" or value == "Shotgun":
@@ -110,7 +110,7 @@ class Weapons:
                 self.__name = value
         except:
             raise strErrors("You must enter 'Pistol', 'Shotgun', 'Sub-machine-gun', or 'Rifle'")
-    damage.setter
+    @damage.setter
     def damage(self, value):
         try:
             if type(value) == "int":
@@ -118,7 +118,7 @@ class Weapons:
                     self.__damage = value
         except:
             raise numErrors("Damage must be an integer, positive number")
-    fire_rate.setter
+    @fire_rate.setter
     def fire_rate(self, value):
         try:
             if type(value) == "int":
@@ -152,27 +152,27 @@ class Bullets():
         self.target = target
         self.bulletPos = pygame.Vector2(x, y)
 
-    property
+    @property
     def asset(self):
         return self.__asset
 
-    property
+    @property
     def showing(self):
         return self.__showing
 
-    property
+    @property
     def speed(self):
         return self.__speed
 
-    property
+    @property
     def target(self):
         return self.__target
 
-    property
+    @property
     def bulletPos(self):
         return self.__bulletPos
 
-    asset.setter
+    @asset.setter
     def asset(self, value):
         try:
             if type(value) == "str":
@@ -180,7 +180,7 @@ class Bullets():
         except:
             raise strErrors("You must enter a string")
 
-    showing.setter
+    @showing.setter
     def showing(self, value):
         try:
             if type(value) == "bool":
@@ -188,7 +188,7 @@ class Bullets():
         except:
             raise boolErrors("You must enter a boolean value")
 
-    speed.setter
+    @speed.setter
     def speed(self, value):
         try:
             if type(value) == "int":
@@ -197,7 +197,7 @@ class Bullets():
         except:
             raise numErrors("You must enter an integer that is greater than zero")
 
-    target.setter
+    @target.setter
     def target(self, value):
         try:
             if type(value) == "str":
@@ -205,7 +205,7 @@ class Bullets():
         except:
             raise strErrors("You must enter a string")
 
-    bulletPos.setter
+    @bulletPos.setter
     def bulletPos(self, x, y):
         try:
             if type(x) == "int" and type(y) == "int":
@@ -229,19 +229,19 @@ class Aliens(Characters):
         self.target = target
         self.spawn_rate = spawn_rate
 
-    property
+    @property
     def target(self):
         return self.__target
 
-    property
+    @property
     def spawn_rate(self):
         return self.__spawn_rate
         
-    target.setter
+    @target.setter
     def target(self, value):
         self.__target = value
 
-    spawn_rate.setter
+    @spawn_rate.setter
     def spawn_rate(self, value):
         self.__spawn_rate = value
 
