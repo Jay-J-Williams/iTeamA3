@@ -56,7 +56,7 @@ class Game:
         self.map.run()
         pygame.display.update()
         self.clock.tick(self.FPS)
-#Game has been re-written (some of it) to properly hold the variables in __init__(), without error - Adam
+#Game had been re-written (some of it) to properly hold the variables in __init__(), without error - Adam
 #----------------------------------------------------------------------------------------------------
 class Map():
     def __init__(self):
@@ -188,6 +188,19 @@ class Player(pygame.sprite.Sprite):
         self.image = pygame.transform.scale2x(self.image)
         self.rect = self.image.get_rect(topleft = pos)
         self.obstacles = obstacles
+        self.pos = pygame.Vector2(pos)
+
+    def movement(self):
+        keys = pygame.key.get_pressed()
+
+        if keys[pygame.K_a]:
+            self.pos.x -= 5
+        elif keys[pygame.K_d]:
+            self.pos.x += 5
+        elif keys[pygame.K_w]:
+            self.pos.y -= 5
+        elif keys[pygame.K_s]:
+            self.pos.y += 5
 
 #class Player(pygame.sprite.Sprite):
 #    def __init__(self, pos, groups,obstacle_sprites):

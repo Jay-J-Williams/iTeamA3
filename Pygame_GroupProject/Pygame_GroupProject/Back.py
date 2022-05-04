@@ -385,9 +385,10 @@ class EnemySpawn():
     #the enemies spawn to. I believe we should use door locations in the way that I have
 
 class GameManager():
+    aliens_alive = []
     def __init__(self):
         pass
-    
+
     @staticmethod
     def start_game():
         round = 1
@@ -411,3 +412,14 @@ class GameManager():
         while(total_aliens < i):
             Aliens.random_spawn(shield.spawn_rate, turret.spawn_rate, armoured_wing.spawn_rate, sniper.spawn_rate, bomber.spawn_rate, mosquito.spawn_rate)
             i+= 1
+
+    @staticmethod
+    def manage_rounds(round):
+        if len(aliens_alive) = 0:
+            round+= 1
+            manage_spawns(round)
+        return round
+
+    @staticmethod
+    def manage_aliens():
+        
