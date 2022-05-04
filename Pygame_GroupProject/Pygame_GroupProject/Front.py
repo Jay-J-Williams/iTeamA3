@@ -1,4 +1,4 @@
-import pygame, sys, Back
+import pygame, sys
 #----------------------------------------------------------------------------------------------------
 class Settings:
     Width = 672
@@ -15,7 +15,7 @@ class Settings:
     ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #4 | [3]
     ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #5 | [4]
     ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #6 | [5]
-    ['d','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','d'], #7 | [6]
+    ['d','f','f','f','f','f','fp','f','f','f','f','f','f','f','f','f','f','f','f','f','d'],#7 | [6]
     ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #8 | [7]
     ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #9 | [8]
     ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #10 | [9]
@@ -76,7 +76,7 @@ class Map():
                 y = row_index * self.TILESIZE
 
                 #--------------------------------------------------------------------------------
-                #Walls -
+                #Walls
                 if col == "w" and row_index == 0:
                     image = "Assets/Area/Wall.png"
                     AreaSprite((x, y), image, [self.visible_sprites, self.obstacle_sprites])
@@ -96,7 +96,7 @@ class Map():
                     image = image.ReturnImage()
                     AreaSprite((x, y), image, [self.visible_sprites, self.obstacle_sprites])
                 #--------------------------------------------------------------------------------
-                #Corners -
+                #Corners
                 elif col == "c" and col_index == 20 and row_index == 0:
                     image = "Assets/Area/Corner.png"
                     AreaSprite((x, y), image, [self.visible_sprites])
@@ -137,9 +137,14 @@ class Map():
                     AreaSprite((x, y), image, [self.visible_sprites, self.obstacle_sprites])
                 #--------------------------------------------------------------------------------
                 #Floor
-                elif col == "f":
+                elif "f" in col:
                     image = "Assets/Area/Floor.png"
-                    AreaSprite((x, y), image, [self.visible_sprites])              
+                    AreaSprite((x, y), image, [self.visible_sprites])      
+                #--------------------------------------------------------------------------------
+                #Player
+                if "p" in col:
+                    image = "Assets/Player/Player_pistol.png"
+                    Player((x, y), image, [self.visible_sprites], self.obstacle_sprites)
 
     def run(self):
         self.visible_sprites.draw(self.display_surface)
@@ -177,64 +182,72 @@ class ImageTransformer(pygame.sprite.Sprite):
 #----------------------------------------------------------------------------------------------------
 #NOTE - Have NOT worked on player yet, haven't even seen it - Adam
 class Player(pygame.sprite.Sprite):
-    def __init__(self, pos, groups,obstacle_sprites):
+    def __init__(self, pos, image, groups, obstacles):
         super().__init__(groups)
-        self.image = pygame.image.load('').convert_alpha()
-        self.rect = self.image.get_rect(topleft = pos) 
+        self.image = pygame.image.load(image).convert_alpha()
+        self.image = pygame.transform.scale2x(self.image)
+        self.rect = self.image.get_rect(topleft = pos)
+        self.obstacles = obstacles
 
-        self.direction = pygame.math.vector2()
-        self.speed = 5
+#class Player(pygame.sprite.Sprite):
+#    def __init__(self, pos, groups,obstacle_sprites):
+#        super().__init__(groups)
+#        self.image = pygame.image.load('').convert_alpha()
+#        self.rect = self.image.get_rect(topleft = pos) 
 
-        self.obstacle_sprites = obstacle_sprites
+#        self.direction = pygame.math.vector2()
+#        self.speed = 5
 
-    def input(self):
-        keys = pygame.key.get_pressed()
+#        self.obstacle_sprites = obstacle_sprites
 
-        if keys[pygame.K_A]:
-            self.direction.y = -1
-        elif keys[pygame.K_D]:
-            self.direction.y = 1
-        else:
-            self.direction.y = 0
+#    def input(self):
+#        keys = pygame.key.get_pressed()
 
-        if keys[pygame.K_A]:
-            self.direction.x = 1
-        elif keys[pygame.K_S]:
-            self.direction.x = -1
-        else:
-            self.direction.x = 0
+#        if keys[pygame.K_A]:
+#            self.direction.y = -1
+#        elif keys[pygame.K_D]:
+#            self.direction.y = 1
+#        else:
+#            self.direction.y = 0
 
-    def move(self,speed):
-        if self.direction.magnitude() != 0:
-            self.direction = self.direction.normalize()
-        self.rect.x += self.direction.x * speed
-        self.collision('horizontal')
-        self.rect.y += self.direction.y * speed
-        self.collision('vertical')
+#        if keys[pygame.K_A]:
+#            self.direction.x = 1
+#        elif keys[pygame.K_S]:
+#            self.direction.x = -1
+#        else:
+#            self.direction.x = 0
 
-    def collision(self,direction):
-        if direction == 'horizontal':
-            if sprite.rect.colliderect(self,rect):
-                if sprite.rect.colliderect(self,rect):
-                    if self.direction.x > 0:    
-                        self.rect.right = sprite.rect.left
-                    if self.direction.x < 0:
-                        self.rect.left = sprite.rect.right
+#    def move(self,speed):
+#        if self.direction.magnitude() != 0:
+#            self.direction = self.direction.normalize()
+#        self.rect.x += self.direction.x * speed
+#        self.collision('horizontal')
+#        self.rect.y += self.direction.y * speed
+#        self.collision('vertical')
 
-        if direction =='vertical':
-            if sprite.rect.colliderect(self,rect):
-                if sprite.rect.colliderect(self,rect):
-                    if self.direction.y > 0:  
-                        self.rect.bottom = sprite.rect.top
-                    if self.direction.y < 0:
-                        self.rect.top = sprite.rect.bottom
+#    def collision(self,direction):
+#        if direction == 'horizontal':
+#            if sprite.rect.colliderect(self,rect):
+#                if sprite.rect.colliderect(self,rect):
+#                    if self.direction.x > 0:    
+#                        self.rect.right = sprite.rect.left
+#                    if self.direction.x < 0:
+#                        self.rect.left = sprite.rect.right
+
+#        if direction =='vertical':
+#            if sprite.rect.colliderect(self,rect):
+#                if sprite.rect.colliderect(self,rect):
+#                    if self.direction.y > 0:  
+#                        self.rect.bottom = sprite.rect.top
+#                    if self.direction.y < 0:
+#                        self.rect.top = sprite.rect.bottom
 
 
-        if direction == 'vertical':
-            pass
-    def update(self):
-        self.input()
-        self.move(self.speed)
+#        if direction == 'vertical':
+#            pass
+#    def update(self):
+#        self.input()
+#        self.move(self.speed)
 #----------------------------------------------------------------------------------------------------
 running = True
 game = Game()
