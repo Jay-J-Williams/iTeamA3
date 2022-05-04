@@ -4,7 +4,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>ae121fe3-95d1-4a43-93f5-8bd4632897f3</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>Pygame_GroupProject.py</StartupFile>
+    <StartupFile>Front.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>

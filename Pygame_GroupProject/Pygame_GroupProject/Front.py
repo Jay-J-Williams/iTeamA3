@@ -1,68 +1,72 @@
 import pygame, sys
-
-#Maybe start with level setup | use the style the zelda video taught you, you can add file assets later
-
+#----------------------------------------------------------------------------------------------------
 class Settings:
-    Width = 1280
-    Height = 720
+    Width = 672
+    Height = 672
+    #Width and Height are equal to 32 * 21, I tried 64 but it turned out too big. If we use less tiles,
+    #maybe I can make it 64 by 64 sized - Adam
     FPS = 60
-    Tilesize = 64
-    #Marc, we will have doors, floors, and walls. they cannot all be x. Maybe use different lettering for each item
+    Tilesize = 32
 
     MAP = [
-    ['w','w','w','w','w','w','w','w','w','w','d','w','w','w','w','w','w','w','w','w','w'],
-    ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'],
-    ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'],
-    ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'],
-    ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'],
-    ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'],
-    ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'],
-    ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'],
-    ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'],
-    ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'],
-    ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'],
-    ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'],
-    ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'],
-    ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'],
-    ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'],
-    ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'],
-    ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'],
-    ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'],
-    ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'],
-    ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'],
-    ['w','w','w','w','w','w','w','w','w','w','w','w','w','w','w','w','w','w','w','w','w']
+    ['c','w','w','w','w','w','w','w','w','w','d','w','w','w','w','w','w','w','w','w','c'], #1 | [0]
+    ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #2 | [1]
+    ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #3 | [2]
+    ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #4 | [3]
+    ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #5 | [4]
+    ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #6 | [5]
+    ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #7 | [6]
+    ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #8 | [7]
+    ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #9 | [8]
+    ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #10 | [9]
+    ['d','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','d'], #11 | [10]
+    ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #12 | [11]
+    ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #13 | [12]
+    ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #14 | [13]
+    ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #15 | [14]
+    ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #16 | [15]
+    ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #17 | [16]
+    ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #18 | [17]
+    ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #19 | [18]
+    ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #20 | [19]
+    ['c','w','w','w','w','w','w','w','w','w','d','w','w','w','w','w','w','w','w','w','c']  #21 | [20]
     ]
-
+#Settings has been updated with some extra comments regarding list placement, also messed with
+#screen and tile size to make 'em work well - Adam
+#----------------------------------------------------------------------------------------------------
 class Game:
     def __init__(self):
+        S = Settings()
         pygame.init()
-        self.screen = pygame.display.set_mode(self.Height,self.Width)
-        pygame.display.set_caption('Alien Attack | Space Shrooms - Deluxe')
-        self.clock = pygame.time.Clock()
 
-        self.level=Level()
+        self.screen = pygame.display.set_mode((S.Width, S.Height))
+        pygame.display.set_caption("Space Shrooms - Deluxe")
+
+        self.clock = pygame.time.Clock()
+        self.map = Map()
+        self.FPS = S.FPS
 
     def run(self):
-        while True:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    pygame.quit()
-                    sys.exit()
-            self.screen.fill=('black')
-            self.level.run()
-            pygame.display.update()
-            self.clock.tick(self.FPS)
-if __name__ == '__main__':
-    game = Game()
-    game.run()
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
 
-
-class Level:
+        self.screen.fill("black")
+        self.map.run()
+        pygame.display.update()
+        self.clock.tick(self.FPS)
+#Game has been re-written (some of it) to properly hold the variables in __init__(), without error - Adam
+#----------------------------------------------------------------------------------------------------
+class Map():
     def __init__(self):
+        S = Settings()
         self.display_surface = pygame.display.get_surface()
         self.visible_sprites = pygame.sprite.Group()
-        self.visible_obstacle = pygame.sprite.Group()
-
+        self.obstacle_sprites = pygame.sprite.Group()
+        
+        self.MAP = S.MAP
+        self.TILESIZE = S.Tilesize
         self.create_map()
 
     def create_map(self):
@@ -70,26 +74,108 @@ class Level:
             for col_index, col in enumerate(row):
                 x = col_index * self.TILESIZE
                 y = row_index * self.TILESIZE
-                if col == 'w':
-                    Tile((x,y),[self.visible_sprites, self.visible_obstacle])
-                if col == 'p':
-                    self.player = Player((x,y),[self.visible_sprites],self.obstacle_sprites)
 
-                if col == 'f':
-                    Floor((x,y),[self.visible_sprites])
-                if col == 'd':
-                    Door((x,y),[self.visible_sprites, self.visible_obstacle])
+                #--------------------------------------------------------------------------------
+                #Walls -
+                if col == "w" and row_index == 0:
+                    image = "Assets/Area/Wall.png"
+                    AreaSprite((x, y), image, [self.visible_sprites, self.obstacle_sprites])
+
+                elif col == "w" and col_index == 0 and row_index > 0 and row_index < 20:
+                    image = ImageTransformer("Assets/Area/Wall.png", 90)
+                    image = image.ReturnImage()
+                    AreaSprite((x, y), image, [self.visible_sprites, self.obstacle_sprites])
+
+                elif col == "w" and row_index == 20:
+                    image = ImageTransformer("Assets/Area/Wall.png", 180)
+                    image = image.ReturnImage()
+                    AreaSprite((x, y), image, [self.visible_sprites, self.obstacle_sprites]) 
+
+                elif col == "w" and col_index == 20 and row_index > 0 and row_index < 20:
+                    image = ImageTransformer("Assets/Area/Wall.png", 270)
+                    image = image.ReturnImage()
+                    AreaSprite((x, y), image, [self.visible_sprites, self.obstacle_sprites])
+                #--------------------------------------------------------------------------------
+                #Corners -
+                elif col == "c" and col_index == 20 and row_index == 0:
+                    image = "Assets/Area/Corner.png"
+                    AreaSprite((x, y), image, [self.visible_sprites])
+
+                elif col == "c" and col_index == 0 and row_index == 0:
+                    image = ImageTransformer("Assets/Area/Corner.png", 90)
+                    image = image.ReturnImage()
+                    AreaSprite((x, y), image, [self.visible_sprites])              
+
+                elif col == "c" and col_index == 0 and row_index == 20:
+                    image = ImageTransformer("Assets/Area/Corner.png", 180)
+                    image = image.ReturnImage()
+                    AreaSprite((x, y), image, [self.visible_sprites])
+
+                elif col == "c" and col_index == 20 and row_index == 20:
+                    image = ImageTransformer("Assets/Area/Corner.png", 270)
+                    image = image.ReturnImage()
+                    AreaSprite((x, y), image, [self.visible_sprites])
+                #--------------------------------------------------------------------------------
+                #Doors
+                elif col == "d" and row_index == 0:
+                    image = "Assets/Area/Door.png"
+                    AreaSprite((x, y), image, [self.visible_sprites, self.obstacle_sprites])
+
+                elif col == "d" and row_index == 10 and col_index == 0:
+                    image = ImageTransformer("Assets/Area/Door.png", 90)
+                    image = image.ReturnImage()
+                    AreaSprite((x, y), image, [self.visible_sprites, self.obstacle_sprites])
+
+                elif col == "d" and row_index == 20:
+                    image = ImageTransformer("Assets/Area/Door.png", 180)
+                    image = image.ReturnImage()
+                    AreaSprite((x, y), image, [self.visible_sprites, self.obstacle_sprites])
+
+                elif col == "d" and row_index == 10 and col_index == 20:
+                    image = ImageTransformer("Assets/Area/Door.png", 270)
+                    image = image.ReturnImage()
+                    AreaSprite((x, y), image, [self.visible_sprites, self.obstacle_sprites])
+                #--------------------------------------------------------------------------------
+                #Floor
+                elif col == "f":
+                    image = "Assets/Area/Floor.png"
+                    AreaSprite((x, y), image, [self.visible_sprites])               
 
     def run(self):
         self.visible_sprites.draw(self.display_surface)
         self.visible_sprites.update()
-
-class Tile(pygame.sprite.Sprite):
-    def __init__(self, pos, groups):
+#This was a big one, 
+#first - I added some varialbes to the initialiser (init) in order to make sure "create_map" worked
+#second - I have re-written all tile typed classes to one single class handling them all
+#third - I then made an ""ImageTransformer" class for rotating images; input: image file and rotation amount
+#you cannot add a "return" statement into an init, so I created the "ReturnImage" function to return them
+#fourth - I had re-written all if statements in "create_map" to fit these new changes
+#Mostly, you had done a great job Marc however, it is still the first pygame anything you've made so don't
+#let my changes discourage you. Learn from them and how they work and you will be able to do a lot better than
+#great. 
+# - Adam
+#----------------------------------------------------------------------------------------------------
+class AreaSprite(pygame.sprite.Sprite):
+    def __init__(self, pos, image, groups):
         super().__init__(groups)
-        self.image = pygame.image.load('').convert_alpha()
+        try:
+            self.image = pygame.image.load(image).convert_alpha()
+        except:
+            self.image = image
+        self.image = pygame.transform.scale2x(self.image)
         self.rect = self.image.get_rect(topleft = pos)
+#Made one class for all the area related sprites (e.g. Walls and Floors) - Adam
 
+class ImageTransformer(pygame.sprite.Sprite):
+    def __init__(self, image, degrees):
+        self.image = pygame.image.load(image).convert_alpha()
+        self.image = pygame.transform.rotate(self.image, degrees)
+
+    def ReturnImage(self):
+        return self.image
+#Used for the rotating of images by the degrees inputted by us - Adam
+#----------------------------------------------------------------------------------------------------
+#NOTE - Have NOT worked on player yet, haven't even seen it - Adam
 class Player(pygame.sprite.Sprite):
     def __init__(self, pos, groups,obstacle_sprites):
         super().__init__(groups)
@@ -106,14 +192,14 @@ class Player(pygame.sprite.Sprite):
 
         if keys[pygame.K_A]:
             self.direction.y = -1
-        elif keys{pygame.K_D}:
+        elif keys[pygame.K_D]:
             self.direction.y = 1
         else:
             self.direction.y = 0
 
         if keys[pygame.K_A]:
             self.direction.x = 1
-        elif keys{pygame.K_S:
+        elif keys[pygame.K_S]:
             self.direction.x = -1
         else:
             self.direction.x = 0
@@ -149,17 +235,11 @@ class Player(pygame.sprite.Sprite):
     def update(self):
         self.input()
         self.move(self.speed)
+#----------------------------------------------------------------------------------------------------
+running = True
+game = Game()
 
-class Floor(pygame.sprite.Sprite):
-    def __init__(self, pos, groups):
-        super().__init__(groups)
-        self.image = pygame.image.load('').convert_alpha()
-        self.rect = self.image.get_rect(topleft = pos) 
-
-class Door(pygame.sprite.Sprite):
-    def __init__(self, pos, groups):
-        super().__init__(groups)
-        self.image = pygame.image.load('').convert_alpha()
-        self.rect = self.image.get_rect(topleft = pos) 
-
-#for doors use "d" | for floors use 'f" | for walls use "w".....Done player will = 'p'
+while running:
+    game.run()
+#Gave this section a little tune-up, so that it runs well - Adam
+#----------------------------------------------------------------------------------------------------
