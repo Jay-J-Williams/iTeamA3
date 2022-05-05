@@ -1,4 +1,6 @@
-import pygame, sys
+import pygame
+import sys
+#import Back
 #----------------------------------------------------------------------------------------------------
 class Settings:
     Width = 672
@@ -15,8 +17,8 @@ class Settings:
     ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #4 | [3]
     ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #5 | [4]
     ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #6 | [5]
-    ['d','f','f','f','f','f','fp','f','f','f','f','f','f','f','f','f','f','f','f','f','d'],#7 | [6]
-    ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #8 | [7]
+    ['d','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','d'],#7 | [6]
+    ['w','f','f','f','f','f','f','f','f','fp','f','f','f','f','f','f','f','f','f','f','w'], #8 | [7]
     ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #9 | [8]
     ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #10 | [9]
     ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #11 | [10]
@@ -47,6 +49,7 @@ class Game:
         self.FPS = S.FPS
 
     def run(self):
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -74,7 +77,8 @@ class Map():
             for col_index, col in enumerate(row):
                 x = col_index * self.TILESIZE
                 y = row_index * self.TILESIZE
-
+                self.y = y
+                self.x = x
                 #--------------------------------------------------------------------------------
                 #Walls
                 if col == "w" and row_index == 0:
@@ -144,7 +148,7 @@ class Map():
                 #Player
                 if "p" in col:
                     image = "Assets/Player/Player_pistol.png"
-                    Player((x, y), image, [self.visible_sprites], self.obstacle_sprites)
+                    Player((x, y), image, self.visible_sprites, self.obstacle_sprites)
 
     def run(self):
         self.visible_sprites.draw(self.display_surface)
@@ -184,16 +188,21 @@ class ImageTransformer(pygame.sprite.Sprite):
 class Player(pygame.sprite.Sprite):
     def __init__(self, pos, image, groups, obstacles):
         super().__init__(groups)
+        
         self.image = pygame.image.load(image).convert_alpha()
         self.image = pygame.transform.scale2x(self.image)
         self.rect = self.image.get_rect(topleft = pos)
         self.obstacles = obstacles
-        self.pos = pygame.Vector2(pos)
+        self.pos = pygame.math.Vector2(pos)
+        Player.movement(self)
 
     def movement(self):
         keys = pygame.key.get_pressed()
+        #self.image = pygame.image.load(image).convert_alpha()
 
-        if keys[pygame.K_a]:
+        self.image = "Assets/Player/Player_pistol.png"
+        if keys [pygame.K_a]:
+            
             self.pos.x -= 5
         elif keys[pygame.K_d]:
             self.pos.x += 5
@@ -201,7 +210,15 @@ class Player(pygame.sprite.Sprite):
             self.pos.y -= 5
         elif keys[pygame.K_s]:
             self.pos.y += 5
+        self.image = pygame.image.load(self.image).convert_alpha()
+        self.image = pygame.transform.scale2x(self.image)
+        self.rect = self.image.get_rect(topleft = self.pos)
 
+    def update(self):
+        Player.movement(self)
+        
+        #self.rect = self.image.get_rect(topleft = pos)
+ 
 #class Player(pygame.sprite.Sprite):
 #    def __init__(self, pos, groups,obstacle_sprites):
 #        super().__init__(groups)
