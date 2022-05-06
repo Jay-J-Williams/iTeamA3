@@ -1,6 +1,6 @@
-import pygame
-import sys
+import pygame, sys
 #import Back
+#Example of use - C = Back.Characters()
 #----------------------------------------------------------------------------------------------------
 class Settings:
     Width = 672
