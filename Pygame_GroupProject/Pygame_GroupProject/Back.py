@@ -289,9 +289,11 @@ class Aliens(Characters):
         self.__target = value
 
     @spawn_rate.setter
-    def spawn_rate(self, value: int):
-        if value <= 93 and value > 0:
+    def spawn_rate(self, value):
+        try:
             self.__spawn_rate = value
+        except:
+            raise numErrors("The spawn_rate is incorrect")
 
 #I created this function to convert the int spawn_rate e.g., 10(%) to a range
 #so it can be used to spawn the aliens. I have included first_conversion
@@ -307,7 +309,7 @@ class Aliens(Characters):
             starting_point = last_aliens_spawn_rate[-1] + 1
             end_point = self.spawn_rate + starting_point
         if first_conversion == True:
-            self.spawn_rate = list(range(1, self.spawn_rate))
+            self.spawn_rate = list(range(1, self.spawn_rate + 1))
         else:
             self.spawn_rate = list(range(starting_point, end_point))
         last_aliens_spawn_rate = self.spawn_rate
@@ -357,23 +359,31 @@ class Aliens(Characters):
 
             i += 1
 
-#Maybe, I should put my spawn functions into the management class instead.
     @staticmethod
     def random_spawn():
         alien_choice = random.randint(1, 100)
+        print(alien_choice)
         door_choice = random.randint(1, 8)
-        if alien_choice == range(shield.spawn_rate[0], shield.spawn_rate[-1]):
+        alien = "Failed"
+        if alien_choice >= shield.spawn_rate[0] and alien_choice <= shield.spawn_rate[-1]:
+            alien = "Shield"
             shield.spawn(door_choice)
-        elif alien_choice == range(turret.spawn_rate[0], turret.spawn_rate[-1]):
+        elif alien_choice >= turret.spawn_rate[0] and alien_choice <= turret.spawn_rate[-1]:
+            alien = "Turret"
             turret.spawn(door_choice)
-        elif alien_choice == range(armoured_wing.spawn_rate[0], armoured_wing.spawn_rate[-1]):
+        elif alien_choice >= armoured_wing.spawn_rate[0] and alien_choice <= armoured_wing.spawn_rate[-1]:
+            alien = "Armoured wing"
             armoured_wing.spawn(door_choice)
-        elif alien_choice == range(sniper.spawn_rate[0], sniper.spawn_rate[-1]):
+        elif alien_choice >= sniper.spawn_rate[0] and alien_choice <= sniper.spawn_rate[-1]:
+            alien = "Sniper"
             sniper.spawn(door_choice)
-        elif alien_choice == range(bomber.spawn_rate[0], bomber.spawn_rate[-1]):
+        elif alien_choice >= bomber.spawn_rate[0] and alien_choice <= bomber.spawn_rate[-1]:
+            alien = "Bomber"
             bomber.spawn(door_choice)
         else:
+            alien = "Mosquito"
             mosquito.spawn(door_choice)
+        return alien
 
 #This function gets the alien's position and the computer's choice of door and
 #uses the door to set the alien's new position. After the position is set,
@@ -382,23 +392,33 @@ class Aliens(Characters):
 
 #Let me know what you think of this alternative Adam. I'd love to hear your
 #thoughts on it.
+
+#Note: positions are for testing only. They are not the correct values.
     def spawn(self, door_choice: int):
         if door_choice == 1:
-            self.character_pos = (0, 1200)
+            self.pos_x = 1
+            self.pos_y = 800
         elif door_choice == 2:
-            self.character_pos = (0, 100)
+            self.pos_x = 48
+            self.pos_y = 92
         elif door_choice == 3:
-            self.character_pos = (1200, 50)
+            self.pos_x = 442
+            self.pos_y = 10
         elif door_choice == 4:
-            self.character_pos = (20, 22)
+            self.pos_x = 150
+            self.pos_y = 232
         elif door_choice == 5:
-            self.character_pos = (20, 22)
+            self.pos_x = 300
+            self.pos_y = 500
         elif door_choice == 6:
-            self.character_pos = (20, 22)
+            self.pos_x = 11
+            self.pos_y = 200
         elif door_choice == 7:
-            self.character_pos = (20, 22)
+            self.pos_x = 23
+            self.pos_y = 62
         else:
-            self.character_pos = (1200, 600)
+            self.pos_x = 1200
+            self.pos_y = 600
         self.alive = True
 
 class RangedAliens(Aliens):
@@ -442,15 +462,15 @@ class GameManager():
     def start_game():
         game_round = 1
         try:
-            shield.convert_spawn_rate(True, 0)
+            shield.convert_spawn_rate(True, None)
             turret.convert_spawn_rate(False, shield.spawn_rate)
-            armoured_wing.convert_spawn_rate(False, armoured_wing.spawn_rate)
-            sniper.convert_spawn_rate(False, sniper.spawn_rate)
-            bomber.convert_spawn_rate(False, bomber.spawn_rate)
-            mosquito.convert_spawn_rate(False, mosquito.spawn_rate)
+            armoured_wing.convert_spawn_rate(False, turret.spawn_rate)
+            sniper.convert_spawn_rate(False, armoured_wing.spawn_rate)
+            bomber.convert_spawn_rate(False, sniper.spawn_rate)
+            mosquito.convert_spawn_rate(False, bomber.spawn_rate)
         except:
             raise entryErrors("The spawn rates are incorrect")
-        manage_spawns(game_round)
+        GameManager.manage_spawns(game_round)
         return game_round
 
     @staticmethod
@@ -458,8 +478,10 @@ class GameManager():
         aliens_needed = game_round * 5
         i = 0
         while(aliens_needed > i):
-            Aliens.random_spawn(shield.spawn_rate, turret.spawn_rate, armoured_wing.spawn_rate, sniper.spawn_rate, bomber.spawn_rate, mosquito.spawn_rate)
+            alien = Aliens.random_spawn()
+            GameManager.aliens_alive.append(alien)
             i+= 1
+        print(GameManager.aliens_alive)
 
     @staticmethod
     def manage_rounds(game_round: int):
@@ -468,11 +490,11 @@ class GameManager():
             manage_spawns(game_round)
         return game_round
 
-player = Player(100, 2, 20, True, None, 1,1)
-shield = Aliens(200, 1, 20, player, 25, False, 1,1)
-turret = Aliens(200, 1, 15, player, 10, False, 1,1)
-armoured_wing = Aliens(150, 2, 30, player(), 15, False, 1,1)
-bomber = Aliens(30, 5, 100, player(), 10, False, 1,1)
-mosquito = Aliens(50, 3, 50, player(), 25, False, 1,1)
-sniper = Aliens(40, 1, 75, player(), 15, False, 1,1)
+player = Player(100, 2, 20, True, None, 1, 1)
+shield = Aliens(200, 1, 20, False, 1, 1, player, 25)
+turret = Aliens(200, 1, 15, False, 1, 1, player, 10)
+armoured_wing = Aliens(150, 2, 30, False, 1, 1, player, 15)
+bomber = Aliens(30, 5, 100, False, 1, 1, player, 10)
+mosquito = Aliens(50, 3, 50, False, 1, 1, player, 25)
+sniper = Aliens(40, 1, 75, False, 1, 1, player, 15)
 GameManager.start_game()
