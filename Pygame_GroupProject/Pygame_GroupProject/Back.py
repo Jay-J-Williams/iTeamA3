@@ -128,6 +128,7 @@ class Player(Characters):
         pygame.time.wait(self.delay)
 
 class Weapons:
+#I doubt we need the name here considering that the objects will have names   
     __name = None
     __damage = None
     __fire_rate = None
@@ -337,34 +338,33 @@ class Aliens(Characters):
 #shield list = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 #15
 
-    @staticmethod
-    def rando_spawn(shieldSpawn, turretSpawn, wingSpawn, sniperSpawn, bomberSpawn, mosquitoSpawn, total):
-        i = 0
-
-        while i < total:
-            alien = random.randint(0, 100)
-
-            if alien == range(shieldSpawn[0], shieldSpawn[-1]):
-                yield shield
-            elif alien == range(turretSpawn[0], turretSpawn[-1]):
-                yield turret
-            elif alien == range(wingSpawn[0], wingSpawn[-1]):
-                yield wing 
-            elif alien == range(sniperSpawn[0], sniperSpawn[-1]):
-                yield sniper 
-            elif alien == range(bomberSpawn[0], bomberSpawn[-1]):
-                yield bomber 
-            elif alien == range(mosquitoSpawn[0], mosquitoSpawn[-1]):
-                yield mosquito 
-
-            i += 1
+#    @staticmethod
+#    def rando_spawn(shieldSpawn, turretSpawn, wingSpawn, sniperSpawn, bomberSpawn, mosquitoSpawn, total):
+#        i = 0
+#
+#        while i < total:
+#            alien = random.randint(0, 100)
+#
+#            if alien == range(shieldSpawn[0], shieldSpawn[-1]):
+#                yield shield
+#            elif alien == range(turretSpawn[0], turretSpawn[-1]):
+#                yield turret
+#            elif alien == range(wingSpawn[0], wingSpawn[-1]):
+#                yield wing 
+#            elif alien == range(sniperSpawn[0], sniperSpawn[-1]):
+#                yield sniper 
+#            elif alien == range(bomberSpawn[0], bomberSpawn[-1]):
+#                yield bomber 
+#            elif alien == range(mosquitoSpawn[0], mosquitoSpawn[-1]):
+#                yield mosquito 
+#
+#            i += 1
 
     @staticmethod
     def random_spawn():
         alien_choice = random.randint(1, 100)
         print(alien_choice)
         door_choice = random.randint(1, 8)
-        alien = "Failed"
         if alien_choice >= shield.spawn_rate[0] and alien_choice <= shield.spawn_rate[-1]:
             alien = "Shield"
             shield.spawn(door_choice)
@@ -427,29 +427,29 @@ class RangedAliens(Aliens):
 class PhysicalAliens(Aliens):
     pass
 
-class EnemySpawn():
-    def AlienCreator():
-        ListOfAliens = []
-
-        return ListOfAliens
-
-    def AlienDoorSpawn():
-        Door1 = pygame.Vector2(0, 1200)
-        Door2 = pygame.Vector2(0, 100)
-        Door3 = pygame.Vector2(1200, 50)
-        Door4 = pygame.Vector2(1200, 600)
-        
-        rand = random.randint(0, 3)
-        Location = None
-
-        if rand == 0:
-            return Door4
-        elif rand == 1:
-            return Door2
-        elif rand == 2:
-            return Door1
-        elif rand == 3:
-            return Door3
+#class EnemySpawn():
+#    def AlienCreator():
+#        ListOfAliens = []
+#
+#        return ListOfAliens
+#
+#    def AlienDoorSpawn():
+#        Door1 = pygame.Vector2(0, 1200)
+#        Door2 = pygame.Vector2(0, 100)
+#        Door3 = pygame.Vector2(1200, 50)
+#        Door4 = pygame.Vector2(1200, 600)
+#        
+#        rand = random.randint(0, 3)
+#        Location = None
+#
+#        if rand == 0:
+#            return Door4
+#        elif rand == 1:
+#            return Door2
+#        elif rand == 2:
+#            return Door1
+#        elif rand == 3:
+#            return Door3
     #I created this sample class to handle the enemy spawns using the rarity system, as well as handle where
     #the enemies spawn to. I believe we should use door locations in the way that I have
 
@@ -460,7 +460,7 @@ class GameManager():
 
     @staticmethod
     def start_game():
-        game_round = 1
+        game_round = 0
         try:
             shield.convert_spawn_rate(True, None)
             turret.convert_spawn_rate(False, shield.spawn_rate)
@@ -470,7 +470,7 @@ class GameManager():
             mosquito.convert_spawn_rate(False, bomber.spawn_rate)
         except:
             raise entryErrors("The spawn rates are incorrect")
-        GameManager.manage_spawns(game_round)
+        GameManager.manage_rounds(game_round)
         return game_round
 
     @staticmethod
@@ -485,9 +485,9 @@ class GameManager():
 
     @staticmethod
     def manage_rounds(game_round: int):
-        if len(aliens_alive) == 0:
+        if len(GameManager.aliens_alive) == 0:
             game_round+= 1
-            manage_spawns(game_round)
+            GameManager.manage_spawns(game_round)
         return game_round
 
 player = Player(100, 2, 20, True, None, 1, 1)
