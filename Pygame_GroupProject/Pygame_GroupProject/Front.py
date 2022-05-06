@@ -18,7 +18,7 @@ class Settings:
     ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #5 | [4]
     ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #6 | [5]
     ['d','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','d'],#7 | [6]
-    ['w','f','f','f','f','f','f','f','f','fp','f','f','f','f','f','f','f','f','f','f','w'], #8 | [7]
+    ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #8 | [7]
     ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #9 | [8]
     ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #10 | [9]
     ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #11 | [10]
@@ -30,7 +30,7 @@ class Settings:
     ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #17 | [16]
     ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #18 | [17]
     ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #19 | [18]
-    ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #20 | [19]
+    ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','fp','w'], #20 | [19]
     ['c','w','w','w','w','w','d','w','w','w','w','w','w','w','d','w','w','w','w','w','c']  #21 | [20]
     ]
 #Settings has been updated with some extra comments regarding list placement, also messed with
@@ -67,7 +67,7 @@ class Map():
         self.display_surface = pygame.display.get_surface()
         self.visible_sprites = pygame.sprite.Group()
         self.obstacle_sprites = pygame.sprite.Group()
-        
+        self.offset = pygame.math.Vector2()
         self.MAP = S.MAP
         self.TILESIZE = S.Tilesize
         self.create_map()
@@ -148,11 +148,13 @@ class Map():
                 #Player
                 if "p" in col:
                     image = "Assets/Player/Player_pistol.png"
-                    Player((x, y), image, self.visible_sprites, self.obstacle_sprites)
+                    self.player = Player((x, y), image, self.visible_sprites, self.obstacle_sprites)
 
     def run(self):
         self.visible_sprites.draw(self.display_surface)
         self.visible_sprites.update()
+
+        
 #This was a big one, 
 #first - I added some varialbes to the initialiser (init) in order to make sure "create_map" worked
 #second - I have re-written all tile typed classes to one single class handling them all
@@ -189,35 +191,32 @@ class Player(pygame.sprite.Sprite):
     def __init__(self, pos, image, groups, obstacles):
         super().__init__(groups)
         
-        self.image = pygame.image.load(image).convert_alpha()
+        self.image = pygame.image.load(image)#.convert_alpha()
         self.image = pygame.transform.scale2x(self.image)
         self.rect = self.image.get_rect(topleft = pos)
         self.obstacles = obstacles
-        self.pos = pygame.math.Vector2(pos)
-        Player.movement(self)
+        self.direction = pygame.math.Vector2(pos)
 
     def movement(self):
         keys = pygame.key.get_pressed()
-        #self.image = pygame.image.load(image).convert_alpha()
-
-        self.image = "Assets/Player/Player_pistol.png"
+        #image=self.image
+        #print(self.image)
         if keys [pygame.K_a]:
             
-            self.pos.x -= 5
+            #self.image = ImageTransformer(self.image, 90)
+            #self.image = self.image.ReturnImage()
+            self.direction.x -= 5
         elif keys[pygame.K_d]:
-            self.pos.x += 5
+            self.direction.x += 5
         elif keys[pygame.K_w]:
-            self.pos.y -= 5
+            self.direction.y -= 5
         elif keys[pygame.K_s]:
-            self.pos.y += 5
-        self.image = pygame.image.load(self.image).convert_alpha()
-        self.image = pygame.transform.scale2x(self.image)
-        self.rect = self.image.get_rect(topleft = self.pos)
+            self.direction.y += 5
+      
 
     def update(self):
         Player.movement(self)
-        
-        #self.rect = self.image.get_rect(topleft = pos)
+        self.rect = self.image.get_rect(topleft = self.direction)
  
 #class Player(pygame.sprite.Sprite):
 #    def __init__(self, pos, groups,obstacle_sprites):
