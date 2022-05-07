@@ -128,7 +128,7 @@ class Player(Characters):
         pygame.time.wait(self.delay)
 
 class Weapons:
-#I doubt we need the name here considering that the objects will have names   
+#I doubt we need the name here considering that the objects will have names  
     __name = None
     __damage = None
     __fire_rate = None
