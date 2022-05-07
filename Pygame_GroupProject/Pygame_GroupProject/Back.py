@@ -54,34 +54,30 @@ class Characters():
 
     @speed.setter
     def speed(self, value):
-        try:
-            if value > 0:
-                self.__movement_speed = value
-        except:
+        if value > 0:
+            self.__movement_speed = value
+        else:
             raise numErrors("Movement Speed has to be a positive int")
         
     @health.setter
     def health(self, value):
-        try:
-            if value > 0:
-                self.__health = value
-        except:
+        if value > 0:
+            self.__health = value
+        else:
             raise numErrors("Health must be a positive int")
         
     @damage.setter
     def damage(self, value: int):
-        try:
-            if value > 0:
-                self.__damage = value
-        except:
+        if value > 0:
+            self.__damage = value
+        else:
             raise numErrors("Damage must be a positive int")
 
     @is_alive.setter
     def is_alive(self, value: bool):
-        try:
-            if value == False or value == True:
-                self.__is_alive = value
-        except:
+        if value == False or value == True:
+            self.__is_alive = value
+        else:
             raise boolErrors("is_alive must be a boolean value")
 
 #Add another conditional statement to check whether the value is too large for
@@ -89,18 +85,16 @@ class Characters():
 #I has to change the vector because it doesn't work in this context.
     @pos_x.setter
     def pos_x(self, value: int):
-        try:
-           if value > 0:
-               self.__pos_x = value
-        except:
+        if value > 0:
+            self.__pos_x = value
+        else:
             numErrors("pos_x must be a positive integer")
 
     @pos_y.setter
     def pos_y(self, value:int):
-        try:
-            if value > 0:
-                self.__pos_y = value
-        except:
+        if value > 0:
+            self.__pos_y = value
+        else:
             numErrors("pos_y must be a positive integer")
 
 class Player(Characters):
@@ -112,12 +106,12 @@ class Player(Characters):
     @property
     def power_up(self):
         return self.__power_up
+
     @power_up.setter
     def power_up(self, value: object):
-        try:
-            if value != "":
-                self.__power_up = value 
-        except:
+        if value != "":
+            self.__power_up = value 
+        else:
             raise objectErrors("The power-up must be an object, or 'None'")
 
     def shoot(self, weapon: object, bullet: object):
@@ -150,26 +144,23 @@ class Weapons:
 
     @name.setter
     def name(self, value: str):
-        try:
-            if value == "Pistol" or value == "Shotgun":
-                self.__name = value
-            elif value == "Sub-machine-gun" or value == "Rifle":
-                self.__name = value
-        except:
+        if value == "Pistol" or value == "Shotgun":
+            self.__name = value
+        elif value == "Sub-machine-gun" or value == "Rifle":
+            self.__name = value
+        else:
             raise strErrors("You must enter 'Pistol', 'Shotgun', 'Sub-machine-gun', or 'Rifle'")
     @damage.setter
     def damage(self, value: int):
-        try:
-            if type(value) > 0:
-                self.__damage = value
-        except:
+        if value > 0:
+            self.__damage = value
+        else:
             raise numErrors("You must enter a positive int")
     @fire_rate.setter
     def fire_rate(self, value: int):
-        try:
-            if value > 0 and value < 10:
-                self.__fire_rate = value
-        except:
+        if value > 0 and value < 10:
+            self.__fire_rate = value
+        else:
             raise numErrors("You must enter an int from 1 to 10")
 
 #Only use positive integers for the fire_rate (final input), not decimals or strings
@@ -224,22 +215,23 @@ class Bullets():
 
     @asset.setter
     def asset(self, value: str):
-        try:
-            if value != "":
-                self.__asset = value
-        except:
+        if value != "":
+            self.__asset = value
+        else:
             raise strErrors("You must enter a string")
 
     @showing.setter
     def showing(self, value: bool):
+        if value == True or value == False:
             self.__showing = value
+        else:
+            raise boolErrors("You must enter a boolean value for 'showing'")
 
     @speed.setter
     def speed(self, value: int):
-        try:
-            if value > 0:
-                self.__speed = value
-        except:
+        if value > 0:
+            self.__speed = value
+        else:
             raise numErrors("You must enter an integer that is greater than zero")
 
     @target.setter
@@ -248,18 +240,16 @@ class Bullets():
 
     @pos_x.setter
     def pos_x(self, value: int):
-        try:
-            if value > 0:
-                self.__pos_x = value
-        except:
+        if value > 0:
+            self.__pos_x = value
+        else:
             raise numErrors("You must an integer that is greater than zero")
 
     @pos_y.setter
     def pos_y(self, value):
-        try:
-            if value > 0:
-                self.__pos_y = value
-        except:
+        if value > 0:
+            self.__pos_y = value
+        else:
             raise numErrors("You must an integer that is greater than zero")
         
 #bullet = Bullets()
@@ -291,10 +281,7 @@ class Aliens(Characters):
 
     @spawn_rate.setter
     def spawn_rate(self, value):
-        try:
-            self.__spawn_rate = value
-        except:
-            raise numErrors("The spawn_rate is incorrect")
+        self.__spawn_rate = value
 
 #I created this function to convert the int spawn_rate e.g., 10(%) to a range
 #so it can be used to spawn the aliens. I have included first_conversion
@@ -454,7 +441,7 @@ class PhysicalAliens(Aliens):
     #the enemies spawn to. I believe we should use door locations in the way that I have
 
 class GameManager():
-    aliens_alive = []
+    __aliens_alive = []
     def __init__(self):
         pass
 
@@ -475,26 +462,34 @@ class GameManager():
 
     @staticmethod
     def manage_spawns(game_round: int):
-        aliens_needed = game_round * 5
-        i = 0
-        while(aliens_needed > i):
-            alien = Aliens.random_spawn()
-            GameManager.aliens_alive.append(alien)
-            i+= 1
-        print(GameManager.aliens_alive)
+        spawn_rate_total = len(shield.spawn_rate) + len(turret.spawn_rate) + len(armoured_wing.spawn_rate) + len(bomber.spawn_rate) + len(mosquito.spawn_rate) + len(sniper.spawn_rate)
+        if spawn_rate_total == 100:
+            aliens_needed = game_round * 5
+            i = 0
+            while(aliens_needed > i):
+                alien = Aliens.random_spawn()
+                GameManager.__aliens_alive.append(alien)
+                i+= 1
+            print(GameManager.__aliens_alive)
+        else:
+            raise numErrors("The spawn rates must add up to 100")
 
     @staticmethod
     def manage_rounds(game_round: int):
-        if len(GameManager.aliens_alive) == 0:
+        if len(GameManager.__aliens_alive) == 0:
             game_round+= 1
             GameManager.manage_spawns(game_round)
         return game_round
 
-player = Player(100, 2, 20, True, None, 1, 1)
+#parameters - (health, speed, damage, is_alive, pos_x, pos_y, power_up)
+player = Player(100, 2, 20, True, 1, 1, None)
+
+#parameters - (health, speed, damage, is_alive, pos_x, pos_y, target, spawn_rate)
 shield = Aliens(200, 1, 20, False, 1, 1, player, 25)
 turret = Aliens(200, 1, 15, False, 1, 1, player, 10)
 armoured_wing = Aliens(150, 2, 30, False, 1, 1, player, 15)
 bomber = Aliens(30, 5, 100, False, 1, 1, player, 10)
 mosquito = Aliens(50, 3, 50, False, 1, 1, player, 25)
 sniper = Aliens(40, 1, 75, False, 1, 1, player, 15)
+
 GameManager.start_game()
