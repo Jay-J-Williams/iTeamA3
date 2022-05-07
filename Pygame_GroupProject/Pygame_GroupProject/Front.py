@@ -191,7 +191,7 @@ class Player(pygame.sprite.Sprite):
     def __init__(self, pos, image, groups, obstacles):
         super().__init__(groups)
         
-        self.image = pygame.image.load(image)#.convert_alpha()
+        self.image = pygame.image.load(image).convert_alpha()
         self.image = pygame.transform.scale2x(self.image)
         self.rect = self.image.get_rect(topleft = pos)
         self.obstacles = obstacles
@@ -199,19 +199,17 @@ class Player(pygame.sprite.Sprite):
 
     def movement(self):
         keys = pygame.key.get_pressed()
-        #image=self.image
-        #print(self.image)
-        if keys [pygame.K_a]:
-            
-            #self.image = ImageTransformer(self.image, 90)
-            #self.image = self.image.ReturnImage()
-            self.direction.x -= 5
+        #self.image = pygame.transform.rotate(self.image, 90)
+        #self.rect = self.image.get_rect(topleft = self.direction)
+        if keys[pygame.K_a]:
+            self.direction.x -= 1
         elif keys[pygame.K_d]:
-            self.direction.x += 5
-        elif keys[pygame.K_w]:
-            self.direction.y -= 5
+            self.direction.x += 1
+
+        if keys[pygame.K_w]:
+            self.direction.y -= 1
         elif keys[pygame.K_s]:
-            self.direction.y += 5
+            self.direction.y += 1
       
 
     def update(self):
