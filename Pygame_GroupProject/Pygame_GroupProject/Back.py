@@ -227,7 +227,7 @@ class Bullets():
 
     @property
     def pos_y(self):
-        return self.pos_y
+        return self.__pos_y
 
     @asset.setter
     def asset(self, value: str):
@@ -277,12 +277,18 @@ class Aliens(Characters):
 #I have added the spawn rate into the Aliens class because it will be a
 #necessary value for each alien.
     __spawn_rate = None
+    __name = None
 
-    def __init__(self, health, speed, damage, is_alive, pos_x, pos_y, target, spawn_rate):
+    def __init__(self, name, health, speed, damage, is_alive, pos_x, pos_y, target, spawn_rate):
         super().__init__(health, speed, damage, is_alive, pos_x, pos_y)
         self.target = target
         self.spawn_rate = spawn_rate
+        self.name = name
 
+    @property
+    def name(self):
+        return self.__name
+    
     @property
     def target(self):
         return self.__target
@@ -290,6 +296,17 @@ class Aliens(Characters):
     @property
     def spawn_rate(self):
         return self.__spawn_rate
+
+    @name.setter
+    def name(self, value):
+        if value == "Shield" or value == "Turret":
+            self.__name = value
+        elif value == "Armoured-wing" or value == "Mosquito":
+            self.__name = value
+        elif value == "Bomber" or value == "Sniper":
+            self.__name = value
+        else:
+            raise strErrors("You must enter a name of an alien")
         
     @target.setter
     def target(self, value: object):
@@ -514,32 +531,32 @@ class GameManager():
 #parameters - (health, speed, damage, is_alive, pos_x, pos_y, target, spawn_rate)
     @staticmethod
     def create_shield():
-        shield = Aliens(200, 1, 20, False, 1, 1, player, 25)
+        shield = Aliens("Shield", 200, 1, 20, False, 1, 1, player, 25)
         return shield
 
     @staticmethod
     def create_turret():
-        turret = Aliens(200, 1, 15, False, 1, 1, player, 10)
+        turret = Aliens("Turret", 200, 1, 15, False, 1, 1, player, 10)
         return turret
     
     @staticmethod
     def create_armoured_wing():
-        armoured_wing = Aliens(150, 2, 30, False, 1, 1, player, 15)
+        armoured_wing = Aliens("Armoured-wing", 150, 2, 30, False, 1, 1, player, 15)
         return armoured_wing
     
     @staticmethod
     def create_bomber():
-        bomber = Aliens(30, 5, 100, False, 1, 1, player, 10)
+        bomber = Aliens("Bomber", 30, 5, 100, False, 1, 1, player, 10)
         return bomber
     
     @staticmethod
     def create_mosquito():
-        mosquito = Aliens(50, 3, 50, False, 1, 1, player, 25)
+        mosquito = Aliens("Mosquito", 50, 3, 50, False, 1, 1, player, 25)
         return mosquito
     
     @staticmethod
     def create_sniper():
-        sniper = Aliens(40, 1, 75, False, 1, 1, player, 15)
+        sniper = Aliens("Sniper", 40, 1, 75, False, 1, 1, player, 15)
         return sniper
 
 #parameters - (name, damage, fire_rate(shots per second))
