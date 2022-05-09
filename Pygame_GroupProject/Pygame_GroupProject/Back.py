@@ -14,16 +14,16 @@ class entryErrors(allErrors):
     pass
 
 class Characters():
-    __speed = 0
-    __health = 0
-    __damage = 0
-    __is_alive = False
-    __pos_x = 1
-    __pos_y = 1
-    def __init__(self, health, speed, dmg, is_alive, x, y):
+    __speed = None
+    __health = None
+    __damage = None
+    __is_alive = None
+    __pos_x = None
+    __pos_y = None
+    def __init__(self, health, speed, damage, is_alive, x, y):
         self.speed = speed
         self.health = health
-        self.damage = dmg
+        self.damage = damage
         self.is_alive = is_alive
         self.pos_x = x
         self.pos_y = y
@@ -99,13 +99,19 @@ class Characters():
 
 class Player(Characters):
     __power_up = None
-    def __init__(self, health, speed, damage, is_alive, pos_x, pos_y, power_up):
+    __weapon = None
+    def __init__(self, health, speed, damage, is_alive, pos_x, pos_y, power_up, weapon):
         super().__init__(health, speed, damage, is_alive, pos_x, pos_y)
-        self.power_up = power_up  
+        self.power_up = power_up
+        self.weapon = weapon
 
     @property
     def power_up(self):
         return self.__power_up
+
+    @property
+    def weapon(self):
+        return self.__weapon
 
     @power_up.setter
     def power_up(self, value: object):
@@ -114,11 +120,21 @@ class Player(Characters):
         else:
             raise objectErrors("The power-up must be an object, or 'None'")
 
+    @weapon.setter
+    def weapon(self, value: object):
+        if value != None and value != "":
+            self.__weapon = value
+        else:
+            raise objectErrors("The weapon must be an object")
+
+    def pickup_weapon(self):
+        self.damage = self.weapon.damage
+
     def shoot(self, weapon: object, bullet: object):
         pass
 
     def delay(self, weapon: object):
-        self.delay = 1000 / weapon.fire_rate
+        self.delay = 1000 / self.weapon.fire_rate
         pygame.time.wait(self.delay)
 
 class Weapons:
@@ -158,7 +174,7 @@ class Weapons:
             raise numErrors("You must enter a positive int")
     @fire_rate.setter
     def fire_rate(self, value: int):
-        if value > 0 and value < 10:
+        if value > 0 and value <= 10:
             self.__fire_rate = value
         else:
             raise numErrors("You must enter an int from 1 to 10")
@@ -177,10 +193,10 @@ class Weapons:
 #drops - Adam
 
 class Bullets():
-    __speed = 0
+    __speed = None
     __target = None
-    __pos_x = 1
-    __pos_y = 1
+    __pos_x = None
+    __pos_y = None
 
     def __init__(self, asset, speed, target, pos_x, pos_y):
         self.asset = asset
@@ -347,28 +363,28 @@ class Aliens(Characters):
 #
 #            i += 1
 
+
     @staticmethod
     def random_spawn():
         alien_choice = random.randint(1, 100)
-        print(alien_choice)
         door_choice = random.randint(1, 8)
         if alien_choice >= shield.spawn_rate[0] and alien_choice <= shield.spawn_rate[-1]:
-            alien = "Shield"
+            alien = GameManager.create_shield()
             shield.spawn(door_choice)
         elif alien_choice >= turret.spawn_rate[0] and alien_choice <= turret.spawn_rate[-1]:
-            alien = "Turret"
+            alien = GameManager.create_turret()
             turret.spawn(door_choice)
         elif alien_choice >= armoured_wing.spawn_rate[0] and alien_choice <= armoured_wing.spawn_rate[-1]:
-            alien = "Armoured wing"
+            alien = GameManager.create_armoured_wing()
             armoured_wing.spawn(door_choice)
         elif alien_choice >= sniper.spawn_rate[0] and alien_choice <= sniper.spawn_rate[-1]:
-            alien = "Sniper"
+            alien = GameManager.create_sniper()
             sniper.spawn(door_choice)
         elif alien_choice >= bomber.spawn_rate[0] and alien_choice <= bomber.spawn_rate[-1]:
-            alien = "Bomber"
+            alien = GameManager.create_bomber()
             bomber.spawn(door_choice)
         else:
-            alien = "Mosquito"
+            alien = GameManager.create_mosquito()
             mosquito.spawn(door_choice)
         return alien
 
@@ -461,13 +477,27 @@ class GameManager():
         return game_round
 
     @staticmethod
+    def find_aliens(alien, lst):
+        i = 0
+        duplicate_aliens = 0
+        while(i < len(lst)):
+            if lst[i] == alien:
+                duplicate_aliens+= 1
+            i+= 1
+        return duplicate_aliens
+
+    @staticmethod
     def manage_spawns(game_round: int):
         spawn_rate_total = len(shield.spawn_rate) + len(turret.spawn_rate) + len(armoured_wing.spawn_rate) + len(bomber.spawn_rate) + len(mosquito.spawn_rate) + len(sniper.spawn_rate)
         if spawn_rate_total == 100:
             aliens_needed = game_round * 5
-            i = 0
+            i = 1
+            aliens_needed+= i
             while(aliens_needed > i):
                 alien = Aliens.random_spawn()
+                duplicate_aliens = GameManager.find_aliens(alien, GameManager.__aliens_alive)
+                if duplicate_aliens > 0:
+                    alien += str(duplicate_aliens + 1)
                 GameManager.__aliens_alive.append(alien)
                 i+= 1
             print(GameManager.__aliens_alive)
@@ -481,15 +511,51 @@ class GameManager():
             GameManager.manage_spawns(game_round)
         return game_round
 
-#parameters - (health, speed, damage, is_alive, pos_x, pos_y, power_up)
-player = Player(100, 2, 20, True, 1, 1, None)
-
 #parameters - (health, speed, damage, is_alive, pos_x, pos_y, target, spawn_rate)
-shield = Aliens(200, 1, 20, False, 1, 1, player, 25)
-turret = Aliens(200, 1, 15, False, 1, 1, player, 10)
-armoured_wing = Aliens(150, 2, 30, False, 1, 1, player, 15)
-bomber = Aliens(30, 5, 100, False, 1, 1, player, 10)
-mosquito = Aliens(50, 3, 50, False, 1, 1, player, 25)
-sniper = Aliens(40, 1, 75, False, 1, 1, player, 15)
+    @staticmethod
+    def create_shield():
+        shield = Aliens(200, 1, 20, False, 1, 1, player, 25)
+        return shield
+
+    @staticmethod
+    def create_turret():
+        turret = Aliens(200, 1, 15, False, 1, 1, player, 10)
+        return turret
+    
+    @staticmethod
+    def create_armoured_wing():
+        armoured_wing = Aliens(150, 2, 30, False, 1, 1, player, 15)
+        return armoured_wing
+    
+    @staticmethod
+    def create_bomber():
+        bomber = Aliens(30, 5, 100, False, 1, 1, player, 10)
+        return bomber
+    
+    @staticmethod
+    def create_mosquito():
+        mosquito = Aliens(50, 3, 50, False, 1, 1, player, 25)
+        return mosquito
+    
+    @staticmethod
+    def create_sniper():
+        sniper = Aliens(40, 1, 75, False, 1, 1, player, 15)
+        return sniper
+
+#parameters - (name, damage, fire_rate(shots per second))
+pistol = Weapons("Pistol", 20, 3)
+shotgun = Weapons("Shotgun", 100, 1)
+smg = Weapons("Sub-machine-gun", 10, 10)
+rifle = Weapons("Rifle", 20, 5)
+
+#parameters - (health, speed, damage, is_alive, pos_x, pos_y, power_up, weapon)
+player = Player(100, 2, 20, True, 1, 1, None, pistol)
+
+shield = GameManager.create_shield()
+turret = GameManager.create_turret()
+armoured_wing = GameManager.create_armoured_wing()
+bomber = GameManager.create_bomber()
+mosquito = GameManager.create_mosquito()
+sniper = GameManager.create_sniper()
 
 GameManager.start_game()

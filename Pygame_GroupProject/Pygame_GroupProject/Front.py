@@ -278,7 +278,6 @@ class Player(pygame.sprite.Sprite):
 #----------------------------------------------------------------------------------------------------
 running = True
 game = Game()
-
 while running:
     game.run()
 #Gave this section a little tune-up, so that it runs well - Adam
