@@ -299,11 +299,7 @@ class Aliens(Characters):
 
     @name.setter
     def name(self, value):
-        if value == "Shield" or value == "Turret":
-            self.__name = value
-        elif value == "Armoured-wing" or value == "Mosquito":
-            self.__name = value
-        elif value == "Bomber" or value == "Sniper":
+        if value != "":
             self.__name = value
         else:
             raise strErrors("You must enter a name of an alien")
@@ -315,6 +311,9 @@ class Aliens(Characters):
     @spawn_rate.setter
     def spawn_rate(self, value):
         self.__spawn_rate = value
+
+    def __str__(self):
+        return self.__name
 
 #I created this function to convert the int spawn_rate e.g., 10(%) to a range
 #so it can be used to spawn the aliens. I have included first_conversion
@@ -498,10 +497,15 @@ class GameManager():
         i = 0
         duplicate_aliens = 0
         while(i < len(lst)):
-            if lst[i] == alien.name or lst[i] == alien.name+" "+str(i+1):
+            if alien.name in lst[i]:
                 duplicate_aliens+= 1
             i+= 1
         return duplicate_aliens
+
+    @staticmethod
+    def remove_alien(alien, lst):
+        if alien.name in lst:
+            lst.remove(alien.name)
 
     @staticmethod
     def manage_spawns(game_round: int):
@@ -515,8 +519,10 @@ class GameManager():
                 duplicate_aliens = GameManager.find_aliens(alien, GameManager.__aliens_alive)
                 if duplicate_aliens > 0:
                     alien.name += str(duplicate_aliens + 1)
-                GameManager.__aliens_alive.append(alien.name)
+                GameManager.__aliens_alive.append(str(alien))
                 i+= 1
+            print(GameManager.__aliens_alive)
+            GameManager.remove_alien(alien, GameManager.__aliens_alive)
             print(GameManager.__aliens_alive)
         else:
             raise numErrors("The spawn rates must add up to 100")

@@ -2,8 +2,23 @@ import pygame, sys, random
 
 visible_sprites = pygame.sprite.Group()
 obstacle_sprites = pygame.sprite.Group()
-#----------------------------------------------------------------------------------------------------
-#FRONT-END
+
+class allErrors(Exception):
+    pass
+class numErrors(allErrors):
+    pass
+class boolErrors(allErrors):
+    pass
+class strErrors(allErrors):
+    pass
+class objectErrors(allErrors):
+    pass
+class entryErrors(allErrors):
+    pass
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 class Settings:
     Width = 672
     Height = 672
@@ -33,7 +48,10 @@ class Settings:
     ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','fp','w'],#20 | [19]
     ['c','w','w','w','w','w','d','w','w','w','w','w','w','w','d','w','w','w','w','w','c']  #21 | [20]
     ]
-#----------------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 class Game:
     def __init__(self):
         S = Settings()
@@ -57,7 +75,10 @@ class Game:
         self.map.run()
         pygame.display.update()
         self.clock.tick(self.FPS)
-#----------------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 class Map():
     def __init__(self):
         S = Settings()
@@ -149,7 +170,10 @@ class Map():
     def run(self):
         self.visible_sprites.draw(self.display_surface)
         self.visible_sprites.update()
-#----------------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 class AreaSprite(pygame.sprite.Sprite):
     def __init__(self, pos, image, groups):
         super().__init__(groups)
@@ -159,7 +183,10 @@ class AreaSprite(pygame.sprite.Sprite):
             self.image = image
         self.image = pygame.transform.scale2x(self.image)
         self.rect = self.image.get_rect(topleft = pos)
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 class ImageTransformer(pygame.sprite.Sprite):
     def __init__(self, image, degrees):
         self.image = pygame.image.load(image).convert_alpha()
@@ -167,49 +194,28 @@ class ImageTransformer(pygame.sprite.Sprite):
 
     def ReturnImage(self):
         return self.image
-#----------------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-#----------------------------------------------------------------------------------------------------
 
-#----------------------------------------------------------------------------------------------------#
-
-#----------------------------------------------------------------------------------------------------
-
-#----------------------------------------------------------------------------------------------------#
-#BACK-END
-
-class allErrors(Exception):
-    pass
-class numErrors(allErrors):
-    pass
-class boolErrors(allErrors):
-    pass
-class strErrors(allErrors):
-    pass
-class objectErrors(allErrors):
-    pass
-class entryErrors(allErrors):
-    pass
-
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 class Characters():
     __speed = None
     __health = None
     __damage = None
-    __is_alive = None
     __pos_x = None
     __pos_y = None
     __image = None
-    def __init__(self, health, speed, damage, is_alive, x, y, image):
+    def __init__(self, health, speed, damage, x, y, image):
         self.speed = speed
         self.health = health
         self.damage = damage
-        self.is_alive = is_alive
         self.pos_x = x
         self.pos_y = y
         self.image =  image
 
         AreaSprite((self.pos_x, self.pos_y), image, [visible_sprites])
 
+    #-------------------------------------------------- Getter
     @property
     def speed(self):
         return self.__speed
@@ -223,10 +229,6 @@ class Characters():
         return self.__damage
 
     @property
-    def is_alive(self):
-        return self.__is_alive
-
-    @property
     def pos_x(self):
         return self.__pos_x
 
@@ -237,6 +239,8 @@ class Characters():
     @property
     def image(self):
         return self.__image
+
+    #-------------------------------------------------- Setter
 
     @speed.setter
     def speed(self, value):
@@ -259,13 +263,6 @@ class Characters():
         else:
             raise numErrors("Damage must be a positive int")
 
-    @is_alive.setter
-    def is_alive(self, value: bool):
-        if value == False or value == True:
-            self.__is_alive = value
-        else:
-            raise boolErrors("is_alive must be a boolean value")
-
     @pos_x.setter
     def pos_x(self, value: int):
         if value > 0:
@@ -286,7 +283,22 @@ class Characters():
             self.__image = value
         else:
             raise strErrors("Image must be a string of the path of the image")
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    #class Player(Characters):
+    #    __power_up = None
+    #    __weapon=  None
+
+    #    def __init__(self, health, speed, damage, pos_x, pos_y, power_up, weapon):
+    #        super().__init__(health, speed, damage, pos_x, pos_y)
+    #        self.power_up = power_up
+    #        self.__weapon = weapon
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 class Player(Characters):
     __power_up = None
     __weapon = None
@@ -326,7 +338,10 @@ class Player(Characters):
     def delay(self, weapon: object):
         self.delay = 1000 / self.weapon.fire_rate
         pygame.time.wait(self.delay)
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 class Weapons:
     __name = None
     __damage = None
@@ -367,7 +382,10 @@ class Weapons:
             self.__fire_rate = value
         else:
             raise numErrors("You must enter an int from 1 to 10")
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 class Bullets():
     __speed = None
     __target = None
@@ -443,14 +461,19 @@ class Bullets():
             self.__pos_y = value
         else:
             raise numErrors("You must an integer that is greater than zero")
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 class Aliens(Characters):
     __target = None
+#I have added the spawn rate into the Aliens class because it will be a
+#necessary value for each alien.
     __spawn_rate = None
     __name = None
 
-    def __init__(self, name, health, speed, damage, is_alive, pos_x, pos_y, target, spawn_rate):
-        super().__init__(health, speed, damage, is_alive, pos_x, pos_y)
+    def __init__(self, name, health, speed, damage, pos_x, pos_y, target, spawn_rate):
+        super().__init__(health, speed, damage, pos_x, pos_y)
         self.target = target
         self.spawn_rate = spawn_rate
         self.name = name
@@ -481,6 +504,9 @@ class Aliens(Characters):
     @spawn_rate.setter
     def spawn_rate(self, value):
         self.__spawn_rate = value
+
+    def __str__(self):
+        return self.__name
     def convert_spawn_rate(self, first_conversion: bool, last_aliens_spawn_rate: list):
         if first_conversion == False:
             starting_point = last_aliens_spawn_rate[-1] + 1
@@ -541,40 +567,22 @@ class Aliens(Characters):
         else:
             self.pos_x = 1200
             self.pos_y = 600
-        self.alive = True
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 class RangedAliens(Aliens):
     pass
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 class PhysicalAliens(Aliens):
     pass
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-#class EnemySpawn():
-#    def AlienCreator():
-#        ListOfAliens = []
-#
-#        return ListOfAliens
-#
-#    def AlienDoorSpawn():
-#        Door1 = pygame.Vector2(0, 1200)
-#        Door2 = pygame.Vector2(0, 100)
-#        Door3 = pygame.Vector2(1200, 50)
-#        Door4 = pygame.Vector2(1200, 600)
-#        
-#        rand = random.randint(0, 3)
-#        Location = None
-#
-#        if rand == 0:
-#            return Door4
-#        elif rand == 1:
-#            return Door2
-#        elif rand == 2:
-#            return Door1
-#        elif rand == 3:
-#            return Door3
-    #I created this sample class to handle the enemy spawns using the rarity system, as well as handle where
-    #the enemies spawn to. I believe we should use door locations in the way that I have
 
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 class GameManager():
     __aliens_alive = []
     def __init__(self):
@@ -596,20 +604,19 @@ class GameManager():
         return game_round
 
     @staticmethod
-    def find_aliens(alien, lst, number):
+    def find_aliens(alien, lst):
         i = 0
         duplicate_aliens = 0
         while(i < len(lst)):
-            if lst[i] == alien.name or lst[i] = alien.name+" "+str(number):
+            if alien.name in lst[i]:
                 duplicate_aliens+= 1
             i+= 1
-        print(duplicate_aliens)
         return duplicate_aliens
 
     @staticmethod
-    def remove_alien(alien, lst, number):
-        lst.remove(alien+" "+number)
-        alien.is_alive = False
+    def remove_alien(alien, lst):
+        if alien.name in lst:
+            lst.remove(alien.name)
 
     @staticmethod
     def manage_spawns(game_round: int):
@@ -620,11 +627,13 @@ class GameManager():
             aliens_needed+= i
             while(aliens_needed > i):
                 alien = Aliens.random_spawn()
-                duplicate_aliens = GameManager.find_aliens(alien, GameManager.__aliens_alive, i)
+                duplicate_aliens = GameManager.find_aliens(alien, GameManager.__aliens_alive)
                 if duplicate_aliens > 0:
                     alien.name += str(duplicate_aliens + 1)
-                GameManager.__aliens_alive.append(alien.name)
+                GameManager.__aliens_alive.append(str(alien))
                 i+= 1
+            print(GameManager.__aliens_alive)
+            GameManager.remove_alien(alien, GameManager.__aliens_alive)
             print(GameManager.__aliens_alive)
         else:
             raise numErrors("The spawn rates must add up to 100")
@@ -636,36 +645,37 @@ class GameManager():
             GameManager.manage_spawns(game_round)
         return game_round
 
-#parameters - (health, speed, damage, is_alive, pos_x, pos_y, target, spawn_rate)
+#parameters - (health, speed, damage, pos_x, pos_y, target, spawn_rate)
     @staticmethod
     def create_shield():
-        shield = Aliens("Shield", 200, 1, 20, False, 1, 1, player, 25)
+        shield = Aliens("Shield", 200, 1, 20, 1, 1, player, 25)
         return shield
 
     @staticmethod
     def create_turret():
-        turret = Aliens("Turret", 200, 1, 15, False, 1, 1, player, 10)
+        turret = Aliens("Turret", 200, 1, 15, 1, 1, player, 10)
         return turret
     
     @staticmethod
     def create_armoured_wing():
-        armoured_wing = Aliens("Armoured-wing", 150, 2, 30, False, 1, 1, player, 15)
+        armoured_wing = Aliens("Armoured-wing", 150, 2, 30, 1, 1, player, 15)
         return armoured_wing
     
     @staticmethod
     def create_bomber():
-        bomber = Aliens("Bomber", 30, 5, 100, False, 1, 1, player, 10)
+        bomber = Aliens("Bomber", 30, 5, 100, 1, 1, player, 10)
         return bomber
     
     @staticmethod
     def create_mosquito():
-        mosquito = Aliens("Mosquito", 50, 3, 50, False, 1, 1, player, 25)
+        mosquito = Aliens("Mosquito", 50, 3, 50, 1, 1, player, 25)
         return mosquito
     
     @staticmethod
     def create_sniper():
-        sniper = Aliens("Sniper", 40, 1, 75, False, 1, 1, player, 15)
+        sniper = Aliens("Sniper", 40, 1, 75, 1, 1, player, 15)
         return sniper
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 #parameters - (name, damage, fire_rate(shots per second))
 pistol = Weapons("Pistol", 20, 3)
@@ -673,17 +683,8 @@ shotgun = Weapons("Shotgun", 100, 1)
 smg = Weapons("Sub-machine-gun", 10, 10)
 rifle = Weapons("Rifle", 20, 5)
 
-#parameters - (health, speed, damage, is_alive, pos_x, pos_y, power_up, weapon)
-player = Player(100, 2, 20, True, 1, 1, "Assets\Player\Player_pistol.png", None, pistol)
+#parameters - (health, speed, damage, pos_x, pos_y, power_up, weapon)
 
-shield = GameManager.create_shield()
-turret = GameManager.create_turret()
-armoured_wing = GameManager.create_armoured_wing()
-bomber = GameManager.create_bomber()
-mosquito = GameManager.create_mosquito()
-sniper = GameManager.create_sniper()
-
-GameManager.start_game()
 class Character(pygame.sprite.Sprite):
     pass
 
@@ -716,6 +717,7 @@ class Player(Characters):
 
 #----------------------------------------------------------------------------------------------------
 
+GameManager.start_game()
 #----------------------------------------------------------------------------------------------------#
 running = True
 game = Game()
