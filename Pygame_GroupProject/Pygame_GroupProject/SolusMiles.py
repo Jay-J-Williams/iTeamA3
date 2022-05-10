@@ -271,14 +271,14 @@ class Characters():
         if value > 0:
             self.__pos_x = value
         else:
-            numErrors("pos_x must be a positive integer")
+            raise numErrors("pos_x must be a positive integer")
 
     @pos_y.setter
     def pos_y(self, value:int):
         if value > 0:
             self.__pos_y = value
         else:
-            numErrors("pos_y must be a positive integer")
+            raise numErrors("pos_y must be a positive integer")
 
     @image.setter
     def image(self, value):
@@ -469,11 +469,7 @@ class Aliens(Characters):
 
     @name.setter
     def name(self, value):
-        if value == "Shield" or value == "Turret":
-            self.__name = value
-        elif value == "Armoured-wing" or value == "Mosquito":
-            self.__name = value
-        elif value == "Bomber" or value == "Sniper":
+        if value != "":
             self.__name = value
         else:
             raise strErrors("You must enter a name of an alien")
@@ -600,14 +596,20 @@ class GameManager():
         return game_round
 
     @staticmethod
-    def find_aliens(alien, lst):
+    def find_aliens(alien, lst, number):
         i = 0
         duplicate_aliens = 0
         while(i < len(lst)):
-            if lst[i] == alien:
+            if lst[i] == alien.name or lst[i] = alien.name+" "+str(number):
                 duplicate_aliens+= 1
             i+= 1
+        print(duplicate_aliens)
         return duplicate_aliens
+
+    @staticmethod
+    def remove_alien(alien, lst, number):
+        lst.remove(alien+" "+number)
+        alien.is_alive = False
 
     @staticmethod
     def manage_spawns(game_round: int):
@@ -618,7 +620,7 @@ class GameManager():
             aliens_needed+= i
             while(aliens_needed > i):
                 alien = Aliens.random_spawn()
-                duplicate_aliens = GameManager.find_aliens(alien, GameManager.__aliens_alive)
+                duplicate_aliens = GameManager.find_aliens(alien, GameManager.__aliens_alive, i)
                 if duplicate_aliens > 0:
                     alien.name += str(duplicate_aliens + 1)
                 GameManager.__aliens_alive.append(alien.name)

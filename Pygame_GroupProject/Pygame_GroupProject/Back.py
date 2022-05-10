@@ -498,7 +498,7 @@ class GameManager():
         i = 0
         duplicate_aliens = 0
         while(i < len(lst)):
-            if lst[i] == alien:
+            if lst[i] == alien.name or lst[i] == alien.name+" "+str(i+1):
                 duplicate_aliens+= 1
             i+= 1
         return duplicate_aliens
