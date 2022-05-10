@@ -106,13 +106,11 @@ class Map():
                     AreaSprite((x, y), image, [self.visible_sprites])         
 
                 elif col == "c" and col_index == 0 and row_index == 20:
-                    print("Corna Numba 3")
                     image = ImageTransformer("Pygame_GroupProject\Pygame_GroupProject\Assets\Area\Corner.png", 180)
                     image = image.ReturnImage()
                     AreaSprite((x, y), image, [self.visible_sprites])
 
                 elif col == "c" and col_index == 20 and row_index == 20:
-                    print("Corner Numba 4")
                     image = ImageTransformer("Pygame_GroupProject\Pygame_GroupProject\Assets\Area\Corner.png", 270)
                     image = image.ReturnImage()
                     AreaSprite((x, y), image, [self.visible_sprites])
@@ -156,11 +154,8 @@ class AreaSprite(pygame.sprite.Sprite):
         super().__init__(groups)
         try:
             self.image = pygame.image.load(image).convert_alpha()
-            print("Booyah")
         except:
-            print("Kasha")
             self.image = image
-            print("__BK__")
         self.image = pygame.transform.scale2x(self.image)
         self.rect = self.image.get_rect(topleft = pos)
 
