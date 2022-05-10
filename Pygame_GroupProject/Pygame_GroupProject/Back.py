@@ -514,8 +514,8 @@ class GameManager():
                 alien = Aliens.random_spawn()
                 duplicate_aliens = GameManager.find_aliens(alien, GameManager.__aliens_alive)
                 if duplicate_aliens > 0:
-                    alien += str(duplicate_aliens + 1)
-                GameManager.__aliens_alive.append(alien)
+                    alien.name += str(duplicate_aliens + 1)
+                GameManager.__aliens_alive.append(alien.name)
                 i+= 1
             print(GameManager.__aliens_alive)
         else:
