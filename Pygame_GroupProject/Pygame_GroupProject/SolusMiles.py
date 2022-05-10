@@ -297,7 +297,40 @@ class Characters():
     #        self.__weapon = weapon
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+class Player(Characters):
+    def __init__(self, pos, image, groups, obstacles):
+        super().__init__(groups)
+        
+        self.image = pygame.image.load(image).convert_alpha()
+        self.image = pygame.transform.scale2x(self.image)
+        self.rect = self.image.get_rect(topleft = pos)
+        self.obstacles = obstacles
+        self.direction = pygame.math.Vector2(pos)
 
+    def movement(self):
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_a]:
+            self.direction.x -= 1
+        elif keys[pygame.K_d]:
+            self.direction.x += 1
+
+        if keys[pygame.K_w]:
+            self.direction.y -= 1
+        elif keys[pygame.K_s]:
+            self.direction.y += 1
+
+    def update(self):
+        Player.movement(self)
+        self.rect = self.image.get_rect(topleft = self.direction)
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+class Player(Characters): #Combination of both - Adam
+    __powerUp = None
+    __weapon = None
+
+    def __init__(self, health, speed, damage, pos_x, pos_y, powerUp, weapon):
+        super().__init__(health, speed, damage, pos_x, pos_y)
+        self.powerUp = powerUp
+        self.weapon = weapon
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 class Player(Characters):
     __power_up = None
@@ -318,7 +351,7 @@ class Player(Characters):
     @power_up.setter
     def power_up(self, value: object):
         if value != "":
-            self.__power_up = value 
+            self.__power_up = value
         else:
             raise objectErrors("The power-up must be an object, or 'None'")
 
@@ -684,35 +717,6 @@ smg = Weapons("Sub-machine-gun", 10, 10)
 rifle = Weapons("Rifle", 20, 5)
 
 #parameters - (health, speed, damage, pos_x, pos_y, power_up, weapon)
-
-class Character(pygame.sprite.Sprite):
-    pass
-
-class Player(Characters):
-    def __init__(self, pos, image, groups, obstacles):
-        super().__init__(groups)
-        
-        self.image = pygame.image.load(image).convert_alpha()
-        self.image = pygame.transform.scale2x(self.image)
-        self.rect = self.image.get_rect(topleft = pos)
-        self.obstacles = obstacles
-        self.direction = pygame.math.Vector2(pos)
-
-    def movement(self):
-        keys = pygame.key.get_pressed()
-        if keys[pygame.K_a]:
-            self.direction.x -= 1
-        elif keys[pygame.K_d]:
-            self.direction.x += 1
-
-        if keys[pygame.K_w]:
-            self.direction.y -= 1
-        elif keys[pygame.K_s]:
-            self.direction.y += 1
-
-    def update(self):
-        Player.movement(self)
-        self.rect = self.image.get_rect(topleft = self.direction)
 #----------------------------------------------------------------------------------------------------#
 
 #----------------------------------------------------------------------------------------------------
