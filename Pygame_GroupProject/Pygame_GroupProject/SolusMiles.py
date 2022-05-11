@@ -204,16 +204,20 @@ class Characters():
     __damage = None
     __pos_x = None
     __pos_y = None
-    __image = None
-    def __init__(self, health, speed, damage, x, y, image):
+    def __init__(self, health, speed, damage, x, y):
         self.speed = speed
         self.health = health
         self.damage = damage
         self.pos_x = x
         self.pos_y = y
-        self.image =  image
-
-        AreaSprite((self.pos_x, self.pos_y), image, [visible_sprites])
+#        self.image =  image
+#        self.image = pygame.image.load(image).convert_alpha()
+#        self.image = pygame.transform.scale2x(self.image)
+#        self.rect = self.image.get_rect(topleft = pos)
+#        self.obstacles = obstacles
+#        self.direction = pygame.math.Vector2(pos_x, pos_y)
+#
+#        AreaSprite((self.pos_x, self.pos_y), image, [visible_sprites])
 
     #-------------------------------------------------- Getter
     @property
@@ -297,48 +301,48 @@ class Characters():
     #        self.__weapon = weapon
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-class Player(Characters):
-    def __init__(self, pos, image, groups, obstacles):
-        super().__init__(groups)
-        
-        self.image = pygame.image.load(image).convert_alpha()
-        self.image = pygame.transform.scale2x(self.image)
-        self.rect = self.image.get_rect(topleft = pos)
-        self.obstacles = obstacles
-        self.direction = pygame.math.Vector2(pos)
-
-    def movement(self):
-        keys = pygame.key.get_pressed()
-        if keys[pygame.K_a]:
-            self.direction.x -= 1
-        elif keys[pygame.K_d]:
-            self.direction.x += 1
-
-        if keys[pygame.K_w]:
-            self.direction.y -= 1
-        elif keys[pygame.K_s]:
-            self.direction.y += 1
-
-    def update(self):
-        Player.movement(self)
-        self.rect = self.image.get_rect(topleft = self.direction)
+#class Player(Characters):
+#    def __init__(self, pos, image, groups, obstacles):
+#        super().__init__(groups)
+#        
+#        self.image = pygame.image.load(image).convert_alpha()
+#        self.image = pygame.transform.scale2x(self.image)
+#        self.rect = self.image.get_rect(topleft = pos)
+#        self.obstacles = obstacles
+#        self.direction = pygame.math.Vector2(pos)
+#
+#    def movement(self):
+#        keys = pygame.key.get_pressed()
+#        if keys[pygame.K_a]:
+#            self.direction.x -= 1
+#        elif keys[pygame.K_d]:
+#            self.direction.x += 1
+#
+#        if keys[pygame.K_w]:
+#            self.direction.y -= 1
+#        elif keys[pygame.K_s]:
+#            self.direction.y += 1
+#
+#    def update(self):
+#        Player.movement(self)
+#        self.rect = self.image.get_rect(topleft = self.direction)
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-class Player(Characters): #Combination of both - Adam
-    __powerUp = None
-    __weapon = None
-
-    def __init__(self, health, speed, damage, pos_x, pos_y, powerUp, weapon):
-        super().__init__(health, speed, damage, pos_x, pos_y)
-        self.powerUp = powerUp
-        self.weapon = weapon
+#class Player(Characters): #Combination of both - Adam
+#    __power_up = None
+#    __weapon = None
+#
+#    def __init__(self, health, speed, damage, pos_x, pos_y, power_up, weapon):
+#        super().__init__(health, speed, damage, pos_x, pos_y)
+#        self.power_up = power_up
+#        self.weapon = weapon
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 class Player(Characters):
     __power_up = None
     __weapon = None
-    def __init__(self, health, speed, damage, is_alive, pos_x, pos_y, image, power_up, weapon):
-        super().__init__(health, speed, damage, is_alive, pos_x, pos_y, image)
+    def __init__(self, health, speed, damage, pos_x, pos_y, power_up, weapon):
+        super().__init__(health, speed, damage, pos_x, pos_y)
         self.power_up = power_up
-        self.weapon = weapon
+        self.weapon = weapon       
 
     @property
     def power_up(self):
@@ -600,6 +604,22 @@ class Aliens(Characters):
         else:
             self.pos_x = 1200
             self.pos_y = 600
+
+    def move(self):
+        if (self.pos_x - target.pos_x) > (self.pos_y - target.pos_y):
+            if target.pos_x > (Settings.Width /= 2):
+                while(self.pos_x != target.pos_x):
+                    self.pos_x += self.speed
+            elif target.pos_x < (Settings.Width /= 2):
+                while(self.pos_x != target.pos_x):
+                    self.pos_x -= self.speed
+        elif (self.pos_y - target.pos_y) > (self.pos_x - target.pos_x):
+            if target.pos_y > (Settings.Height /= 2):
+                while(self.pos_y != target.pos_y):
+                    self.pos_y -= self.speed
+            elif target.pos_y < (Settings.Height /= 2):
+                while(self.pos_y != target.pos_y):
+                    self.pos_y += self.speed
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
@@ -656,9 +676,8 @@ class GameManager():
         spawn_rate_total = len(shield.spawn_rate) + len(turret.spawn_rate) + len(armoured_wing.spawn_rate) + len(bomber.spawn_rate) + len(mosquito.spawn_rate) + len(sniper.spawn_rate)
         if spawn_rate_total == 100:
             aliens_needed = game_round * 5
-            i = 1
-            aliens_needed+= i
-            while(aliens_needed > i):
+            i = 0
+            while(aliens_needed >= i):
                 alien = Aliens.random_spawn()
                 duplicate_aliens = GameManager.find_aliens(alien, GameManager.__aliens_alive)
                 if duplicate_aliens > 0:
@@ -718,13 +737,18 @@ rifle = Weapons("Rifle", 20, 5)
 
 #parameters - (health, speed, damage, pos_x, pos_y, power_up, weapon)
 #----------------------------------------------------------------------------------------------------#
-
+player = Player(100, 2, 20, 1, 1, None, pistol)
 #----------------------------------------------------------------------------------------------------
-
+shield = GameManager.create_shield()
+turret = GameManager.create_turret()
+armoured_wing = GameManager.create_armoured_wing()
+sniper = GameManager.create_sniper()
+bomber = GameManager.create_bomber()
+mosquito = GameManager.create_mosquito()
 GameManager.start_game()
 #----------------------------------------------------------------------------------------------------#
-running = True
-game = Game()
+#running = True
+#game = Game()
 
-while running:
-    game.run()
+#while running:
+#    game.run()
