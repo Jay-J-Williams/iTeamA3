@@ -148,7 +148,7 @@ class Map():
                 #Player
                 if "p" in col:
                     image = "Assets/Player/Player_pistol.png"
-                    self.player = Player((x, y), image, self.visible_sprites, self.obstacle_sprites)
+                    self.player = Player((x,y), image, self.visible_sprites, self.obstacle_sprites)
 
     def run(self):
         self.visible_sprites.draw(self.display_surface)
@@ -190,30 +190,40 @@ class ImageTransformer(pygame.sprite.Sprite):
 class Player(pygame.sprite.Sprite):
     def __init__(self, pos, image, groups, obstacles):
         super().__init__(groups)
-        
-        self.image = pygame.image.load(image)#.convert_alpha()
+        self.visible_sprites = groups
+        self.obstacle_sprites = obstacles
+        self.image_org = image
+        self.image = image
+        self.image = pygame.image.load(image).convert_alpha()
         self.image = pygame.transform.scale2x(self.image)
-        self.rect = self.image.get_rect(topleft = pos)
+        self.rect = self.image.get_rect(topleft = (pos))
         self.obstacles = obstacles
         self.direction = pygame.math.Vector2(pos)
 
     def movement(self):
         keys = pygame.key.get_pressed()
-        #image=self.image
-        #print(self.image)
-        if keys [pygame.K_a]:
-            
-            #self.image = ImageTransformer(self.image, 90)
-            #self.image = self.image.ReturnImage()
+        if keys [pygame.K_a] and (self.direction.x>32):
+            self.image = ImageTransformer(self.image_org, 270)
+            self.image = self.image.ReturnImage() 
+            self.image = pygame.transform.scale2x(self.image)
             self.direction.x -= 5
-        elif keys[pygame.K_d]:
+            #print (self.direction.x)
+        elif keys[pygame.K_d] and (self.direction.x<608):
             self.direction.x += 5
-        elif keys[pygame.K_w]:
+            self.image = ImageTransformer(self.image_org, 90)
+            self.image = self.image.ReturnImage() 
+            self.image = pygame.transform.scale2x(self.image)
+        elif keys[pygame.K_w] and (self.direction.y>32):
+            self.image = ImageTransformer(self.image_org, 180)
+            self.image = self.image.ReturnImage() 
+            self.image = pygame.transform.scale2x(self.image)
             self.direction.y -= 5
-        elif keys[pygame.K_s]:
+        elif keys[pygame.K_s] and (self.direction.y<608):
+            self.image = ImageTransformer(self.image_org, 0)
+            self.image = self.image.ReturnImage() 
+            self.image = pygame.transform.scale2x(self.image)
             self.direction.y += 5
-      
-
+   
     def update(self):
         Player.movement(self)
         self.rect = self.image.get_rect(topleft = self.direction)
