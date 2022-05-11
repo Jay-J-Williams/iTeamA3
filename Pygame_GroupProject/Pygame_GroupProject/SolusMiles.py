@@ -1,22 +1,20 @@
-import pygame, sys, random
-
+import pygame, sys
 visible_sprites = pygame.sprite.Group()
 obstacle_sprites = pygame.sprite.Group()
 
-class allErrors(Exception):
-    pass
-class numErrors(allErrors):
-    pass
-class boolErrors(allErrors):
-    pass
-class strErrors(allErrors):
-    pass
-class objectErrors(allErrors):
-    pass
-class entryErrors(allErrors):
-    pass
-#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#IMPORTANT NOTE - The assets folder cannot be directly accessed through Assets/blahblah/blahblah
+#This is because the file path starts at the .sln file, this file is ONE folder above the game files
+#This means that to add an asset, you have to follow the following file structure ->
+#Pygame_GroupProject/Assets/blahblah/blahblah
 
+#This took me too long to figure out and drove me crazy
+
+#Less importantly, obviously, I figured out how to reduce the code to make it way easier to both 
+#use and understand, and have added comments explaining them.
+
+#Note - I created the sprite groups here instead, so they can be used in any class they need to be used in
+
+# - Adam
 
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 class Settings:
@@ -49,9 +47,6 @@ class Settings:
     ['c','w','w','w','w','w','d','w','w','w','w','w','w','w','d','w','w','w','w','w','c']  #21 | [20]
     ]
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-
-#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 class Game:
     def __init__(self):
         S = Settings()
@@ -65,7 +60,6 @@ class Game:
         self.FPS = S.FPS
 
     def run(self):
-
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -75,9 +69,6 @@ class Game:
         self.map.run()
         pygame.display.update()
         self.clock.tick(self.FPS)
-#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 class Map():
     def __init__(self):
@@ -99,80 +90,75 @@ class Map():
                 #--------------------------------------------------------------------------------
                 #Walls
                 if col == "w" and row_index == 0:
-                    image = "Pygame_GroupProject\Pygame_GroupProject\Assets\Area\Wall.png"
+                    image = "Pygame_GroupProject\Assets\Area\Wall.png"
                     AreaSprite((x, y), image, [visible_sprites, obstacle_sprites])
 
                 elif col == "w" and col_index == 0 and row_index > 0 and row_index < 20:
-                    image = ImageTransformer("Pygame_GroupProject\Pygame_GroupProject\Assets\Area\Wall.png", 90)
-                    image = image.ReturnImage()
-                    AreaSprite((x, y), image, [visible_sprites, obstacle_sprites])
+                    image = ImageTransformer("Pygame_GroupProject\Assets\Area\Wall.png", 90)
+                    image = image.ReturnImage((x, y), [visible_sprites, obstacle_sprites])
 
                 elif col == "w" and row_index == 20:
-                    image = ImageTransformer("Pygame_GroupProject\Pygame_GroupProject\Assets\Area\Wall.png", 180)
-                    image = image.ReturnImage()
-                    AreaSprite((x, y), image, [visible_sprites, obstacle_sprites])
+                    image = ImageTransformer("Pygame_GroupProject\Assets\Area\Wall.png", 180)
+                    image = image.ReturnImage((x, y), [visible_sprites, obstacle_sprites])
 
                 elif col == "w" and col_index == 20 and row_index > 0 and row_index < 20:
-                    image = ImageTransformer("Pygame_GroupProject\Pygame_GroupProject\Assets\Area\Wall.png", 270)
-                    image = image.ReturnImage()
-                    AreaSprite((x, y), image, [visible_sprites, obstacle_sprites])
+                    image = ImageTransformer("Pygame_GroupProject\Assets\Area\Wall.png", 270)
+                    image = image.ReturnImage((x, y), [visible_sprites, obstacle_sprites])
                 #--------------------------------------------------------------------------------
                 #Corners
                 elif col == "c" and col_index == 20 and row_index == 0:
-                    image = "Pygame_GroupProject\Pygame_GroupProject\Assets\Area\Corner.png"
+                    image = "Pygame_GroupProject\Assets\Area\Corner.png"
                     AreaSprite((x, y), image, [visible_sprites])
 
                 elif col == "c" and col_index == 0 and row_index == 0:
-                    image = ImageTransformer("Pygame_GroupProject\Pygame_GroupProject\Assets\Area\Corner.png", 90)
-                    image = image.ReturnImage()
-                    AreaSprite((x, y), image, [visible_sprites])       
+                    image = ImageTransformer("Pygame_GroupProject\Assets\Area\Corner.png", 90)
+                    image = image.ReturnImage((x, y), [visible_sprites])      
 
                 elif col == "c" and col_index == 0 and row_index == 20:
-                    image = ImageTransformer("Pygame_GroupProject\Pygame_GroupProject\Assets\Area\Corner.png", 180)
-                    image = image.ReturnImage()
-                    AreaSprite((x, y), image, [visible_sprites])
+                    image = ImageTransformer("Pygame_GroupProject\Assets\Area\Corner.png", 180)
+                    image = image.ReturnImage((x, y), [visible_sprites]) 
 
                 elif col == "c" and col_index == 20 and row_index == 20:
-                    image = ImageTransformer("Pygame_GroupProject\Pygame_GroupProject\Assets\Area\Corner.png", 270)
-                    image = image.ReturnImage()
-                    AreaSprite((x, y), image, [visible_sprites])
+                    image = ImageTransformer("Pygame_GroupProject\Assets\Area\Corner.png", 270)
+                    image = image.ReturnImage((x, y), [visible_sprites]) 
                 #--------------------------------------------------------------------------------
                 #Doors
                 elif col == "d" and row_index == 0:
-                    image = "Pygame_GroupProject\Pygame_GroupProject\Assets\Area\Door.png"
+                    image = "Pygame_GroupProject\Assets\Area\Door.png"
                     AreaSprite((x, y), image, [visible_sprites, obstacle_sprites])
 
                 elif col == "d" and (row_index == 6 or row_index == 14) and col_index == 0:
-                    image = ImageTransformer("Pygame_GroupProject\Pygame_GroupProject\Assets\Area\Door.png", 90)
-                    image = image.ReturnImage()
-                    AreaSprite((x, y), image, [visible_sprites, obstacle_sprites])
+                    image = ImageTransformer("Pygame_GroupProject\Assets\Area\Door.png", 90)
+                    image = image.ReturnImage((x, y), [visible_sprites, obstacle_sprites])
 
                 elif col == "d" and row_index == 20:
-                    image = ImageTransformer("Pygame_GroupProject\Pygame_GroupProject\Assets\Area\Door.png", 180)
-                    image = image.ReturnImage()
-                    AreaSprite((x, y), image, [visible_sprites, obstacle_sprites])
+                    image = ImageTransformer("Pygame_GroupProject\Assets\Area\Door.png", 180)
+                    image = image.ReturnImage((x, y), [visible_sprites, obstacle_sprites])
 
                 elif col == "d" and (row_index == 6 or row_index == 14) and col_index == 20:
-                    image = ImageTransformer("Pygame_GroupProject\Pygame_GroupProject\Assets\Area\Door.png", 270)
-                    image = image.ReturnImage()
-                    AreaSprite((x, y), image, [visible_sprites, obstacle_sprites])
+                    image = ImageTransformer("Pygame_GroupProject\Assets\Area\Door.png", 270)
+                    image = image.ReturnImage((x, y), [visible_sprites, obstacle_sprites])
                 #--------------------------------------------------------------------------------
                 #Floor
-                elif "f" in col:
-                    image = "Pygame_GroupProject\Pygame_GroupProject\Assets\Area\Floor.png"
+                elif col == "f":
+                    image = "Pygame_GroupProject\Assets\Area\Floor.png"
                     AreaSprite((x, y), image, [visible_sprites])      
                 #--------------------------------------------------------------------------------
                 #Player
-                if "p" in col:
-                    image = "Pygame_GroupProject\Pygame_GroupProject\Assets\Player\Player_pistol.png"
-                    self.player = Player((x, y), image, visible_sprites, obstacle_sprites)
+                elif col == "fp":
+                    image = "Pygame_GroupProject\Assets\Area\Floor.png"
+                    AreaSprite((x, y), image, [visible_sprites])
+
+                    image = "Pygame_GroupProject\Assets\Player\Player_pistol.png"
+                    self.player = Character(100, 5, 20, (x, y), image, [visible_sprites])
+
+                #Looks like less code, does it not? This is due to the change I made in ImageTransformer()
+                #See it below - Adam
 
     def run(self):
-        self.visible_sprites.draw(self.display_surface)
-        self.visible_sprites.update()
-#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-
+        visible_sprites.draw(self.display_surface)
+        self.player.Update()
+        visible_sprites.update()
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 class AreaSprite(pygame.sprite.Sprite):
     def __init__(self, pos, image, groups):
@@ -183,548 +169,118 @@ class AreaSprite(pygame.sprite.Sprite):
             self.image = image
         self.image = pygame.transform.scale2x(self.image)
         self.rect = self.image.get_rect(topleft = pos)
-#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+    def Move(self, pos):
+        self.rect = self.image.get_rect(topleft = pos)
 
+#AreaSprite is now used to handle every single sprite of the game, and the Move() function is made to
+# handle all the sprites that move, like player and aliens
+
+#The main change was mentioned above: the Move() funtion, however, I also refined some __init__ code in 
+# order to deal with all the sprites. Literally all of them. You're welcome.
+
+# - Adam
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 class ImageTransformer(pygame.sprite.Sprite):
     def __init__(self, image, degrees):
         self.image = pygame.image.load(image).convert_alpha()
         self.image = pygame.transform.rotate(self.image, degrees)
 
-    def ReturnImage(self):
-        return self.image
-#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    def ReturnImage(self, pos, groups):
+        return AreaSprite(pos, self.image, groups)
 
+#There are a total of 6 lines of code here, including the class statment. All of them have their uses, and
+# all have been made to deal with all types of sprites, may get updated when we start working with aliens
 
+#The main change I have made is in ReturnImage(), this now returns an AreaSprite object in order to lessen
+# the code that is used, by alot too. It was primarily edited to deal with player movements with as little 
+# issue as possible, then moved from there to handle all sprites.
+
+# - Adam
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-class Characters():
-    __speed = None
-    __health = None
-    __damage = None
-    __pos_x = None
-    __pos_y = None
-    __image = None
-    def __init__(self, health, speed, damage, x, y, image):
-        self.speed = speed
+class Character():
+    health = None
+    speed = None
+    damage = None
+    pos = None
+    image = None
+    groups = None
+
+    #Characters have a main 6 attributes they all deal with, the player will only use these 6 so no need
+    # to create a player class. However an alien class should be made to deal with their adjustments
+    # until we figure out how to do them all in this one class. Might not happen, so an Alien sub-class
+    # should still to be made
+    # - Adam
+
+    def __init__(self, health, speed, damage, pos, image, groups):
         self.health = health
-        self.damage = damage
-        self.pos_x = x
-        self.pos_y = y
-        self.image =  image
-
-        AreaSprite((self.pos_x, self.pos_y), image, [visible_sprites])
-
-    #-------------------------------------------------- Getter
-    @property
-    def speed(self):
-        return self.__speed
-    
-    @property
-    def health(self):
-        return self.__health
-
-    @property
-    def damage(self):
-        return self.__damage
-
-    @property
-    def pos_x(self):
-        return self.__pos_x
-
-    @property
-    def pos_y(self):
-        return self.__pos_y
-
-    @property
-    def image(self):
-        return self.__image
-
-    #-------------------------------------------------- Setter
-
-    @speed.setter
-    def speed(self, value):
-        if value > 0:
-            self.__movement_speed = value
-        else:
-            raise numErrors("Movement Speed has to be a positive int")
-        
-    @health.setter
-    def health(self, value):
-        if value > 0:
-            self.__health = value
-        else:
-            raise numErrors("Health must be a positive int")
-        
-    @damage.setter
-    def damage(self, value: int):
-        if value > 0:
-            self.__damage = value
-        else:
-            raise numErrors("Damage must be a positive int")
-
-    @pos_x.setter
-    def pos_x(self, value: int):
-        if value > 0:
-            self.__pos_x = value
-        else:
-            raise numErrors("pos_x must be a positive integer")
-
-    @pos_y.setter
-    def pos_y(self, value:int):
-        if value > 0:
-            self.__pos_y = value
-        else:
-            raise numErrors("pos_y must be a positive integer")
-
-    @image.setter
-    def image(self, value):
-        if value != "":
-            self.__image = value
-        else:
-            raise strErrors("Image must be a string of the path of the image")
-#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-
-#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-    #class Player(Characters):
-    #    __power_up = None
-    #    __weapon=  None
-
-    #    def __init__(self, health, speed, damage, pos_x, pos_y, power_up, weapon):
-    #        super().__init__(health, speed, damage, pos_x, pos_y)
-    #        self.power_up = power_up
-    #        self.__weapon = weapon
-#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-class Player(Characters):
-    def __init__(self, pos, image, groups, obstacles):
-        super().__init__(groups)
-        
-        self.image = pygame.image.load(image).convert_alpha()
-        self.image = pygame.transform.scale2x(self.image)
-        self.rect = self.image.get_rect(topleft = pos)
-        self.obstacles = obstacles
-        self.direction = pygame.math.Vector2(pos)
-
-    def movement(self):
-        keys = pygame.key.get_pressed()
-        if keys[pygame.K_a]:
-            self.direction.x -= 1
-        elif keys[pygame.K_d]:
-            self.direction.x += 1
-
-        if keys[pygame.K_w]:
-            self.direction.y -= 1
-        elif keys[pygame.K_s]:
-            self.direction.y += 1
-
-    def update(self):
-        Player.movement(self)
-        self.rect = self.image.get_rect(topleft = self.direction)
-#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-class Player(Characters): #Combination of both - Adam
-    __powerUp = None
-    __weapon = None
-
-    def __init__(self, health, speed, damage, pos_x, pos_y, powerUp, weapon):
-        super().__init__(health, speed, damage, pos_x, pos_y)
-        self.powerUp = powerUp
-        self.weapon = weapon
-#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-class Player(Characters):
-    __power_up = None
-    __weapon = None
-    def __init__(self, health, speed, damage, is_alive, pos_x, pos_y, image, power_up, weapon):
-        super().__init__(health, speed, damage, is_alive, pos_x, pos_y, image)
-        self.power_up = power_up
-        self.weapon = weapon
-
-    @property
-    def power_up(self):
-        return self.__power_up
-
-    @property
-    def weapon(self):
-        return self.__weapon
-
-    @power_up.setter
-    def power_up(self, value: object):
-        if value != "":
-            self.__power_up = value
-        else:
-            raise objectErrors("The power-up must be an object, or 'None'")
-
-    @weapon.setter
-    def weapon(self, value: object):
-        if value != None and value != "":
-            self.__weapon = value
-        else:
-            raise objectErrors("The weapon must be an object")
-
-    def pickup_weapon(self):
-        self.damage = self.weapon.damage
-
-    def shoot(self, weapon: object, bullet: object):
-        pass
-
-    def delay(self, weapon: object):
-        self.delay = 1000 / self.weapon.fire_rate
-        pygame.time.wait(self.delay)
-#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-
-#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-class Weapons:
-    __name = None
-    __damage = None
-    __fire_rate = None
-
-    def __init__(self, name, damage, fire_rate):
-        self.name = name
-        self.damage = damage
-        self.fire_rate = fire_rate
-
-    @property
-    def name(self):
-        return self.__name
-    @property
-    def damage(self):
-        return self.__damage
-    @property
-    def fire_rate(self):
-        return self.__fire_rate
-
-    @name.setter
-    def name(self, value: str):
-        if value == "Pistol" or value == "Shotgun":
-            self.__name = value
-        elif value == "Sub-machine-gun" or value == "Rifle":
-            self.__name = value
-        else:
-            raise strErrors("You must enter 'Pistol', 'Shotgun', 'Sub-machine-gun', or 'Rifle'")
-    @damage.setter
-    def damage(self, value: int):
-        if value > 0:
-            self.__damage = value
-        else:
-            raise numErrors("You must enter a positive int")
-    @fire_rate.setter
-    def fire_rate(self, value: int):
-        if value > 0 and value <= 10:
-            self.__fire_rate = value
-        else:
-            raise numErrors("You must enter an int from 1 to 10")
-#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-
-#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-class Bullets():
-    __speed = None
-    __target = None
-    __pos_x = None
-    __pos_y = None
-
-    def __init__(self, asset, speed, target, pos_x, pos_y):
-        self.asset = asset
         self.speed = speed
-        self.target = target
-        self.pos_x = pos_x
-        self.pos_y = pos_y
+        self.damage = damage
 
-    @property
-    def asset(self):
-        return self.__asset
+        self.pos = pygame.Vector2(pos)
+        self.org_image = image
+        self.groups = groups
 
-    @property
-    def showing(self):
-        return self.__showing
+        self.char = AreaSprite(self.pos, image, groups)
+        self.rect = self.char.rect
 
-    @property
-    def speed(self):
-        return self.__speed
+        #Little explanation here, there is a self. made to handle everything it needs to from all 6 
+        # attributes, I have added the extra self.char and self.rect for the player. They could be used on
+        # aliens, but seeing as that sub-class has not been done yet, I dunno if they definiely will
+        # - Adam
 
-    @property
-    def target(self):
-        return self.__target
+    def Movement(self):
+        keys = pygame.key.get_pressed()
 
-    @property
-    def pos_x(self):
-        return self.__pos_x
+        if keys[pygame.K_a] and self.pos.x > 32:
+            self.char.kill()
+            self.char = ImageTransformer(self.org_image, 270)
+            self.char = self.char.ReturnImage(self.pos, self.groups)
+            self.pos.x -= self.speed           
 
-    @property
-    def pos_y(self):
-        return self.__pos_y
+        elif keys[pygame.K_d] and self.pos.x < 608:
+            self.char.kill()
+            self.char = ImageTransformer(self.org_image, 90)
+            self.char = self.char.ReturnImage(self.pos, self.groups)
+            self.pos.x += self.speed
 
-    @asset.setter
-    def asset(self, value: str):
-        if value != "":
-            self.__asset = value
-        else:
-            raise strErrors("You must enter a string")
+        elif keys[pygame.K_w] and self.pos.y > 32:
+            self.char.kill()
+            self.char = ImageTransformer(self.org_image, 180)
+            self.char = self.char.ReturnImage(self.pos, self.groups)
+            self.pos.y -= self.speed
 
-    @showing.setter
-    def showing(self, value: bool):
-        if value == True or value == False:
-            self.__showing = value
-        else:
-            raise boolErrors("You must enter a boolean value for 'showing'")
+        elif keys[pygame.K_s] and self.pos.y < 608:
+            self.char.kill()
+            self.char = ImageTransformer(self.org_image, 0)
+            self.char = self.char.ReturnImage(self.pos, self.groups)
+            self.pos.y += self.speed
 
-    @speed.setter
-    def speed(self, value: int):
-        if value > 0:
-            self.__speed = value
-        else:
-            raise numErrors("You must enter an integer that is greater than zero")
-
-    @target.setter
-    def target(self, value: object):
-        self.__target = value
-
-    @pos_x.setter
-    def pos_x(self, value: int):
-        if value > 0:
-            self.__pos_x = value
-        else:
-            raise numErrors("You must an integer that is greater than zero")
-
-    @pos_y.setter
-    def pos_y(self, value):
-        if value > 0:
-            self.__pos_y = value
-        else:
-            raise numErrors("You must an integer that is greater than zero")
-#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-
-#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-class Aliens(Characters):
-    __target = None
-#I have added the spawn rate into the Aliens class because it will be a
-#necessary value for each alien.
-    __spawn_rate = None
-    __name = None
-
-    def __init__(self, name, health, speed, damage, pos_x, pos_y, target, spawn_rate):
-        super().__init__(health, speed, damage, pos_x, pos_y)
-        self.target = target
-        self.spawn_rate = spawn_rate
-        self.name = name
-
-    @property
-    def name(self):
-        return self.__name
-    
-    @property
-    def target(self):
-        return self.__target
-
-    @property
-    def spawn_rate(self):
-        return self.__spawn_rate
-
-    @name.setter
-    def name(self, value):
-        if value != "":
-            self.__name = value
-        else:
-            raise strErrors("You must enter a name of an alien")
         
-    @target.setter
-    def target(self, value: object):
-        self.__target = value
+        self.char.Move(self.pos)
 
-    @spawn_rate.setter
-    def spawn_rate(self, value):
-        self.__spawn_rate = value
+        #This was the big one, but was only completed then refined thanks to Marc's work on movement on the
+        # 11th of May, the day I am writing this. When I first tried the code, the map was filled
+        # with multiple player objects showing every place the player was. This is due to new objects
+        # being created every milisecond. This has been fixed by killing off the old player object and 
+        # replacing it with the newly created one every milisecond.
 
-    def __str__(self):
-        return self.__name
-    def convert_spawn_rate(self, first_conversion: bool, last_aliens_spawn_rate: list):
-        if first_conversion == False:
-            starting_point = last_aliens_spawn_rate[-1] + 1
-            end_point = self.spawn_rate + starting_point
-        if first_conversion == True:
-            self.spawn_rate = list(range(1, self.spawn_rate + 1))
-        else:
-            self.spawn_rate = list(range(starting_point, end_point))
-        last_aliens_spawn_rate = self.spawn_rate
-        return last_aliens_spawn_rate
+        #Note - self.char.Move(self.pos) could be used in both here AND the update() function, I just like
+        # seeing it here, personal preference.
 
-    @staticmethod
-    def random_spawn():
-        alien_choice = random.randint(1, 100)
-        door_choice = random.randint(1, 8)
-        if alien_choice >= shield.spawn_rate[0] and alien_choice <= shield.spawn_rate[-1]:
-            alien = GameManager.create_shield()
-            shield.spawn(door_choice)
-        elif alien_choice >= turret.spawn_rate[0] and alien_choice <= turret.spawn_rate[-1]:
-            alien = GameManager.create_turret()
-            turret.spawn(door_choice)
-        elif alien_choice >= armoured_wing.spawn_rate[0] and alien_choice <= armoured_wing.spawn_rate[-1]:
-            alien = GameManager.create_armoured_wing()
-            armoured_wing.spawn(door_choice)
-        elif alien_choice >= sniper.spawn_rate[0] and alien_choice <= sniper.spawn_rate[-1]:
-            alien = GameManager.create_sniper()
-            sniper.spawn(door_choice)
-        elif alien_choice >= bomber.spawn_rate[0] and alien_choice <= bomber.spawn_rate[-1]:
-            alien = GameManager.create_bomber()
-            bomber.spawn(door_choice)
-        else:
-            alien = GameManager.create_mosquito()
-            mosquito.spawn(door_choice)
-        return alien
+        # - Adam
 
-    def spawn(self, door_choice: int):
-        if door_choice == 1:
-            self.pos_x = 1
-            self.pos_y = 800
-        elif door_choice == 2:
-            self.pos_x = 48
-            self.pos_y = 92
-        elif door_choice == 3:
-            self.pos_x = 442
-            self.pos_y = 10
-        elif door_choice == 4:
-            self.pos_x = 150
-            self.pos_y = 232
-        elif door_choice == 5:
-            self.pos_x = 300
-            self.pos_y = 500
-        elif door_choice == 6:
-            self.pos_x = 11
-            self.pos_y = 200
-        elif door_choice == 7:
-            self.pos_x = 23
-            self.pos_y = 62
-        else:
-            self.pos_x = 1200
-            self.pos_y = 600
-#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-
-#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-class RangedAliens(Aliens):
-    pass
-#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-
-#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-class PhysicalAliens(Aliens):
-    pass
-#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-
-#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-class GameManager():
-    __aliens_alive = []
-    def __init__(self):
+    def Collision(self):
+        #Hit = pygame.sprite.spritecollide(self, obstacle_sprites, False) - Used to detect colision
+        #Use for aliens, after they are created
+        # - Adam
         pass
 
-    @staticmethod
-    def start_game():
-        game_round = 0
-        try:
-            shield.convert_spawn_rate(True, None)
-            turret.convert_spawn_rate(False, shield.spawn_rate)
-            armoured_wing.convert_spawn_rate(False, turret.spawn_rate)
-            sniper.convert_spawn_rate(False, armoured_wing.spawn_rate)
-            bomber.convert_spawn_rate(False, sniper.spawn_rate)
-            mosquito.convert_spawn_rate(False, bomber.spawn_rate)
-        except:
-            raise entryErrors("The spawn rates are incorrect")
-        GameManager.manage_rounds(game_round)
-        return game_round
-
-    @staticmethod
-    def find_aliens(alien, lst):
-        i = 0
-        duplicate_aliens = 0
-        while(i < len(lst)):
-            if alien.name in lst[i]:
-                duplicate_aliens+= 1
-            i+= 1
-        return duplicate_aliens
-
-    @staticmethod
-    def remove_alien(alien, lst):
-        if alien.name in lst:
-            lst.remove(alien.name)
-
-    @staticmethod
-    def manage_spawns(game_round: int):
-        spawn_rate_total = len(shield.spawn_rate) + len(turret.spawn_rate) + len(armoured_wing.spawn_rate) + len(bomber.spawn_rate) + len(mosquito.spawn_rate) + len(sniper.spawn_rate)
-        if spawn_rate_total == 100:
-            aliens_needed = game_round * 5
-            i = 1
-            aliens_needed+= i
-            while(aliens_needed > i):
-                alien = Aliens.random_spawn()
-                duplicate_aliens = GameManager.find_aliens(alien, GameManager.__aliens_alive)
-                if duplicate_aliens > 0:
-                    alien.name += str(duplicate_aliens + 1)
-                GameManager.__aliens_alive.append(str(alien))
-                i+= 1
-            print(GameManager.__aliens_alive)
-            GameManager.remove_alien(alien, GameManager.__aliens_alive)
-            print(GameManager.__aliens_alive)
-        else:
-            raise numErrors("The spawn rates must add up to 100")
-
-    @staticmethod
-    def manage_rounds(game_round: int):
-        if len(GameManager.__aliens_alive) == 0:
-            game_round+= 1
-            GameManager.manage_spawns(game_round)
-        return game_round
-
-#parameters - (health, speed, damage, pos_x, pos_y, target, spawn_rate)
-    @staticmethod
-    def create_shield():
-        shield = Aliens("Shield", 200, 1, 20, 1, 1, player, 25)
-        return shield
-
-    @staticmethod
-    def create_turret():
-        turret = Aliens("Turret", 200, 1, 15, 1, 1, player, 10)
-        return turret
-    
-    @staticmethod
-    def create_armoured_wing():
-        armoured_wing = Aliens("Armoured-wing", 150, 2, 30, 1, 1, player, 15)
-        return armoured_wing
-    
-    @staticmethod
-    def create_bomber():
-        bomber = Aliens("Bomber", 30, 5, 100, 1, 1, player, 10)
-        return bomber
-    
-    @staticmethod
-    def create_mosquito():
-        mosquito = Aliens("Mosquito", 50, 3, 50, 1, 1, player, 25)
-        return mosquito
-    
-    @staticmethod
-    def create_sniper():
-        sniper = Aliens("Sniper", 40, 1, 75, 1, 1, player, 15)
-        return sniper
+    def Update(self):
+        self.Movement()
+        self.Collision()
+        #This will update the player every milisecond.
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-#parameters - (name, damage, fire_rate(shots per second))
-pistol = Weapons("Pistol", 20, 3)
-shotgun = Weapons("Shotgun", 100, 1)
-smg = Weapons("Sub-machine-gun", 10, 10)
-rifle = Weapons("Rifle", 20, 5)
-
-#parameters - (health, speed, damage, pos_x, pos_y, power_up, weapon)
-#----------------------------------------------------------------------------------------------------#
-
-#----------------------------------------------------------------------------------------------------
-
-GameManager.start_game()
-#----------------------------------------------------------------------------------------------------#
-running = True
 game = Game()
-
-while running:
+while True:
     game.run()

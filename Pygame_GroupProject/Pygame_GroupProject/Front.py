@@ -17,7 +17,7 @@ class Settings:
     ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #4 | [3]
     ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #5 | [4]
     ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #6 | [5]
-    ['d','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','d'],#7 | [6]
+    ['d','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','d'], #7 | [6]
     ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #8 | [7]
     ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #9 | [8]
     ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #10 | [9]
@@ -30,7 +30,7 @@ class Settings:
     ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #17 | [16]
     ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #18 | [17]
     ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #19 | [18]
-    ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','fp','w'], #20 | [19]
+    ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','fp','w'],#20 | [19]
     ['c','w','w','w','w','w','d','w','w','w','w','w','w','w','d','w','w','w','w','w','c']  #21 | [20]
     ]
 #Settings has been updated with some extra comments regarding list placement, also messed with
@@ -207,17 +207,19 @@ class Player(pygame.sprite.Sprite):
             self.image = self.image.ReturnImage() 
             self.image = pygame.transform.scale2x(self.image)
             self.direction.x -= 5
-            #print (self.direction.x)
+
         elif keys[pygame.K_d] and (self.direction.x<608):
             self.direction.x += 5
             self.image = ImageTransformer(self.image_org, 90)
             self.image = self.image.ReturnImage() 
             self.image = pygame.transform.scale2x(self.image)
+
         elif keys[pygame.K_w] and (self.direction.y>32):
             self.image = ImageTransformer(self.image_org, 180)
             self.image = self.image.ReturnImage() 
             self.image = pygame.transform.scale2x(self.image)
             self.direction.y -= 5
+
         elif keys[pygame.K_s] and (self.direction.y<608):
             self.image = ImageTransformer(self.image_org, 0)
             self.image = self.image.ReturnImage() 
@@ -227,66 +229,6 @@ class Player(pygame.sprite.Sprite):
     def update(self):
         Player.movement(self)
         self.rect = self.image.get_rect(topleft = self.direction)
- 
-#class Player(pygame.sprite.Sprite):
-#    def __init__(self, pos, groups,obstacle_sprites):
-#        super().__init__(groups)
-#        self.image = pygame.image.load('').convert_alpha()
-#        self.rect = self.image.get_rect(topleft = pos) 
-
-#        self.direction = pygame.math.vector2()
-#        self.speed = 5
-
-#        self.obstacle_sprites = obstacle_sprites
-
-#    def input(self):
-#        keys = pygame.key.get_pressed()
-
-#        if keys[pygame.K_A]:
-#            self.direction.y = -1
-#        elif keys[pygame.K_D]:
-#            self.direction.y = 1
-#        else:
-#            self.direction.y = 0
-
-#        if keys[pygame.K_A]:
-#            self.direction.x = 1
-#        elif keys[pygame.K_S]:
-#            self.direction.x = -1
-#        else:
-#            self.direction.x = 0
-
-#    def move(self,speed):
-#        if self.direction.magnitude() != 0:
-#            self.direction = self.direction.normalize()
-#        self.rect.x += self.direction.x * speed
-#        self.collision('horizontal')
-#        self.rect.y += self.direction.y * speed
-#        self.collision('vertical')
-
-#    def collision(self,direction):
-#        if direction == 'horizontal':
-#            if sprite.rect.colliderect(self,rect):
-#                if sprite.rect.colliderect(self,rect):
-#                    if self.direction.x > 0:    
-#                        self.rect.right = sprite.rect.left
-#                    if self.direction.x < 0:
-#                        self.rect.left = sprite.rect.right
-
-#        if direction =='vertical':
-#            if sprite.rect.colliderect(self,rect):
-#                if sprite.rect.colliderect(self,rect):
-#                    if self.direction.y > 0:  
-#                        self.rect.bottom = sprite.rect.top
-#                    if self.direction.y < 0:
-#                        self.rect.top = sprite.rect.bottom
-
-
-#        if direction == 'vertical':
-#            pass
-#    def update(self):
-#        self.input()
-#        self.move(self.speed)
 #----------------------------------------------------------------------------------------------------
 running = True
 game = Game()
