@@ -204,20 +204,20 @@ class Characters():
     __damage = None
     __pos_x = None
     __pos_y = None
-    def __init__(self, health, speed, damage, x, y):
+    def __init__(self, health, speed, damage, pos_x, pos_y, image, obstacles):
         self.speed = speed
         self.health = health
         self.damage = damage
-        self.pos_x = x
-        self.pos_y = y
-#        self.image =  image
-#        self.image = pygame.image.load(image).convert_alpha()
-#        self.image = pygame.transform.scale2x(self.image)
-#        self.rect = self.image.get_rect(topleft = pos)
-#        self.obstacles = obstacles
-#        self.direction = pygame.math.Vector2(pos_x, pos_y)
-#
-#        AreaSprite((self.pos_x, self.pos_y), image, [visible_sprites])
+        self.pos_x = pos_x
+        self.pos_y = pos_y
+        self.image = image
+        self.image = pygame.image.load(image).convert_alpha()
+        self.image = pygame.transform.scale2x(self.image)
+        self.rect = self.image.get_rect(topleft = pygame.math.Vector(self.pos_x, self.pos_y))
+        self.obstacles = obstacles
+        self.direction = pygame.math.Vector2(self.pos_x, self.pos_y)
+
+        AreaSprite((self.pos_x, self.pos_y), image, [visible_sprites])
 
     #-------------------------------------------------- Getter
     @property
@@ -248,42 +248,42 @@ class Characters():
 
     @speed.setter
     def speed(self, value):
-        if value > 0:
+        if type(value) == int and value > 0:
             self.__movement_speed = value
         else:
             raise numErrors("Movement Speed has to be a positive int")
         
     @health.setter
     def health(self, value):
-        if value > 0:
+        if type(value) == int and value > 0:
             self.__health = value
         else:
             raise numErrors("Health must be a positive int")
         
     @damage.setter
     def damage(self, value: int):
-        if value > 0:
+        if type(value) == int and value > 0:
             self.__damage = value
         else:
             raise numErrors("Damage must be a positive int")
 
     @pos_x.setter
     def pos_x(self, value: int):
-        if value > 0:
+        if type(value) == int and value > 0:
             self.__pos_x = value
         else:
             raise numErrors("pos_x must be a positive integer")
 
     @pos_y.setter
     def pos_y(self, value:int):
-        if value > 0:
+        if type(value) == int and value > 0:
             self.__pos_y = value
         else:
             raise numErrors("pos_y must be a positive integer")
 
     @image.setter
     def image(self, value):
-        if value != "":
+        if type(value) == str and value != "":
             self.__image = value
         else:
             raise strErrors("Image must be a string of the path of the image")
@@ -339,8 +339,8 @@ class Characters():
 class Player(Characters):
     __power_up = None
     __weapon = None
-    def __init__(self, health, speed, damage, pos_x, pos_y, power_up, weapon):
-        super().__init__(health, speed, damage, pos_x, pos_y)
+    def __init__(self, health, speed, damage, pos_x, pos_y, power_up, weapon, image, obstacles = None):
+        super().__init__(health, speed, damage, pos_x, pos_y, image, obstacles)
         self.power_up = power_up
         self.weapon = weapon       
 
@@ -361,15 +361,16 @@ class Player(Characters):
 
     @weapon.setter
     def weapon(self, value: object):
-        if value != None and value != "":
+        if type(value) == object or value == None:
             self.__weapon = value
         else:
             raise objectErrors("The weapon must be an object")
 
-    def pickup_weapon(self):
+    def pickup_weapon(self, weapon):
+        player.weapon = weapon
         self.damage = self.weapon.damage
 
-    def shoot(self, weapon: object, bullet: object):
+    def shoot(self):
         pass
 
     def delay(self, weapon: object):
@@ -409,14 +410,16 @@ class Weapons:
             raise strErrors("You must enter 'Pistol', 'Shotgun', 'Sub-machine-gun', or 'Rifle'")
     @damage.setter
     def damage(self, value: int):
-        if value > 0:
-            self.__damage = value
+        if type(value) == int:
+            if value > 0:
+                self.__damage = value
         else:
             raise numErrors("You must enter a positive int")
     @fire_rate.setter
     def fire_rate(self, value: int):
-        if value > 0 and value <= 10:
-            self.__fire_rate = value
+        if type(value) == int:
+            if value > 0 and value <= 10:
+                self.__fire_rate = value
         else:
             raise numErrors("You must enter an int from 1 to 10")
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -462,14 +465,14 @@ class Bullets():
 
     @asset.setter
     def asset(self, value: str):
-        if value != "":
+        if value != "" and type(value) == str:
             self.__asset = value
         else:
             raise strErrors("You must enter a string")
 
     @showing.setter
     def showing(self, value: bool):
-        if value == True or value == False:
+        if type(value) == bool:
             self.__showing = value
         else:
             raise boolErrors("You must enter a boolean value for 'showing'")
@@ -509,8 +512,8 @@ class Aliens(Characters):
     __spawn_rate = None
     __name = None
 
-    def __init__(self, name, health, speed, damage, pos_x, pos_y, target, spawn_rate):
-        super().__init__(health, speed, damage, pos_x, pos_y)
+    def __init__(self, name, health, speed, damage, pos_x, pos_y, target, spawn_rate, image, obstacles):
+        super().__init__(health, speed, damage, pos_x, pos_y, image, obstacles)
         self.target = target
         self.spawn_rate = spawn_rate
         self.name = name
@@ -529,21 +532,33 @@ class Aliens(Characters):
 
     @name.setter
     def name(self, value):
-        if value != "":
+        if "Shield" in value or "Turret" in value:
+            self.__name = value
+        elif "Armoured-wing" in value or "Bomber" in value:
+            self.__name = value
+        elif "Sniper" in value or "Mosquito" in value:
             self.__name = value
         else:
             raise strErrors("You must enter a name of an alien")
+            
         
     @target.setter
     def target(self, value: object):
-        self.__target = value
+        if type(value) == object:
+            self.__target = value
+        else:
+            objectErrors("Target must be an object")
 
     @spawn_rate.setter
     def spawn_rate(self, value):
-        self.__spawn_rate = value
+        if type(value) == list or type(value) == int:
+            self.__spawn_rate = value
+        else:
+            entryErrors("The spawn rate must be initialised as an int, then turned into a list")
 
     def __str__(self):
         return self.__name
+
     def convert_spawn_rate(self, first_conversion: bool, last_aliens_spawn_rate: list):
         if first_conversion == False:
             starting_point = last_aliens_spawn_rate[-1] + 1
@@ -581,11 +596,11 @@ class Aliens(Characters):
 
     def spawn(self, door_choice: int):
         if door_choice == 1:
-            self.pos_x = 1
-            self.pos_y = 800
+            self.pos_x = 7
+            self.pos_y = 0
         elif door_choice == 2:
-            self.pos_x = 48
-            self.pos_y = 92
+            self.pos_x = 25
+            self.pos_y = 0
         elif door_choice == 3:
             self.pos_x = 442
             self.pos_y = 10
@@ -599,26 +614,26 @@ class Aliens(Characters):
             self.pos_x = 11
             self.pos_y = 200
         elif door_choice == 7:
-            self.pos_x = 23
-            self.pos_y = 62
+            self.pos_x = 0
+            self.pos_y = 7
         else:
-            self.pos_x = 1200
-            self.pos_y = 600
+            self.pos_x = 0
+            self.pos_y = 25
 
     def move(self):
-        if (self.pos_x - target.pos_x) > (self.pos_y - target.pos_y):
-            if target.pos_x > (Settings.Width /= 2):
-                while(self.pos_x != target.pos_x):
+        if self.pos_x - self.target.pos_x > self.pos_y - self.target.pos_y:
+            if self.target.pos_x > Settings.Width / 2:
+                while(self.pos_x < self.target.pos_x):
                     self.pos_x += self.speed
-            elif target.pos_x < (Settings.Width /= 2):
-                while(self.pos_x != target.pos_x):
+            elif self.target.pos_x < Settings.Width / 2:
+                while(self.pos_x > self.target.pos_x):
                     self.pos_x -= self.speed
-        elif (self.pos_y - target.pos_y) > (self.pos_x - target.pos_x):
-            if target.pos_y > (Settings.Height /= 2):
-                while(self.pos_y != target.pos_y):
+        elif self.pos_y - self.target.pos_y > self.pos_x - self.target.pos_x:
+            if self.target.pos_y > Settings.Height / 2:
+                while(self.pos_y > self.target.pos_y):
                     self.pos_y -= self.speed
-            elif target.pos_y < (Settings.Height /= 2):
-                while(self.pos_y != target.pos_y):
+            elif self.target.pos_y < Settings.Height / 2:
+                while(self.pos_y < self.target.pos_y):
                     self.pos_y += self.speed
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -697,36 +712,52 @@ class GameManager():
             GameManager.manage_spawns(game_round)
         return game_round
 
-#parameters - (health, speed, damage, pos_x, pos_y, target, spawn_rate)
+#Adam, can you add the images for the aliens to the folder? Thanks in advance.
+
+#parameters - (health, speed, damage, pos_x, pos_y, target, spawn_rate, image, obstacles)
     @staticmethod
     def create_shield():
-        shield = Aliens("Shield", 200, 1, 20, 1, 1, player, 25)
+        shield = Aliens("Shield", 200, 1, 20, 1, 1, player, 25, "Pygame_GroupProject\Pygame_GroupProject\Assets\Alien\Shield_armour.png", None)
         return shield
 
     @staticmethod
     def create_turret():
-        turret = Aliens("Turret", 200, 1, 15, 1, 1, player, 10)
+        turret = Aliens("Turret", 200, 1, 15, 1, 1, player, 10, None, None)
         return turret
     
     @staticmethod
     def create_armoured_wing():
-        armoured_wing = Aliens("Armoured-wing", 150, 2, 30, 1, 1, player, 15)
+        armoured_wing = Aliens("Armoured-wing", 150, 2, 30, 1, 1, player, 15, None, None)
         return armoured_wing
     
     @staticmethod
     def create_bomber():
-        bomber = Aliens("Bomber", 30, 5, 100, 1, 1, player, 10)
+        bomber = Aliens("Bomber", 30, 5, 100, 1, 1, player, 10, None, None)
         return bomber
     
     @staticmethod
     def create_mosquito():
-        mosquito = Aliens("Mosquito", 50, 3, 50, 1, 1, player, 25)
+        mosquito = Aliens("Mosquito", 50, 3, 50, 1, 1, player, 25, None, None)
         return mosquito
     
     @staticmethod
     def create_sniper():
-        sniper = Aliens("Sniper", 40, 1, 75, 1, 1, player, 15)
+        sniper = Aliens("Sniper", 40, 1, 75, 1, 1, player, 15, None, None)
         return sniper
+
+#parameters - (health, speed, damage, pos_x, pos_y, power_up, weapon, image, obstacles)
+    @staticmethod
+    def create_player(weapon):
+        if weapon == pistol:
+            image = "iTeamA3\Pygame_GroupProject\Pygame_GroupProject\Assets\Player\Player_pistol.png"
+        elif weapon == shotgun:
+            image = "iTeamA3\Pygame_GroupProject\Pygame_GroupProject\Assets\Player\Player_shotgun.png"
+        elif weapon == smg:
+            image = "iTeamA3\Pygame_GroupProject\Pygame_GroupProject\Assets\Player\Player_smg.png"
+        else:
+            image = "iTeamA3\Pygame_GroupProject\Pygame_GroupProject\Assets\Player\Player_rifle.png"
+        player = Player(100, 2, 20, 1, 1, None, weapon, image, None)
+        return player
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 #parameters - (name, damage, fire_rate(shots per second))
@@ -734,10 +765,8 @@ pistol = Weapons("Pistol", 20, 3)
 shotgun = Weapons("Shotgun", 100, 1)
 smg = Weapons("Sub-machine-gun", 10, 10)
 rifle = Weapons("Rifle", 20, 5)
-
-#parameters - (health, speed, damage, pos_x, pos_y, power_up, weapon)
 #----------------------------------------------------------------------------------------------------#
-player = Player(100, 2, 20, 1, 1, None, pistol)
+player = GameManager.create_player(pistol)
 #----------------------------------------------------------------------------------------------------
 shield = GameManager.create_shield()
 turret = GameManager.create_turret()
@@ -745,10 +774,10 @@ armoured_wing = GameManager.create_armoured_wing()
 sniper = GameManager.create_sniper()
 bomber = GameManager.create_bomber()
 mosquito = GameManager.create_mosquito()
-GameManager.start_game()
+#GameManager.start_game()
 #----------------------------------------------------------------------------------------------------#
 #running = True
-#game = Game()
-
-#while running:
-#    game.run()
+game = Game()
+running = True
+while running:
+    game.run()
