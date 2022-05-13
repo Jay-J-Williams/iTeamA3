@@ -1,6 +1,6 @@
 import pygame, sys
 visible_sprites = pygame.sprite.Group()
-obstacle_sprites = pygame.sprite.Group()
+enemy_sprites = pygame.sprite.Group()
 
 #IMPORTANT NOTE - The assets folder cannot be directly accessed through Assets/blahblah/blahblah
 #This is because the file path starts at the .sln file, this file is ONE folder above the game files
@@ -24,28 +24,28 @@ class Settings:
     Tilesize = 32
 
     MAP = [
-    ['c','w','w','w','w','w','d','w','w','w','w','w','w','w','d','w','w','w','w','w','c'], #1 | [0]
+    ['c','w','w','w','w','l','d','l','w','w','w','w','w','l','d','l','w','w','w','w','c'], #1 | [0]
     ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #2 | [1]
     ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #3 | [2]
     ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #4 | [3]
     ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #5 | [4]
-    ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #6 | [5]
+    ['l','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','l'], #6 | [5]
     ['d','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','d'], #7 | [6]
-    ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #8 | [7]
+    ['l','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','l'], #8 | [7]
     ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #9 | [8]
     ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #10 | [9]
     ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #11 | [10]
     ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #12 | [11]
     ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #13 | [12]
-    ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #14 | [13]
+    ['l','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','l'], #14 | [13]
     ['d','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','d'], #15 | [14]
-    ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #16 | [15]
+    ['l','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','l'], #16 | [15]
     ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #17 | [16]
     ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #18 | [17]
     ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #19 | [18]
     ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','fp','w'],#20 | [19]
-    ['c','w','w','w','w','w','d','w','w','w','w','w','w','w','d','w','w','w','w','w','c']  #21 | [20]
-    ]
+    ['c','w','w','w','w','l','d','l','w','w','w','w','w','l','d','l','w','w','w','w','c']  #21 | [20]
+   ]
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 class Game:
     def __init__(self):
@@ -79,31 +79,34 @@ class Map():
         self.TILESIZE = S.Tilesize
         self.create_map()
 
+        self.animation = Animations()
+
     def create_map(self):
         for row_index, row in enumerate(self.MAP):
             for col_index, col in enumerate(row):
                 x = col_index * self.TILESIZE
                 y = row_index * self.TILESIZE
-                self.y = y
-                self.x = x
+
+                self.Door_indexes = [6, 14]
+
                 col = col.lower()
                 #--------------------------------------------------------------------------------
                 #Walls
                 if col == "w" and row_index == 0:
                     image = "Pygame_GroupProject\Assets\Area\Wall.png"
-                    AreaSprite((x, y), image, [visible_sprites, obstacle_sprites])
+                    AreaSprite((x, y), image, [visible_sprites])
 
                 elif col == "w" and col_index == 0 and row_index > 0 and row_index < 20:
                     image = ImageTransformer("Pygame_GroupProject\Assets\Area\Wall.png", 90)
-                    image = image.ReturnImage((x, y), [visible_sprites, obstacle_sprites])
+                    image = image.ReturnImage((x, y), [visible_sprites])
 
                 elif col == "w" and row_index == 20:
                     image = ImageTransformer("Pygame_GroupProject\Assets\Area\Wall.png", 180)
-                    image = image.ReturnImage((x, y), [visible_sprites, obstacle_sprites])
+                    image = image.ReturnImage((x, y), [visible_sprites])
 
                 elif col == "w" and col_index == 20 and row_index > 0 and row_index < 20:
                     image = ImageTransformer("Pygame_GroupProject\Assets\Area\Wall.png", 270)
-                    image = image.ReturnImage((x, y), [visible_sprites, obstacle_sprites])
+                    image = image.ReturnImage((x, y), [visible_sprites])
                 #--------------------------------------------------------------------------------
                 #Corners
                 elif col == "c" and col_index == 20 and row_index == 0:
@@ -125,19 +128,19 @@ class Map():
                 #Doors
                 elif col == "d" and row_index == 0:
                     image = "Pygame_GroupProject\Assets\Area\Door.png"
-                    AreaSprite((x, y), image, [visible_sprites, obstacle_sprites])
+                    AreaSprite((x, y), image, [visible_sprites])
 
-                elif col == "d" and (row_index == 6 or row_index == 14) and col_index == 0:
+                elif col == "d" and  row_index in self.Door_indexes and col_index == 0:
                     image = ImageTransformer("Pygame_GroupProject\Assets\Area\Door.png", 90)
-                    image = image.ReturnImage((x, y), [visible_sprites, obstacle_sprites])
+                    image = image.ReturnImage((x, y), [visible_sprites])
 
                 elif col == "d" and row_index == 20:
                     image = ImageTransformer("Pygame_GroupProject\Assets\Area\Door.png", 180)
-                    image = image.ReturnImage((x, y), [visible_sprites, obstacle_sprites])
+                    image = image.ReturnImage((x, y), [visible_sprites])
 
-                elif col == "d" and (row_index == 6 or row_index == 14) and col_index == 20:
+                elif col == "d" and  row_index in self.Door_indexes and col_index == 20:
                     image = ImageTransformer("Pygame_GroupProject\Assets\Area\Door.png", 270)
-                    image = image.ReturnImage((x, y), [visible_sprites, obstacle_sprites])
+                    image = image.ReturnImage((x, y), [visible_sprites])
                 #--------------------------------------------------------------------------------
                 #Floor
                 elif col == "f":
@@ -158,6 +161,7 @@ class Map():
     def run(self):
         visible_sprites.draw(self.display_surface)
         self.player.Update()
+        self.animation.LED_animations()
         visible_sprites.update()
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 class AreaSprite(pygame.sprite.Sprite):
@@ -180,6 +184,57 @@ class AreaSprite(pygame.sprite.Sprite):
 # order to deal with all the sprites. Literally all of them. You're welcome.
 
 # - Adam
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+class Animations():
+    def __init__(self):
+        S = Settings()
+        self.map = S.MAP
+        self.TILESIZE = S.Tilesize
+
+        self.LEDOne = "Pygame_GroupProject\Assets\Area\LED.png"
+        self.LEDTwo = "Pygame_GroupProject\Assets\Area\LED_frame2.png"
+        self.LEDThree = "Pygame_GroupProject\Assets\Area\LED_frame3.png"
+        self.LEDFour = "Pygame_GroupProject\Assets\Area\LED_frame4.png"
+        self.LED_frames = [self.LEDOne, self.LEDTwo, self.LEDThree, self.LEDFour]
+        self.LED_current = 0
+
+        self.DoorOne = "Pygame_GroupProject\Assets\Area\Door.png"
+        self.DoorTwo = "Pygame_GroupProject\Assets\Area\Door_frame2.png"
+        self.DoorThree = "Pygame_GroupProject\Assets\Area\Door_frame3.png"
+        self.DoorFour = "Pygame_GroupProject\Assets\Area\Door_frame4.png"
+        self.Door_frames = [self.DoorOne, self.DoorTwo, self.DoorThree, self.DoorFour]
+        self.Door_current = 0
+
+        self.LED_animations()
+
+    def LED_animations(self):
+        for row_index, row in enumerate(self.map):
+            for col_index, col in enumerate(row):
+                x = col_index * self.TILESIZE
+                y = row_index * self.TILESIZE
+
+                self.LED_indexes = [5, 7, 13, 15]
+
+                if col == "l" and row_index == 0:
+                    image = self.LED_frames[int(self.LED_current)]
+                    AreaSprite((x, y), image, [visible_sprites])
+
+                elif col == "l" and row_index in self.LED_indexes and col_index == 0:
+                    image = ImageTransformer(self.LED_frames[int(self.LED_current)], 90)
+                    image = image.ReturnImage((x, y), [visible_sprites])
+
+                elif col == "l" and row_index == 20:
+                    image = ImageTransformer(self.LED_frames[int(self.LED_current)], 180)
+                    image = image.ReturnImage((x, y), [visible_sprites])
+
+                elif col == "l" and row_index in self.LED_indexes and col_index == 20:
+                    image = ImageTransformer(self.LED_frames[int(self.LED_current)], 270)
+                    image = image.ReturnImage((x, y), [visible_sprites])
+
+                self.LED_current += 0.2
+
+                if self.LED_current >= len(self.LED_frames):
+                    self.LED_current = 0
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 class ImageTransformer(pygame.sprite.Sprite):
     def __init__(self, image, degrees):
