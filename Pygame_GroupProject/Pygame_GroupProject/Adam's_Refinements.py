@@ -1,21 +1,18 @@
 import pygame, sys
 visible_sprites = pygame.sprite.Group()
-enemy_sprites = pygame.sprite.Group()
+obstacle_sprites = pygame.sprite.Group()
 
-#IMPORTANT NOTE - The assets folder cannot be directly accessed through Assets/blahblah/blahblah
-#This is because the file path starts at the .sln file, this file is ONE folder above the game files
-#This means that to add an asset, you have to follow the following file structure ->
-#Pygame_GroupProject/Assets/blahblah/blahblah
+global Pistol
+global SMG   
+global Rifle   
+global Shotgun
 
-#This took me too long to figure out and drove me crazy
-
-#Less importantly, obviously, I figured out how to reduce the code to make it way easier to both 
-#use and understand, and have added comments explaining them.
-
-#Note - I created the sprite groups here instead, so they can be used in any class they need to be used in
+#Changes have occured once more, in the form of door animations (work-in-progress | "space" to try) 
+# and weapon / player classes, leaving Character() open for both player and alien use
+#Note - Player and Weapon objects are now global objects, this means that you can use them wherever 
+# in the code, though weapons have proved to only work after they've been called
 
 # - Adam
-
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 class Settings:
     Width = 672
@@ -45,7 +42,7 @@ class Settings:
     ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #19 | [18]
     ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','fp','w'],#20 | [19]
     ['c','w','w','w','w','l','d','l','w','w','w','w','w','l','d','l','w','w','w','w','c']  #21 | [20]
-   ]
+    ]
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 class Game:
     def __init__(self):
@@ -87,8 +84,6 @@ class Map():
                 x = col_index * self.TILESIZE
                 y = row_index * self.TILESIZE
 
-                self.Door_indexes = [6, 14]
-
                 col = col.lower()
                 #--------------------------------------------------------------------------------
                 #Walls
@@ -119,27 +114,10 @@ class Map():
 
                 elif col == "c" and col_index == 0 and row_index == 20:
                     image = ImageTransformer("Pygame_GroupProject\Assets\Area\Corner.png", 180)
-                    image = image.ReturnImage((x, y), [visible_sprites])  
+                    image = image.ReturnImage((x, y), [visible_sprites]) 
 
                 elif col == "c" and col_index == 20 and row_index == 20:
                     image = ImageTransformer("Pygame_GroupProject\Assets\Area\Corner.png", 270)
-                    image = image.ReturnImage((x, y), [visible_sprites]) 
-                #--------------------------------------------------------------------------------
-                #Doors
-                elif col == "d" and row_index == 0:
-                    image = "Pygame_GroupProject\Assets\Area\Door.png"
-                    AreaSprite((x, y), image, [visible_sprites])
-
-                elif col == "d" and  row_index in self.Door_indexes and col_index == 0:
-                    image = ImageTransformer("Pygame_GroupProject\Assets\Area\Door.png", 90)
-                    image = image.ReturnImage((x, y), [visible_sprites])
-
-                elif col == "d" and row_index == 20:
-                    image = ImageTransformer("Pygame_GroupProject\Assets\Area\Door.png", 180)
-                    image = image.ReturnImage((x, y), [visible_sprites])
-
-                elif col == "d" and  row_index in self.Door_indexes and col_index == 20:
-                    image = ImageTransformer("Pygame_GroupProject\Assets\Area\Door.png", 270)
                     image = image.ReturnImage((x, y), [visible_sprites])
                 #--------------------------------------------------------------------------------
                 #Floor
@@ -153,16 +131,22 @@ class Map():
                     AreaSprite((x, y), image, [visible_sprites])
 
                     image = "Pygame_GroupProject\Assets\Player\Player_pistol.png"
-                    self.player = Character(100, 5, 20, (x, y), image, [visible_sprites])
-
-                #Looks like less code, does it not? This is due to the change I made in ImageTransformer()
-                #See it below - Adam
+                    global player 
+                    player = Player(100, 5, 20, x, y, image, [visible_sprites])
 
     def run(self):
         visible_sprites.draw(self.display_surface)
-        self.player.Update()
-        self.animation.LED_animations()
+        player.Update()
+        self.animation.Update()
         visible_sprites.update()
+
+#Door was removed from this map list, in order to not repeat code from the door animation side, also
+# Run() now uses self.animation.Update(), this is instead of using .LED_animations(). This is also
+# due to door animations
+
+#Player has become a global variable, thus solving the issue of using it across multiple classes. ...Whoo
+
+# - Adam
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 class AreaSprite(pygame.sprite.Sprite):
     def __init__(self, pos, image, groups):
@@ -173,17 +157,6 @@ class AreaSprite(pygame.sprite.Sprite):
             self.image = image
         self.image = pygame.transform.scale2x(self.image)
         self.rect = self.image.get_rect(topleft = pos)
-
-    def Move(self, pos):
-        self.rect = self.image.get_rect(topleft = pos)
-
-#AreaSprite is now used to handle every single sprite of the game, and the Move() function is made to
-# handle all the sprites that move, like player and aliens
-
-#The main change was mentioned above: the Move() funtion, however, I also refined some __init__ code in 
-# order to deal with all the sprites. Literally all of them. You're welcome.
-
-# - Adam
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 class Animations():
     def __init__(self):
@@ -195,6 +168,7 @@ class Animations():
         self.LEDTwo = "Pygame_GroupProject\Assets\Area\LED_frame2.png"
         self.LEDThree = "Pygame_GroupProject\Assets\Area\LED_frame3.png"
         self.LEDFour = "Pygame_GroupProject\Assets\Area\LED_frame4.png"
+
         self.LED_frames = [self.LEDOne, self.LEDTwo, self.LEDThree, self.LEDFour]
         self.LED_current = 0
 
@@ -202,10 +176,10 @@ class Animations():
         self.DoorTwo = "Pygame_GroupProject\Assets\Area\Door_frame2.png"
         self.DoorThree = "Pygame_GroupProject\Assets\Area\Door_frame3.png"
         self.DoorFour = "Pygame_GroupProject\Assets\Area\Door_frame4.png"
+
         self.Door_frames = [self.DoorOne, self.DoorTwo, self.DoorThree, self.DoorFour]
         self.Door_current = 0
-
-        self.LED_animations()
+        self.DoorOpening = False
 
     def LED_animations(self):
         for row_index, row in enumerate(self.map):
@@ -235,6 +209,82 @@ class Animations():
 
                 if self.LED_current >= len(self.LED_frames):
                     self.LED_current = 0
+
+    def Door_animations(self):
+        for row_index, row in enumerate(self.map):
+            for col_index, col in enumerate(row):
+                x = col_index * self.TILESIZE
+                y = row_index * self.TILESIZE
+
+                Door_indexes = [6, 14]
+
+                if col == "d" and row_index == 0:
+                    image = self.Door_frames[int(self.Door_current)]
+                    AreaSprite((x, y), image, [visible_sprites])
+
+                elif col == "d" and row_index in Door_indexes and col_index == 0:
+                    image = ImageTransformer(self.Door_frames[int(self.Door_current)], 90)
+                    image = image.ReturnImage((x, y), [visible_sprites])
+
+                elif col == "d" and row_index == 20:
+                    image = ImageTransformer(self.Door_frames[int(self.Door_current)], 180)
+                    image = image.ReturnImage((x, y), [visible_sprites])
+
+                elif col == "d" and row_index in Door_indexes and col_index == 20:
+                    image = ImageTransformer(self.Door_frames[int(self.Door_current)], 270)
+                    image = image.ReturnImage((x, y), [visible_sprites])
+
+                self.Door_current += 0.2
+
+                if self.Door_current >= len(self.Door_frames):
+                    self.Door_current = 0
+                    self.DoorOpening = False
+
+    def DoorStill(self):
+        for row_index, row in enumerate(self.map):
+            for col_index, col in enumerate(row):
+                x = col_index * self.TILESIZE
+                y = row_index * self.TILESIZE
+
+                Door_indexes = [6, 14]
+
+                if col == "d" and row_index == 0:
+                    image = self.DoorOne
+                    AreaSprite((x, y), image, [visible_sprites])
+
+                elif col == "d" and row_index in Door_indexes and col_index == 0:
+                    image = ImageTransformer(self.DoorOne, 90)
+                    image = image.ReturnImage((x, y), [visible_sprites])
+
+                elif col == "d" and row_index == 20:
+                    image = ImageTransformer(self.DoorOne, 180)
+                    image = image.ReturnImage((x, y), [visible_sprites])
+
+                elif col == "d" and row_index in Door_indexes and col_index == 20:
+                    image = ImageTransformer(self.DoorOne, 270)
+                    image = image.ReturnImage((x, y), [visible_sprites])
+
+    def DoorPress(self): #Note - later turn into round based opening
+        keys = pygame.key.get_pressed()
+
+        if keys[pygame.K_SPACE]:
+            self.DoorOpening = True
+
+    def Update(self):
+        self.LED_animations()      
+        self.DoorPress()
+
+        if self.DoorOpening:
+            self.Door_animations()
+        else:
+            self.DoorStill()
+
+#This is a really big class that I am hoping to refine and simplify later on, for now I am too tired to 
+# realy care. So far LEDs work, however, door animation is proving to be a challenge. This should be left
+# until we implement the round-based mode, since the animation will play at the beginning of the round.
+# I will be testing the door animation with the "space bar" during testing tho.
+
+# - Adam
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 class ImageTransformer(pygame.sprite.Sprite):
     def __init__(self, image, degrees):
@@ -243,93 +293,124 @@ class ImageTransformer(pygame.sprite.Sprite):
 
     def ReturnImage(self, pos, groups):
         return AreaSprite(pos, self.image, groups)
-
-#There are a total of 6 lines of code here, including the class statment. All of them have their uses, and
-# all have been made to deal with all types of sprites, may get updated when we start working with aliens
-
-#The main change I have made is in ReturnImage(), this now returns an AreaSprite object in order to lessen
-# the code that is used, by alot too. It was primarily edited to deal with player movements with as little 
-# issue as possible, then moved from there to handle all sprites.
-
-# - Adam
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 class Character():
     health = None
     speed = None
     damage = None
-    pos = None
+
+    x = None
+    y = None
+
     image = None
     groups = None
 
-    #Characters have a main 6 attributes they all deal with, the player will only use these 6 so no need
-    # to create a player class. However an alien class should be made to deal with their adjustments
-    # until we figure out how to do them all in this one class. Might not happen, so an Alien sub-class
-    # should still to be made
-    # - Adam
-
-    def __init__(self, health, speed, damage, pos, image, groups):
+    def __init__(self, health, speed, damage, x, y, image, groups):
         self.health = health
         self.speed = speed
         self.damage = damage
 
-        self.pos = pygame.Vector2(pos)
+        self.x = x
+        self.y = y
+
         self.org_image = image
         self.groups = groups
 
-        self.char = AreaSprite(self.pos, image, groups)
+        self.char = AreaSprite((self.x, self.y), image, groups)
         self.rect = self.char.rect
 
-        #Little explanation here, there is a self. made to handle everything it needs to from all 6 
-        # attributes, I have added the extra self.char and self.rect for the player. They could be used on
-        # aliens, but seeing as that sub-class has not been done yet, I dunno if they definiely will
-        # - Adam
+#This has become a class to hold all character related sprites, player and aliens - Adam
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+class Player(Character):
+    weapon = None
+    powerUp = None
+
+    def __init__(self, health, speed, damage, x, y, image, group):
+        super().__init__(health, speed, damage, x, y, image, group)
+        self.weapon = None
+        self.powerUp = None
 
     def Movement(self):
         keys = pygame.key.get_pressed()
 
-        if keys[pygame.K_a] and self.pos.x > 32:
+        if keys[pygame.K_a] and self.x > 32:
             self.char.kill()
             self.char = ImageTransformer(self.org_image, 270)
-            self.char = self.char.ReturnImage(self.pos, self.groups)
-            self.pos.x -= self.speed           
+            self.char = self.char.ReturnImage((self.x, self.y), self.groups)
+            self.x -= self.speed           
 
-        elif keys[pygame.K_d] and self.pos.x < 608:
+        elif keys[pygame.K_d] and self.x < 608:
             self.char.kill()
             self.char = ImageTransformer(self.org_image, 90)
-            self.char = self.char.ReturnImage(self.pos, self.groups)
-            self.pos.x += self.speed
+            self.char = self.char.ReturnImage((self.x, self.y), self.groups)
+            self.x += self.speed
 
-        elif keys[pygame.K_w] and self.pos.y > 32:
+        elif keys[pygame.K_w] and self.y > 32:
             self.char.kill()
             self.char = ImageTransformer(self.org_image, 180)
-            self.char = self.char.ReturnImage(self.pos, self.groups)
-            self.pos.y -= self.speed
+            self.char = self.char.ReturnImage((self.x, self.y), self.groups)
+            self.y -= self.speed
 
-        elif keys[pygame.K_s] and self.pos.y < 608:
+        elif keys[pygame.K_s] and self.y < 608:
             self.char.kill()
             self.char = ImageTransformer(self.org_image, 0)
-            self.char = self.char.ReturnImage(self.pos, self.groups)
-            self.pos.y += self.speed
-
-        
-        self.char.Move(self.pos)
-
-        #This was the big one, but was only completed then refined thanks to Marc's work on movement on the
-        # 11th of May, the day I am writing this. When I first tried the code, the map was filled
-        # with multiple player objects showing every place the player was. This is due to new objects
-        # being created every milisecond. This has been fixed by killing off the old player object and 
-        # replacing it with the newly created one every milisecond.
+            self.char = self.char.ReturnImage((self.x, self.y), self.groups)
+            self.y += self.speed
 
     def Collision(self):
-        #Hit = pygame.sprite.spritecollide(self, obstacle_sprites, False) - Used to detect colision
-        #Use for aliens, after they are created
-        # - Adam
+        #enHit = pygame.sprite.spritecollide(self, obstacle_sprites, False)
+        #Use for enemies
         pass
+
+    def WeaponChanger(self):
+        image = "Pygame_GroupProject\Assets\Player\Player_pistol.png"
+
+        if self.weapon == Pistol:
+            image = "Pygame_GroupProject\Assets\Player\Player_pistol.png"
+        elif self.weapon == SMG:
+            image = "Pygame_GroupProject\Assets\Player\Player_smg.png"
+        elif self.weapon == Rifle:
+            image = "Pygame_GroupProject\Assets\Player\Player_rifle.png"
+        elif self.weapon == Shotgun:
+            image = "Pygame_GroupProject\Assets\Player\Player_shotgun.png"
+
+        self.org_image = image
+
+        self.char.kill()
+        self.char = AreaSprite((self.x, self.y), self.org_image, [visible_sprites])
 
     def Update(self):
         self.Movement()
         self.Collision()
-        #This will update the player every milisecond - Adam
+
+#The main addition is the weapon and powerUp variables, as well as the WeaponChanger() function, the
+# variables do not need to be set during start-up, this is because you will always start the game with
+# a pistol. The function is used to change to specific weapons, to be used when a weapon is collected
+
+# - Adam
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+class Weapon():
+    damage = None #Damage done
+    fireRate = None #Between 1 and 10, being shot/second
+    shotRange = None #The tile range that a gun fires in
+    isShot = False #Used for about 2 miliseconds, to show that a gun has been fired
+
+    def __init__(self, damage, fireRate, shotRange):
+        self.damage = damage
+        self.fireRate = fireRate
+        self.shotRange = shotRange
+
+Pistol = Weapon(15, 2, 5)
+SMG = Weapon(10, 1, 3)
+Rifle = Weapon(60, 5, 15)
+Shotgun = Weapon(50, 5, 2)
+
+#This class is used for the basic weapon functions, like calculating damage, rate of fire, and range of 
+# shot, all 3 variables have been used to create "sample" weaponry right below the class using the global
+# variales created on lines 4 to 8. So far a work in progress, but as far as I know, this is all that
+# is necessary. Likely that I am wrong, but once again, I am too tired to care
+
+# - Adam
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 game = Game()
 while True:
