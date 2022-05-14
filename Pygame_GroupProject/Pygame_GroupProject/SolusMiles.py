@@ -168,7 +168,7 @@ class Map():
                     AreaSprite((x, y), image, visible_sprites)
 
                     player = GameManager.create_player(pistol)
-                    AreaSprite((player.pos_x, player.pos_y), player.image, visible_sprites)
+                    #AreaSprite((player.pos_x, player.pos_y), player.image, visible_sprites)
 
     def run(self):
         visible_sprites.draw(self.display_surface)
@@ -300,8 +300,13 @@ class Player(Characters):
     __weapon = None
     def __init__(self, health, speed, damage, pos_x, pos_y, power_up, weapon, image, obstacles = None):
         super().__init__(health, speed, damage, pos_x, pos_y, image, obstacles)
+        self.pos_x = pos_x
+        self.pos_y = pos_y
+        self.image = image
+        self.speed = speed
         self.power_up = power_up
-        self.weapon = weapon       
+        self.weapon = weapon
+        Player.movement(self)
 
     @property
     def power_up(self):
@@ -335,6 +340,38 @@ class Player(Characters):
     def delay(self, weapon: object):
         self.delay = 1000 / self.weapon.fire_rate
         pygame.time.wait(self.delay)
+
+    def movement(self):
+        print("test")
+        keys = pygame.key.get_pressed()
+
+        if keys[pygame.K_a] and self.pos_x > 32:
+            self.char.kill()
+            self.char = ImageTransformer(self.org_image, 270)
+            self.char = self.char.ReturnImage((self.pos_x, self.pos_y), self.groups)
+            self.pos_x -= self.speed           
+
+        elif keys[pygame.K_d] and self.pos_x < 608:
+            self.char.kill()
+            self.char = ImageTransformer(self.org_image, 90)
+            self.char = self.char.ReturnImage((self.pos_x, self.pos_y), self.groups)
+            self.pos_x += self.speed
+
+        elif keys[pygame.K_w] and self.pos_y > 32:
+            self.char.kill()
+            self.char = ImageTransformer(self.org_image, 180)
+            self.char = self.char.ReturnImage((self.pos_x, self.pos_), self.groups)
+            self.pos_y -= self.speed
+
+        elif keys[pygame.K_s] and self.pos_y < 608:
+            self.char.kill()
+            self.char = ImageTransformer(self.org_image, 0)
+            self.char = self.char.ReturnImage((self.pos_x, self.pos_y), self.groups)
+            self.pos_y += self.speed
+
+    def Update(self):
+        self.Movement()
+        #self.Collision()
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
