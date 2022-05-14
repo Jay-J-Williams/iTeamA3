@@ -87,6 +87,7 @@ class Map():
         self.MAP = S.MAP
         self.TILESIZE = S.Tilesize
         self.create_map()
+        self.animation = Animations()
 
     def create_map(self):
         for row_index, row in enumerate(self.MAP):
@@ -97,81 +98,57 @@ class Map():
                 self.x = x
                 col = col.lower()
                 #--------------------------------------------------------------------------------
-                #Walls
+               #Walls
                 if col == "w" and row_index == 0:
                     image = "Pygame_GroupProject\Assets\Area\Wall.png"
-                    AreaSprite((x, y), image, visible_sprites)
+                    AreaSprite((x, y), image, [visible_sprites])
 
                 elif col == "w" and col_index == 0 and row_index > 0 and row_index < 20:
                     image = ImageTransformer("Pygame_GroupProject\Assets\Area\Wall.png", 90)
-                    image = image.ReturnImage()
-                    AreaSprite((x, y), image, visible_sprites)
+                    image = image.ReturnImage((x, y), [visible_sprites])
 
                 elif col == "w" and row_index == 20:
                     image = ImageTransformer("Pygame_GroupProject\Assets\Area\Wall.png", 180)
-                    image = image.ReturnImage()
-                    AreaSprite((x, y), image, visible_sprites)
+                    image = image.ReturnImage((x, y), [visible_sprites])
 
                 elif col == "w" and col_index == 20 and row_index > 0 and row_index < 20:
                     image = ImageTransformer("Pygame_GroupProject\Assets\Area\Wall.png", 270)
-                    image = image.ReturnImage()
-                    AreaSprite((x, y), image, visible_sprites)
+                    image = image.ReturnImage((x, y), [visible_sprites])
                 #--------------------------------------------------------------------------------
                 #Corners
                 elif col == "c" and col_index == 20 and row_index == 0:
                     image = "Pygame_GroupProject\Assets\Area\Corner.png"
-                    AreaSprite((x, y), image, visible_sprites)
+                    AreaSprite((x, y), image, [visible_sprites])
 
                 elif col == "c" and col_index == 0 and row_index == 0:
                     image = ImageTransformer("Pygame_GroupProject\Assets\Area\Corner.png", 90)
-                    image = image.ReturnImage()
-                    AreaSprite((x, y), image, visible_sprites)    
+                    image = image.ReturnImage((x, y), [visible_sprites])      
 
                 elif col == "c" and col_index == 0 and row_index == 20:
                     image = ImageTransformer("Pygame_GroupProject\Assets\Area\Corner.png", 180)
-                    image = image.ReturnImage()
-                    AreaSprite((x, y), image, visible_sprites)
+                    image = image.ReturnImage((x, y), [visible_sprites]) 
 
                 elif col == "c" and col_index == 20 and row_index == 20:
                     image = ImageTransformer("Pygame_GroupProject\Assets\Area\Corner.png", 270)
-                    image = image.ReturnImage()
-                    AreaSprite((x, y), image, visible_sprites)
-                #--------------------------------------------------------------------------------
-                #Doors
-                elif col == "d" and row_index == 0:
-                    image = "Pygame_GroupProject\Assets\Area\Door.png"
-                    AreaSprite((x, y), image, visible_sprites)
-
-                elif col == "d" and (row_index == 6 or row_index == 14) and col_index == 0:
-                    image = ImageTransformer("Pygame_GroupProject\Assets\Area\Door.png", 90)
-                    image = image.ReturnImage()
-                    AreaSprite((x, y), image, visible_sprites)
-
-                elif col == "d" and row_index == 20:
-                    image = ImageTransformer("Pygame_GroupProject\Assets\Area\Door.png", 180)
-                    image = image.ReturnImage()
-                    AreaSprite((x, y), image, visible_sprites)
-
-                elif col == "d" and (row_index == 6 or row_index == 14) and col_index == 20:
-                    image = ImageTransformer("Pygame_GroupProject\Assets\Area\Door.png", 270)
-                    image = image.ReturnImage()
-                    AreaSprite((x, y), image, visible_sprites)
+                    image = image.ReturnImage((x, y), [visible_sprites])
                 #--------------------------------------------------------------------------------
                 #Floor
                 elif col == "f":
                     image = "Pygame_GroupProject\Assets\Area\Floor.png"
-                    AreaSprite((x, y), image, visible_sprites)    
+                    AreaSprite((x, y), image, [visible_sprites])         
                 #--------------------------------------------------------------------------------
                 #Player
                 elif col == "fp":
                     image = "Pygame_GroupProject\Assets\Area\Floor.png"
                     AreaSprite((x, y), image, visible_sprites)
-
+                    global player 
                     player = GameManager.create_player(pistol)
                     #AreaSprite((player.pos_x, player.pos_y), player.image, visible_sprites)
 
     def run(self):
         visible_sprites.draw(self.display_surface)
+        player.Update()
+        self.animation.Update()
         visible_sprites.update()
 
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -196,10 +173,129 @@ class ImageTransformer(pygame.sprite.Sprite):
         self.image = pygame.image.load(image).convert_alpha()
         self.image = pygame.transform.rotate(self.image, degrees)
 
-    def ReturnImage(self):
-        return self.image
+    def ReturnImage(self, pos, groups):
+        return AreaSprite(pos, self.image, groups)
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+class Animations():
+    def __init__(self):
+        S = Settings()
+        self.map = S.MAP
+        self.TILESIZE = S.Tilesize
 
+        self.LEDOne = "Pygame_GroupProject\Assets\Area\LED.png"
+        self.LEDTwo = "Pygame_GroupProject\Assets\Area\LED_frame2.png"
+        self.LEDThree = "Pygame_GroupProject\Assets\Area\LED_frame3.png"
+        self.LEDFour = "Pygame_GroupProject\Assets\Area\LED_frame4.png"
+
+        self.LED_frames = [self.LEDOne, self.LEDTwo, self.LEDThree, self.LEDFour]
+        self.LED_current = 0
+
+        self.DoorOne = "Pygame_GroupProject\Assets\Area\Door.png"
+        self.DoorTwo = "Pygame_GroupProject\Assets\Area\Door_frame2.png"
+        self.DoorThree = "Pygame_GroupProject\Assets\Area\Door_frame3.png"
+        self.DoorFour = "Pygame_GroupProject\Assets\Area\Door_frame4.png"
+
+        self.Door_frames = [self.DoorOne, self.DoorTwo, self.DoorThree, self.DoorFour]
+        self.Door_current = 0
+        self.DoorOpening = False
+
+    def LED_animations(self):
+        for row_index, row in enumerate(self.map):
+            for col_index, col in enumerate(row):
+                x = col_index * self.TILESIZE
+                y = row_index * self.TILESIZE
+
+                self.LED_indexes = [5, 7, 13, 15]
+
+                if col == "l" and row_index == 0:
+                    image = self.LED_frames[int(self.LED_current)]
+                    AreaSprite((x, y), image, [visible_sprites])
+
+                elif col == "l" and row_index in self.LED_indexes and col_index == 0:
+                    image = ImageTransformer(self.LED_frames[int(self.LED_current)], 90)
+                    image = image.ReturnImage((x, y), [visible_sprites])
+
+                elif col == "l" and row_index == 20:
+                    image = ImageTransformer(self.LED_frames[int(self.LED_current)], 180)
+                    image = image.ReturnImage((x, y), [visible_sprites])
+
+                elif col == "l" and row_index in self.LED_indexes and col_index == 20:
+                    image = ImageTransformer(self.LED_frames[int(self.LED_current)], 270)
+                    image = image.ReturnImage((x, y), [visible_sprites])
+
+                self.LED_current += 0.2
+
+                if self.LED_current >= len(self.LED_frames):
+                    self.LED_current = 0
+
+    def Door_animations(self):
+        for row_index, row in enumerate(self.map):
+            for col_index, col in enumerate(row):
+                x = col_index * self.TILESIZE
+                y = row_index * self.TILESIZE
+
+                Door_indexes = [6, 14]
+
+                if col == "d" and row_index == 0:
+                    image = self.Door_frames[int(self.Door_current)]
+                    AreaSprite((x, y), image, [visible_sprites])
+
+                elif col == "d" and row_index in Door_indexes and col_index == 0:
+                    image = ImageTransformer(self.Door_frames[int(self.Door_current)], 90)
+                    image = image.ReturnImage((x, y), [visible_sprites])
+
+                elif col == "d" and row_index == 20:
+                    image = ImageTransformer(self.Door_frames[int(self.Door_current)], 180)
+                    image = image.ReturnImage((x, y), [visible_sprites])
+
+                elif col == "d" and row_index in Door_indexes and col_index == 20:
+                    image = ImageTransformer(self.Door_frames[int(self.Door_current)], 270)
+                    image = image.ReturnImage((x, y), [visible_sprites])
+
+                self.Door_current += 0.2
+
+                if self.Door_current >= len(self.Door_frames):
+                    self.Door_current = 0
+                    self.DoorOpening = False
+
+    def DoorStill(self):
+        for row_index, row in enumerate(self.map):
+            for col_index, col in enumerate(row):
+                x = col_index * self.TILESIZE
+                y = row_index * self.TILESIZE
+
+                Door_indexes = [6, 14]
+
+                if col == "d" and row_index == 0:
+                    image = self.DoorOne
+                    AreaSprite((x, y), image, [visible_sprites])
+
+                elif col == "d" and row_index in Door_indexes and col_index == 0:
+                    image = ImageTransformer(self.DoorOne, 90)
+                    image = image.ReturnImage((x, y), [visible_sprites])
+
+                elif col == "d" and row_index == 20:
+                    image = ImageTransformer(self.DoorOne, 180)
+                    image = image.ReturnImage((x, y), [visible_sprites])
+
+                elif col == "d" and row_index in Door_indexes and col_index == 20:
+                    image = ImageTransformer(self.DoorOne, 270)
+                    image = image.ReturnImage((x, y), [visible_sprites])
+
+    def DoorPress(self): #Note - later turn into round based opening
+        keys = pygame.key.get_pressed()
+
+        if keys[pygame.K_SPACE]:
+            self.DoorOpening = True
+
+    def Update(self):
+        self.LED_animations()      
+        self.DoorPress()
+
+        if self.DoorOpening:
+            self.Door_animations()
+        else:
+            self.DoorStill()
 
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 class Characters():
@@ -210,6 +306,7 @@ class Characters():
     __pos_y = None
     def __init__(self, health, speed, damage, pos_x, pos_y, image, obstacles):
         self.speed = speed
+        print (self.speed)
         self.health = health
         self.damage = damage
         self.pos_x = pos_x
@@ -253,7 +350,7 @@ class Characters():
     @speed.setter
     def speed(self, value):
         if type(value) == int and value > 0:
-            self.__movement_speed = value
+            self.__speed = value
         else:
             raise numErrors("Movement Speed has to be a positive int")
         
@@ -298,15 +395,26 @@ class Characters():
 class Player(Characters):
     __power_up = None
     __weapon = None
-    def __init__(self, health, speed, damage, pos_x, pos_y, power_up, weapon, image, obstacles = None):
+    def __init__(self, health, speed, damage, x, y, power_up, weapon, image, obstacles):
+        super().__init__(health, speed, damage, x, y, image, obstacles)
+        self.x = x
+        self.y = y
+        #print (self.speed)
+        #self.obstacles = groups
+        self.weapon = None
+        self.powerUp = None
+        self.image = image
+        self.direction = pygame.math.Vector2(self.x,self.y)
+    
+    '''def __init__(self, health, speed, damage, pos_x, pos_y, power_up, weapon, image, obstacles = None):
         super().__init__(health, speed, damage, pos_x, pos_y, image, obstacles)
         self.pos_x = pos_x
         self.pos_y = pos_y
         self.image = image
         self.speed = speed
         self.power_up = power_up
-        self.weapon = weapon
-        Player.movement(self)
+        self.weapon = weapon'''
+        #Player.movement(self)
 
     @property
     def power_up(self):
@@ -341,37 +449,60 @@ class Player(Characters):
         self.delay = 1000 / self.weapon.fire_rate
         pygame.time.wait(self.delay)
 
-    def movement(self):
-        print("test")
+    def Movement(self):
+        #print("test")
         keys = pygame.key.get_pressed()
 
-        if keys[pygame.K_a] and self.pos_x > 32:
-            self.char.kill()
-            self.char = ImageTransformer(self.org_image, 270)
-            self.char = self.char.ReturnImage((self.pos_x, self.pos_y), self.groups)
-            self.pos_x -= self.speed           
+        if keys[pygame.K_a] and self.x > 32:
+            #self.direction.kill()
 
-        elif keys[pygame.K_d] and self.pos_x < 608:
-            self.char.kill()
-            self.char = ImageTransformer(self.org_image, 90)
-            self.char = self.char.ReturnImage((self.pos_x, self.pos_y), self.groups)
-            self.pos_x += self.speed
+            self.direction = ImageTransformer(self.image, 270)
+            self.direction = self.direction.ReturnImage((self.x, self.y), self.obstacles)
+            self.x -= self.speed           
 
-        elif keys[pygame.K_w] and self.pos_y > 32:
-            self.char.kill()
-            self.char = ImageTransformer(self.org_image, 180)
-            self.char = self.char.ReturnImage((self.pos_x, self.pos_), self.groups)
-            self.pos_y -= self.speed
+        elif keys[pygame.K_d] and self.x < 608:
+            #self.direction.kill()
+            self.direction = ImageTransformer(self.image, 90)
+            self.direction = self.direction.ReturnImage((self.x, self.y), self.obstacles)
+            self.x += self.speed
 
-        elif keys[pygame.K_s] and self.pos_y < 608:
-            self.char.kill()
-            self.char = ImageTransformer(self.org_image, 0)
-            self.char = self.char.ReturnImage((self.pos_x, self.pos_y), self.groups)
-            self.pos_y += self.speed
+        elif keys[pygame.K_w] and self.y > 32:
+            #self.direction.kill()
+            self.direction = ImageTransformer(self.image, 180)
+            self.direction = self.direction.ReturnImage((self.x, self.y), self.obstacles)
+            self.y -= self.speed
+
+        elif keys[pygame.K_s] and self.y < 608:
+            #self.direction.kill()
+            self.direction = ImageTransformer(self.image, 0)
+            self.direction = self.direction.ReturnImage((self.x, self.y), self.obstacles)
+            self.y += self.speed
+
+    def Collision(self):
+        #enHit = pygame.sprite.spritecollide(self, obstacle_sprites, False)
+        #Use for enemies
+        pass
+
+    def WeaponChanger(self):
+        image = "Pygame_GroupProject\Assets\Player\Player_pistol.png"
+
+        if self.weapon == Pistol:
+            image = "Pygame_GroupProject\Assets\Player\Player_pistol.png"
+        elif self.weapon == SMG:
+            image = "Pygame_GroupProject\Assets\Player\Player_smg.png"
+        elif self.weapon == Rifle:
+            image = "Pygame_GroupProject\Assets\Player\Player_rifle.png"
+        elif self.weapon == Shotgun:
+            image = "Pygame_GroupProject\Assets\Player\Player_shotgun.png"
+
+        self.org_image = image
+
+        self.direction.kill()
+        self.direction = AreaSprite((self.x, self.y), self.org_image, [visible_sprites])
 
     def Update(self):
         self.Movement()
-        #self.Collision()
+        self.Collision()
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
@@ -759,7 +890,7 @@ class GameManager():
         else:
             raise entryErrors("You must enter a weapon object")
 
-        player = Player(100, 2, 20, 112, 112, None, weapon, image, None)
+        player = Player(100, 2, 20, 112, 112, None, weapon, image, [visible_sprites])
         print("BRUH")
         return player
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
