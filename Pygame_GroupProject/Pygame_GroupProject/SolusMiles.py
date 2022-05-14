@@ -99,77 +99,81 @@ class Map():
                 #--------------------------------------------------------------------------------
                 #Walls
                 if col == "w" and row_index == 0:
-                    image = "Pygame_GroupProject\Pygame_GroupProject\Assets\Area\Wall.png"
-                    AreaSprite((x, y), image, [visible_sprites, obstacle_sprites])
+                    image = "Pygame_GroupProject\Assets\Area\Wall.png"
+                    AreaSprite((x, y), image, visible_sprites)
 
                 elif col == "w" and col_index == 0 and row_index > 0 and row_index < 20:
-                    image = ImageTransformer("Pygame_GroupProject\Pygame_GroupProject\Assets\Area\Wall.png", 90)
+                    image = ImageTransformer("Pygame_GroupProject\Assets\Area\Wall.png", 90)
                     image = image.ReturnImage()
-                    AreaSprite((x, y), image, [visible_sprites, obstacle_sprites])
+                    AreaSprite((x, y), image, visible_sprites)
 
                 elif col == "w" and row_index == 20:
-                    image = ImageTransformer("Pygame_GroupProject\Pygame_GroupProject\Assets\Area\Wall.png", 180)
+                    image = ImageTransformer("Pygame_GroupProject\Assets\Area\Wall.png", 180)
                     image = image.ReturnImage()
-                    AreaSprite((x, y), image, [visible_sprites, obstacle_sprites])
+                    AreaSprite((x, y), image, visible_sprites)
 
                 elif col == "w" and col_index == 20 and row_index > 0 and row_index < 20:
-                    image = ImageTransformer("Pygame_GroupProject\Pygame_GroupProject\Assets\Area\Wall.png", 270)
+                    image = ImageTransformer("Pygame_GroupProject\Assets\Area\Wall.png", 270)
                     image = image.ReturnImage()
-                    AreaSprite((x, y), image, [visible_sprites, obstacle_sprites])
+                    AreaSprite((x, y), image, visible_sprites)
                 #--------------------------------------------------------------------------------
                 #Corners
                 elif col == "c" and col_index == 20 and row_index == 0:
-                    image = "Pygame_GroupProject\Pygame_GroupProject\Assets\Area\Corner.png"
-                    AreaSprite((x, y), image, [visible_sprites])
+                    image = "Pygame_GroupProject\Assets\Area\Corner.png"
+                    AreaSprite((x, y), image, visible_sprites)
 
                 elif col == "c" and col_index == 0 and row_index == 0:
-                    image = ImageTransformer("Pygame_GroupProject\Pygame_GroupProject\Assets\Area\Corner.png", 90)
+                    image = ImageTransformer("Pygame_GroupProject\Assets\Area\Corner.png", 90)
                     image = image.ReturnImage()
-                    AreaSprite((x, y), image, [visible_sprites])       
+                    AreaSprite((x, y), image, visible_sprites)    
 
                 elif col == "c" and col_index == 0 and row_index == 20:
-                    image = ImageTransformer("Pygame_GroupProject\Pygame_GroupProject\Assets\Area\Corner.png", 180)
+                    image = ImageTransformer("Pygame_GroupProject\Assets\Area\Corner.png", 180)
                     image = image.ReturnImage()
-                    AreaSprite((x, y), image, [visible_sprites])
+                    AreaSprite((x, y), image, visible_sprites)
 
                 elif col == "c" and col_index == 20 and row_index == 20:
-                    image = ImageTransformer("Pygame_GroupProject\Pygame_GroupProject\Assets\Area\Corner.png", 270)
+                    image = ImageTransformer("Pygame_GroupProject\Assets\Area\Corner.png", 270)
                     image = image.ReturnImage()
-                    AreaSprite((x, y), image, [visible_sprites])
+                    AreaSprite((x, y), image, visible_sprites)
                 #--------------------------------------------------------------------------------
                 #Doors
                 elif col == "d" and row_index == 0:
-                    image = "Pygame_GroupProject\Pygame_GroupProject\Assets\Area\Door.png"
-                    AreaSprite((x, y), image, [visible_sprites, obstacle_sprites])
+                    image = "Pygame_GroupProject\Assets\Area\Door.png"
+                    AreaSprite((x, y), image, visible_sprites)
 
                 elif col == "d" and (row_index == 6 or row_index == 14) and col_index == 0:
-                    image = ImageTransformer("Pygame_GroupProject\Pygame_GroupProject\Assets\Area\Door.png", 90)
+                    image = ImageTransformer("Pygame_GroupProject\Assets\Area\Door.png", 90)
                     image = image.ReturnImage()
-                    AreaSprite((x, y), image, [visible_sprites, obstacle_sprites])
+                    AreaSprite((x, y), image, visible_sprites)
 
                 elif col == "d" and row_index == 20:
-                    image = ImageTransformer("Pygame_GroupProject\Pygame_GroupProject\Assets\Area\Door.png", 180)
+                    image = ImageTransformer("Pygame_GroupProject\Assets\Area\Door.png", 180)
                     image = image.ReturnImage()
-                    AreaSprite((x, y), image, [visible_sprites, obstacle_sprites])
+                    AreaSprite((x, y), image, visible_sprites)
 
                 elif col == "d" and (row_index == 6 or row_index == 14) and col_index == 20:
-                    image = ImageTransformer("Pygame_GroupProject\Pygame_GroupProject\Assets\Area\Door.png", 270)
+                    image = ImageTransformer("Pygame_GroupProject\Assets\Area\Door.png", 270)
                     image = image.ReturnImage()
-                    AreaSprite((x, y), image, [visible_sprites, obstacle_sprites])
+                    AreaSprite((x, y), image, visible_sprites)
                 #--------------------------------------------------------------------------------
                 #Floor
-                elif "f" in col:
-                    image = "Pygame_GroupProject\Pygame_GroupProject\Assets\Area\Floor.png"
-                    AreaSprite((x, y), image, [visible_sprites])      
+                elif col == "f":
+                    image = "Pygame_GroupProject\Assets\Area\Floor.png"
+                    AreaSprite((x, y), image, visible_sprites)    
                 #--------------------------------------------------------------------------------
                 #Player
-                if "p" in col:
-                    image = "Pygame_GroupProject\Pygame_GroupProject\Assets\Player\Player_pistol.png"
-                    self.player = Player((x, y), image, visible_sprites, obstacle_sprites)
+                elif col == "fp":
+                    image = "Pygame_GroupProject\Assets\Area\Floor.png"
+                    AreaSprite((x, y), image, visible_sprites)
+
+                    player = GameManager.create_player(pistol)
+                    AreaSprite((player.pos_x, player.pos_y), player.image, visible_sprites)
 
     def run(self):
-        self.visible_sprites.draw(self.display_surface)
-        self.visible_sprites.update()
+        visible_sprites.draw(self.display_surface)
+        visible_sprites.update()
+
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
@@ -211,9 +215,9 @@ class Characters():
         self.pos_x = pos_x
         self.pos_y = pos_y
         self.image = image
-        self.image = pygame.image.load(image).convert_alpha()
+        self.image = pygame.image.load(self.image).convert_alpha()
         self.image = pygame.transform.scale2x(self.image)
-        self.rect = self.image.get_rect(topleft = pygame.math.Vector(self.pos_x, self.pos_y))
+        self.rect = self.image.get_rect(topleft = pygame.math.Vector2(self.pos_x, self.pos_y))
         self.obstacles = obstacles
         self.direction = pygame.math.Vector2(self.pos_x, self.pos_y)
 
@@ -283,58 +287,13 @@ class Characters():
 
     @image.setter
     def image(self, value):
-        if type(value) == str and value != "":
+        if value != "":
             self.__image = value
         else:
             raise strErrors("Image must be a string of the path of the image")
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
-#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-    #class Player(Characters):
-    #    __power_up = None
-    #    __weapon=  None
-
-    #    def __init__(self, health, speed, damage, pos_x, pos_y, power_up, weapon):
-    #        super().__init__(health, speed, damage, pos_x, pos_y)
-    #        self.power_up = power_up
-    #        self.__weapon = weapon
-#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-#class Player(Characters):
-#    def __init__(self, pos, image, groups, obstacles):
-#        super().__init__(groups)
-#        
-#        self.image = pygame.image.load(image).convert_alpha()
-#        self.image = pygame.transform.scale2x(self.image)
-#        self.rect = self.image.get_rect(topleft = pos)
-#        self.obstacles = obstacles
-#        self.direction = pygame.math.Vector2(pos)
-#
-#    def movement(self):
-#        keys = pygame.key.get_pressed()
-#        if keys[pygame.K_a]:
-#            self.direction.x -= 1
-#        elif keys[pygame.K_d]:
-#            self.direction.x += 1
-#
-#        if keys[pygame.K_w]:
-#            self.direction.y -= 1
-#        elif keys[pygame.K_s]:
-#            self.direction.y += 1
-#
-#    def update(self):
-#        Player.movement(self)
-#        self.rect = self.image.get_rect(topleft = self.direction)
-#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-#class Player(Characters): #Combination of both - Adam
-#    __power_up = None
-#    __weapon = None
-#
-#    def __init__(self, health, speed, damage, pos_x, pos_y, power_up, weapon):
-#        super().__init__(health, speed, damage, pos_x, pos_y)
-#        self.power_up = power_up
-#        self.weapon = weapon
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 class Player(Characters):
     __power_up = None
@@ -361,7 +320,7 @@ class Player(Characters):
 
     @weapon.setter
     def weapon(self, value: object):
-        if type(value) == object or value == None:
+        if isinstance(value, object):
             self.__weapon = value
         else:
             raise objectErrors("The weapon must be an object")
@@ -507,8 +466,6 @@ class Bullets():
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 class Aliens(Characters):
     __target = None
-#I have added the spawn rate into the Aliens class because it will be a
-#necessary value for each alien.
     __spawn_rate = None
     __name = None
 
@@ -715,48 +672,58 @@ class GameManager():
 #Adam, can you add the images for the aliens to the folder? Thanks in advance.
 
 #parameters - (health, speed, damage, pos_x, pos_y, target, spawn_rate, image, obstacles)
-    @staticmethod
-    def create_shield():
-        shield = Aliens("Shield", 200, 1, 20, 1, 1, player, 25, "Pygame_GroupProject\Pygame_GroupProject\Assets\Alien\Shield_armour.png", None)
-        return shield
+#    @staticmethod
+#    def create_shield():
+#        shield = Aliens("Shield", 200, 1, 20, 1, 1, player, 25, "Pygame_GroupProject\Assets\Alien\Shield_armor.png", None)
+#        return shield
 
-    @staticmethod
-    def create_turret():
-        turret = Aliens("Turret", 200, 1, 15, 1, 1, player, 10, None, None)
-        return turret
+#    @staticmethod
+#    def create_turret():
+#        turret = Aliens("Turret", 200, 1, 15, 1, 1, player, 10, None, None)
+#        return turret
     
-    @staticmethod
-    def create_armoured_wing():
-        armoured_wing = Aliens("Armoured-wing", 150, 2, 30, 1, 1, player, 15, None, None)
-        return armoured_wing
+#    @staticmethod
+#    def create_armoured_wing():
+#        armoured_wing = Aliens("Armoured-wing", 150, 2, 30, 1, 1, player, 15, None, None)
+#        return armoured_wing
     
-    @staticmethod
-    def create_bomber():
-        bomber = Aliens("Bomber", 30, 5, 100, 1, 1, player, 10, None, None)
-        return bomber
+#    @staticmethod
+#    def create_bomber():
+#        bomber = Aliens("Bomber", 30, 5, 100, 1, 1, player, 10, None, None)
+#        return bomber
     
-    @staticmethod
-    def create_mosquito():
-        mosquito = Aliens("Mosquito", 50, 3, 50, 1, 1, player, 25, None, None)
-        return mosquito
+#    @staticmethod
+#    def create_mosquito():
+#        mosquito = Aliens("Mosquito", 50, 3, 50, 1, 1, player, 25, None, None)
+#        return mosquito
     
-    @staticmethod
-    def create_sniper():
-        sniper = Aliens("Sniper", 40, 1, 75, 1, 1, player, 15, None, None)
-        return sniper
+#    @staticmethod
+#    def create_sniper():
+#        sniper = Aliens("Sniper", 40, 1, 75, 1, 1, player, 15, None, None)
+#        return sniper
 
 #parameters - (health, speed, damage, pos_x, pos_y, power_up, weapon, image, obstacles)
     @staticmethod
-    def create_player(weapon):
+    def create_player(weapon: object):
         if weapon == pistol:
-            image = "iTeamA3\Pygame_GroupProject\Pygame_GroupProject\Assets\Player\Player_pistol.png"
+            print("Zoinks!")
+            image = "Pygame_GroupProject\Assets\Player\Player_pistol.png"
+            print("I have the power!")
+        
         elif weapon == shotgun:
-            image = "iTeamA3\Pygame_GroupProject\Pygame_GroupProject\Assets\Player\Player_shotgun.png"
+            image = "Pygame_GroupProject\Assets\Player\Player_shotgun.png"
+
         elif weapon == smg:
-            image = "iTeamA3\Pygame_GroupProject\Pygame_GroupProject\Assets\Player\Player_smg.png"
+            image = "Pygame_GroupProject\Assets\Player\Player_smg.png"
+
+        elif weapon == rifle:
+            image = "Pygame_GroupProject\Assets\Player\Player_rifle.png"
+
         else:
-            image = "iTeamA3\Pygame_GroupProject\Pygame_GroupProject\Assets\Player\Player_rifle.png"
-        player = Player(100, 2, 20, 1, 1, None, weapon, image, None)
+            raise entryErrors("You must enter a weapon object")
+
+        player = Player(100, 2, 20, 112, 112, None, weapon, image, None)
+        print("BRUH")
         return player
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -766,14 +733,15 @@ shotgun = Weapons("Shotgun", 100, 1)
 smg = Weapons("Sub-machine-gun", 10, 10)
 rifle = Weapons("Rifle", 20, 5)
 #----------------------------------------------------------------------------------------------------#
-player = GameManager.create_player(pistol)
+#player = GameManager.create_player("Pistol")
+#player = Player(100, 2, 20, 1, 1, None, pistol, "Pygame_GroupProject\Assets\Player\Player_pistol.png", None)
 #----------------------------------------------------------------------------------------------------
-shield = GameManager.create_shield()
-turret = GameManager.create_turret()
-armoured_wing = GameManager.create_armoured_wing()
-sniper = GameManager.create_sniper()
-bomber = GameManager.create_bomber()
-mosquito = GameManager.create_mosquito()
+#shield = GameManager.create_shield()
+#turret = GameManager.create_turret()
+#armoured_wing = GameManager.create_armoured_wing()
+#sniper = GameManager.create_sniper()
+#bomber = GameManager.create_bomber()
+#mosquito = GameManager.create_mosquito()
 #GameManager.start_game()
 #----------------------------------------------------------------------------------------------------#
 #running = True
