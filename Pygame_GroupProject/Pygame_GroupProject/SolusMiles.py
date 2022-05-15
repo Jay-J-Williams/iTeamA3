@@ -26,51 +26,27 @@ class Settings:
     Tilesize = 32
 
     MAP = [
-    ['c','w','w','w','w','l','d','l','w','w','w','w','w','l','d','l','w','w','w','w','c'], #1 | [0]
+    ['c','w','w','w','w','w','d','w','w','w','w','w','w','w','d','w','w','w','w','w','c'], #1 | [0]
     ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #2 | [1]
     ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #3 | [2]
     ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #4 | [3]
     ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #5 | [4]
-    ['l','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','l'], #6 | [5]
+    ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #6 | [5]
     ['d','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','d'], #7 | [6]
-    ['l','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','l'], #8 | [7]
+    ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #8 | [7]
     ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #9 | [8]
     ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #10 | [9]
     ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #11 | [10]
     ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #12 | [11]
     ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #13 | [12]
-    ['l','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','l'], #14 | [13]
+    ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #14 | [13]
     ['d','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','d'], #15 | [14]
-    ['l','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','l'], #16 | [15]
+    ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #16 | [15]
     ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #17 | [16]
     ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #18 | [17]
     ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #19 | [18]
     ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','fp','w'],#20 | [19]
-    ['c','w','w','w','w','l','d','l','w','w','w','w','w','l','d','l','w','w','w','w','c']  #21 | [20]
-    ]
-
-    entity_map = [
-    ['','','','','','','','','','','','','','','','','','','','',''], #1 | [0]
-    ['','','','','','','','','','','','','','','','','','','','',''], #2 | [1]
-    ['','','','','','','','','','','','','','','','','','','','',''], #3 | [2]
-    ['','','','','','','','','','','','','','','','','','','','',''], #4 | [3]
-    ['','','','','','','','','','','','','','','','','','','','',''], #5 | [4]
-    ['','','','','','','','','','','','','','','','','','','','',''], #6 | [5]
-    ['','','','','','','','','','','','','','','','','','','','',''], #7 | [6]
-    ['','','','','','','','','','','','','','','','','','','','',''], #8 | [7]
-    ['','','','','','','','','','','','','','','','','','','','',''], #9 | [8]
-    ['','','','','','','','','','','','','','','','','','','','',''], #10 | [9]
-    ['','','','','','','','','','','','','','','','','','','','',''], #11 | [10]
-    ['','','','','','','','','','','','','','','','','','','','',''], #12 | [11]
-    ['','','','','','','','','','','','','','','','','','','','',''], #13 | [12]
-    ['','','','','','','','','','','','','','','','','','','','',''], #14 | [13]
-    ['','','','','','','','','','','','','','','','','','','','',''], #15 | [14]
-    ['','','','','','','','','','','','','','','','','','','','',''], #16 | [15]
-    ['','','','','','','','','','','','','','','','','','','','',''], #17 | [16]
-    ['','','','','','','','','','','','','','','','','','','','',''], #18 | [17]
-    ['','','','','','','','','','','','','','','','','','','','',''], #19 | [18]
-    ['','','','','','','','','','','','','','','','','','','','p',''],#20 | [19]
-    ['','','','','','','','','','','','','','','','','','','','','']  #21 | [20]
+    ['c','w','w','w','w','w','d','w','w','w','w','w','w','w','d','w','w','w','w','w','c']  #21 | [20]
     ]
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -159,14 +135,7 @@ class Map():
                 #Floor
                 elif col == "f":
                     image = "Pygame_GroupProject\Pygame_GroupProject\Assets\Area\Floor.png"
-                    AreaSprite((x, y), image, [visible_sprites])         
-                #--------------------------------------------------------------------------------
-                #Player
-                elif col == "fp":
-                    image = "Pygame_GroupProject\Pygame_GroupProject\Assets\Area\Floor.png"
                     AreaSprite((x, y), image, [visible_sprites])
-                    print(player.image)
-                    AreaSprite((player.pos_x, player.pos_y), player.image, [visible_sprites])
 
     def run(self, player):
         visible_sprites.draw(self.display_surface)
@@ -184,6 +153,7 @@ class AreaSprite(pygame.sprite.Sprite):
         try:
             self.image = pygame.image.load(image).convert_alpha()
         except:
+            print("{}___:___:___{}")
             self.image = image
         self.image = pygame.transform.scale2x(self.image)
         self.rect = self.image.get_rect(topleft = pos)
@@ -325,21 +295,22 @@ class Characters():
     __speed = None
     __health = None
     __damage = None
+
     __pos_x = None
-    __pos_y = None
-    __speed = None
+    __pos_y =  None
+    __image = None
+
     def __init__(self, health, speed, damage, pos_x, pos_y, image, obstacles):
         self.speed = speed
         self.health = health
         self.damage = damage
+
         self.pos_x = pos_x
         self.pos_y = pos_y
+
         self.image = image
-        #self.image = pygame.image.load(self.image).convert_alpha()
-        #self.image = pygame.transform.scale2x(self.image)
-        #self.rect = self.image.get_rect(topleft = pygame.math.Vector2(self.pos_x, self.pos_y))
         self.obstacles = obstacles
-        self.direction = pygame.math.Vector2(self.pos_x, self.pos_y)
+        self.direction = pygame.math.Vector2(pos_x, pos_y)
 
         #AreaSprite((self.pos_x, self.pos_y), image, [visible_sprites])
 
@@ -424,17 +395,8 @@ class Player(Characters):
         #self.obstacles = groups
         self.weapon = weapon
         self.power_up = power_up
-        self.image = image
-    
-    '''def __init__(self, health, speed, damage, pos_x, pos_y, power_up, weapon, image, obstacles = None):
-        super().__init__(health, speed, damage, pos_x, pos_y, image, obstacles)
-        self.pos_x = pos_x
-        self.pos_y = pos_y
-        self.image = image
-        self.speed = speed
-        self.power_up = power_up
-        self.weapon = weapon'''
-        #Player.movement(self)
+        self.char = AreaSprite((pos_x, pos_y), image, visible_sprites)
+        self.rect = self.char.rect
 
     @property
     def power_up(self):
@@ -474,26 +436,25 @@ class Player(Characters):
         keys = pygame.key.get_pressed()
 
         if keys[pygame.K_a] and self.pos_x > 32:
-            #self.direction.kill()
-
+            self.char.kill()
             self.direction = ImageTransformer(self.image, 270)
             self.direction = self.direction.ReturnImage((self.pos_x, self.pos_y), self.obstacles)
             self.pos_x -= self.speed    
 
         elif keys[pygame.K_d] and self.pos_x < 608:
-            #self.direction.kill()
+            self.char.kill()
             self.direction = ImageTransformer(self.image, 90)
             self.direction = self.direction.ReturnImage((self.pos_x, self.pos_y), self.obstacles)
             self.pos_x += self.speed
 
         elif keys[pygame.K_w] and self.pos_y > 32:
-            #self.direction.kill()
+            self.char.kill()
             self.direction = ImageTransformer(self.image, 180)
             self.direction = self.direction.ReturnImage((self.pos_x, self.pos_y), self.obstacles)
             self.pos_y -= self.speed
 
         elif keys[pygame.K_s] and self.pos_y < 608:
-            #self.direction.kill()
+            self.char.kill()
             self.direction = ImageTransformer(self.image, 0)
             self.direction = self.direction.ReturnImage((self.pos_x, self.pos_y), self.obstacles)
             self.pos_y += self.speed
@@ -906,6 +867,7 @@ class GameManager():
         else:
             raise entryErrors("You must enter a weapon object")
         player = Player(100, 2, 20, 112, 112, None, weapon, image, [visible_sprites])
+
         return player
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
