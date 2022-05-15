@@ -48,6 +48,30 @@ class Settings:
     ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','fp','w'],#20 | [19]
     ['c','w','w','w','w','w','d','w','w','w','w','w','w','w','d','w','w','w','w','w','c']  #21 | [20]
     ]
+
+    entity_map = [
+    ['','','','','','','','','','','','','','','','','','','','',''], #1 | [0]
+    ['','','','','','','','','','','','','','','','','','','','',''], #2 | [1]
+    ['','','','','','','','','','','','','','','','','','','','',''], #3 | [2]
+    ['','','','','','','','','','','','','','','','','','','','',''], #4 | [3]
+    ['','','','','','','','','','','','','','','','','','','','',''], #5 | [4]
+    ['','','','','','','','','','','','','','','','','','','','',''], #6 | [5]
+    ['','','','','','','','','','','','','','','','','','','','',''], #7 | [6]
+    ['','','','','','','','','','','','','','','','','','','','',''], #8 | [7]
+    ['','','','','','','','','','','','','','','','','','','','',''], #9 | [8]
+    ['','','','','','','','','','','','','','','','','','','','',''], #10 | [9]
+    ['','','','','','','','','','','','','','','','','','','','',''], #11 | [10]
+    ['','','','','','','','','','','','','','','','','','','','',''], #12 | [11]
+    ['','','','','','','','','','','','','','','','','','','','',''], #13 | [12]
+    ['','','','','','','','','','','','','','','','','','','','',''], #14 | [13]
+    ['','','','','','','','','','','','','','','','','','','','',''], #15 | [14]
+    ['','','','','','','','','','','','','','','','','','','','',''], #16 | [15]
+    ['','','','','','','','','','','','','','','','','','','','',''], #17 | [16]
+    ['','','','','','','','','','','','','','','','','','','','',''], #18 | [17]
+    ['','','','','','','','','','','','','','','','','','','','',''], #19 | [18]
+    ['','','','','','','','','','','','','','','','','','','','p',''],#20 | [19]
+    ['','','','','','','','','','','','','','','','','','','','','']  #21 | [20]
+    ]
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
@@ -72,7 +96,7 @@ class Game:
                 sys.exit()
 
         self.screen.fill("black")
-        self.map.run()
+        self.map.run(player)
         pygame.display.update()
         self.clock.tick(self.FPS)
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -158,8 +182,10 @@ class AreaSprite(pygame.sprite.Sprite):
     def __init__(self, pos, image, groups):
         super().__init__(groups)
         print(image)
-        self.image = pygame.image.load(image).convert_alpha()
-        self.image = image
+        try:
+            self.image = pygame.image.load(image).convert_alpha()
+        except:
+            self.image = image
         self.image = pygame.transform.scale2x(self.image)
         self.rect = self.image.get_rect(topleft = pos)
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -180,18 +206,18 @@ class Animations():
         self.map = S.MAP
         self.TILESIZE = S.Tilesize
 
-        self.LEDOne = "Pygame_GroupProject\Assets\Area\LED.png"
-        self.LEDTwo = "Pygame_GroupProject\Assets\Area\LED_frame2.png"
-        self.LEDThree = "Pygame_GroupProject\Assets\Area\LED_frame3.png"
-        self.LEDFour = "Pygame_GroupProject\Assets\Area\LED_frame4.png"
+        self.LEDOne = "Pygame_GroupProject\Pygame_GroupProject\Assets\Area\LED.png"
+        self.LEDTwo = "Pygame_GroupProject\Pygame_GroupProject\Assets\Area\LED_frame2.png"
+        self.LEDThree = "Pygame_GroupProject\Pygame_GroupProject\Assets\Area\LED_frame3.png"
+        self.LEDFour = "Pygame_GroupProject\Pygame_GroupProject\Assets\Area\LED_frame4.png"
 
         self.LED_frames = [self.LEDOne, self.LEDTwo, self.LEDThree, self.LEDFour]
         self.LED_current = 0
 
-        self.DoorOne = "Pygame_GroupProject\Assets\Area\Door.png"
-        self.DoorTwo = "Pygame_GroupProject\Assets\Area\Door_frame2.png"
-        self.DoorThree = "Pygame_GroupProject\Assets\Area\Door_frame3.png"
-        self.DoorFour = "Pygame_GroupProject\Assets\Area\Door_frame4.png"
+        self.DoorOne = "Pygame_GroupProject\Pygame_GroupProject\Assets\Area\Door.png"
+        self.DoorTwo = "Pygame_GroupProject\Pygame_GroupProject\Assets\Area\Door_frame2.png"
+        self.DoorThree = "Pygame_GroupProject\Pygame_GroupProject\Assets\Area\Door_frame3.png"
+        self.DoorFour = "Pygame_GroupProject\Pygame_GroupProject\Assets\Area\Door_frame4.png"
 
         self.Door_frames = [self.DoorOne, self.DoorTwo, self.DoorThree, self.DoorFour]
         self.Door_current = 0
@@ -302,9 +328,9 @@ class Characters():
     __damage = None
     __pos_x = None
     __pos_y = None
+    __speed = None
     def __init__(self, health, speed, damage, pos_x, pos_y, image, obstacles):
         self.speed = speed
-        print (self.speed)
         self.health = health
         self.damage = damage
         self.pos_x = pos_x
@@ -316,7 +342,7 @@ class Characters():
         self.obstacles = obstacles
         self.direction = pygame.math.Vector2(self.pos_x, self.pos_y)
 
-        AreaSprite((self.pos_x, self.pos_y), image, [visible_sprites])
+        #AreaSprite((self.pos_x, self.pos_y), image, [visible_sprites])
 
     #-------------------------------------------------- Getter
     @property
@@ -393,16 +419,13 @@ class Characters():
 class Player(Characters):
     __power_up = None
     __weapon = None
-    def __init__(self, health, speed, damage, x, y, power_up, weapon, image, obstacles):
-        super().__init__(health, speed, damage, x, y, image, obstacles)
-        self.x = x
-        self.y = y
+    def __init__(self, health, speed, damage, pos_x, pos_y, power_up, weapon, image, obstacles):
+        super().__init__(health, speed, damage, pos_x, pos_y, image, obstacles)
         #print (self.speed)
         #self.obstacles = groups
-        self.weapon = None
-        self.powerUp = None
+        self.weapon = weapon
+        self.power_up = power_up
         self.image = image
-        self.direction = pygame.math.Vector2(self.x,self.y)
     
     '''def __init__(self, health, speed, damage, pos_x, pos_y, power_up, weapon, image, obstacles = None):
         super().__init__(health, speed, damage, pos_x, pos_y, image, obstacles)
@@ -424,14 +447,14 @@ class Player(Characters):
 
     @power_up.setter
     def power_up(self, value: object):
-        if value != "":
+        if value == None or type(value) == object:
             self.__power_up = value
         else:
             raise objectErrors("The power-up must be an object, or 'None'")
 
     @weapon.setter
     def weapon(self, value: object):
-        if isinstance(value, object):
+        if value != None:
             self.__weapon = value
         else:
             raise objectErrors("The weapon must be an object")
@@ -443,7 +466,7 @@ class Player(Characters):
     def shoot(self):
         pass
 
-    def delay(self, weapon: object):
+    def delay(self):
         self.delay = 1000 / self.weapon.fire_rate
         pygame.time.wait(self.delay)
 
@@ -451,30 +474,30 @@ class Player(Characters):
         #print("test")
         keys = pygame.key.get_pressed()
 
-        if keys[pygame.K_a] and self.x > 32:
+        if keys[pygame.K_a] and self.pos_x > 32:
             #self.direction.kill()
 
             self.direction = ImageTransformer(self.image, 270)
-            self.direction = self.direction.ReturnImage((self.x, self.y), self.obstacles)
-            self.x -= self.speed           
+            self.direction = self.direction.ReturnImage((self.pos_x, self.pos_y), self.obstacles)
+            self.pos_x -= self.speed    
 
-        elif keys[pygame.K_d] and self.x < 608:
+        elif keys[pygame.K_d] and self.pos_x < 608:
             #self.direction.kill()
             self.direction = ImageTransformer(self.image, 90)
-            self.direction = self.direction.ReturnImage((self.x, self.y), self.obstacles)
-            self.x += self.speed
+            self.direction = self.direction.ReturnImage((self.pos_x, self.pos_y), self.obstacles)
+            self.pos_x += self.speed
 
-        elif keys[pygame.K_w] and self.y > 32:
+        elif keys[pygame.K_w] and self.pos_y > 32:
             #self.direction.kill()
             self.direction = ImageTransformer(self.image, 180)
-            self.direction = self.direction.ReturnImage((self.x, self.y), self.obstacles)
-            self.y -= self.speed
+            self.direction = self.direction.ReturnImage((self.pos_x, self.pos_y), self.obstacles)
+            self.pos_y -= self.speed
 
-        elif keys[pygame.K_s] and self.y < 608:
+        elif keys[pygame.K_s] and self.pos_y < 608:
             #self.direction.kill()
             self.direction = ImageTransformer(self.image, 0)
-            self.direction = self.direction.ReturnImage((self.x, self.y), self.obstacles)
-            self.y += self.speed
+            self.direction = self.direction.ReturnImage((self.pos_x, self.pos_y), self.obstacles)
+            self.pos_y += self.speed
 
     def Collision(self):
         #enHit = pygame.sprite.spritecollide(self, obstacle_sprites, False)
@@ -482,16 +505,14 @@ class Player(Characters):
         pass
 
     def WeaponChanger(self):
-        image = "Pygame_GroupProject\Assets\Player\Player_pistol.png"
-
         if self.weapon == pistol:
-            image = "Pygame_GroupProject\Assets\Player\Player_pistol.png"
+            self.image = "Pygame_GroupProject\Assets\Player\Player_pistol.png"
         elif self.weapon == smg:
-            image = "Pygame_GroupProject\Assets\Player\Player_smg.png"
+            self.image = "Pygame_GroupProject\Assets\Player\Player_smg.png"
         elif self.weapon == rifle:
-            image = "Pygame_GroupProject\Assets\Player\Player_rifle.png"
+            self.image = "Pygame_GroupProject\Assets\Player\Player_rifle.png"
         elif self.weapon == shotgun:
-            image = "Pygame_GroupProject\Assets\Player\Player_shotgun.png"
+            self.image = "Pygame_GroupProject\Assets\Player\Player_shotgun.png"
 
         self.org_image = image
 
@@ -885,7 +906,7 @@ class GameManager():
 
         else:
             raise entryErrors("You must enter a weapon object")
-        player = Player(100, 2, 20, 112, 112, None, weapon, image, None)
+        player = Player(100, 2, 20, 112, 112, None, weapon, image, [visible_sprites])
         return player
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
