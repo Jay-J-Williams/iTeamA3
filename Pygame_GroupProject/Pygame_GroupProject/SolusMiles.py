@@ -100,52 +100,51 @@ class Map():
                 #--------------------------------------------------------------------------------
                #Walls
                 if col == "w" and row_index == 0:
-                    image = "Pygame_GroupProject\Assets\Area\Wall.png"
+                    image = "Pygame_GroupProject\Pygame_GroupProject\Assets\Area\Wall.png"
                     AreaSprite((x, y), image, [visible_sprites])
 
                 elif col == "w" and col_index == 0 and row_index > 0 and row_index < 20:
-                    image = ImageTransformer("Pygame_GroupProject\Assets\Area\Wall.png", 90)
+                    image = ImageTransformer("Pygame_GroupProject\Pygame_GroupProject\Assets\Area\Wall.png", 90)
                     image = image.ReturnImage((x, y), [visible_sprites])
 
                 elif col == "w" and row_index == 20:
-                    image = ImageTransformer("Pygame_GroupProject\Assets\Area\Wall.png", 180)
+                    image = ImageTransformer("Pygame_GroupProject\Pygame_GroupProject\Assets\Area\Wall.png", 180)
                     image = image.ReturnImage((x, y), [visible_sprites])
 
                 elif col == "w" and col_index == 20 and row_index > 0 and row_index < 20:
-                    image = ImageTransformer("Pygame_GroupProject\Assets\Area\Wall.png", 270)
+                    image = ImageTransformer("Pygame_GroupProject\Pygame_GroupProject\Assets\Area\Wall.png", 270)
                     image = image.ReturnImage((x, y), [visible_sprites])
                 #--------------------------------------------------------------------------------
                 #Corners
                 elif col == "c" and col_index == 20 and row_index == 0:
-                    image = "Pygame_GroupProject\Assets\Area\Corner.png"
+                    image = "Pygame_GroupProject\Pygame_GroupProject\Assets\Area\Corner.png"
                     AreaSprite((x, y), image, [visible_sprites])
 
                 elif col == "c" and col_index == 0 and row_index == 0:
-                    image = ImageTransformer("Pygame_GroupProject\Assets\Area\Corner.png", 90)
-                    image = image.ReturnImage((x, y), [visible_sprites])      
+                    image = ImageTransformer("Pygame_GroupProject\Pygame_GroupProject\Assets\Area\Corner.png", 90)
+                    image = image.ReturnImage((x, y), [visible_sprites])
 
                 elif col == "c" and col_index == 0 and row_index == 20:
-                    image = ImageTransformer("Pygame_GroupProject\Assets\Area\Corner.png", 180)
+                    image = ImageTransformer("Pygame_GroupProject\Pygame_GroupProject\Assets\Area\Corner.png", 180)
                     image = image.ReturnImage((x, y), [visible_sprites]) 
 
                 elif col == "c" and col_index == 20 and row_index == 20:
-                    image = ImageTransformer("Pygame_GroupProject\Assets\Area\Corner.png", 270)
+                    image = ImageTransformer("Pygame_GroupProject\Pygame_GroupProject\Assets\Area\Corner.png", 270)
                     image = image.ReturnImage((x, y), [visible_sprites])
                 #--------------------------------------------------------------------------------
                 #Floor
                 elif col == "f":
-                    image = "Pygame_GroupProject\Assets\Area\Floor.png"
+                    image = "Pygame_GroupProject\Pygame_GroupProject\Assets\Area\Floor.png"
                     AreaSprite((x, y), image, [visible_sprites])         
                 #--------------------------------------------------------------------------------
                 #Player
                 elif col == "fp":
-                    image = "Pygame_GroupProject\Assets\Area\Floor.png"
-                    AreaSprite((x, y), image, visible_sprites)
-                    global player 
-                    player = GameManager.create_player(pistol)
-                    #AreaSprite((player.pos_x, player.pos_y), player.image, visible_sprites)
+                    image = "Pygame_GroupProject\Pygame_GroupProject\Assets\Area\Floor.png"
+                    AreaSprite((x, y), image, [visible_sprites])
+                    print(player.image)
+                    AreaSprite((player.pos_x, player.pos_y), player.image, [visible_sprites])
 
-    def run(self):
+    def run(self, player):
         visible_sprites.draw(self.display_surface)
         player.Update()
         self.animation.Update()
@@ -158,10 +157,9 @@ class Map():
 class AreaSprite(pygame.sprite.Sprite):
     def __init__(self, pos, image, groups):
         super().__init__(groups)
-        try:
-            self.image = pygame.image.load(image).convert_alpha()
-        except:
-            self.image = image
+        print(image)
+        self.image = pygame.image.load(image).convert_alpha()
+        self.image = image
         self.image = pygame.transform.scale2x(self.image)
         self.rect = self.image.get_rect(topleft = pos)
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -169,7 +167,7 @@ class AreaSprite(pygame.sprite.Sprite):
 
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 class ImageTransformer(pygame.sprite.Sprite):
-    def __init__(self, image, degrees):
+    def __init__(self, image, degrees = 0):
         self.image = pygame.image.load(image).convert_alpha()
         self.image = pygame.transform.rotate(self.image, degrees)
 
@@ -312,9 +310,9 @@ class Characters():
         self.pos_x = pos_x
         self.pos_y = pos_y
         self.image = image
-        self.image = pygame.image.load(self.image).convert_alpha()
-        self.image = pygame.transform.scale2x(self.image)
-        self.rect = self.image.get_rect(topleft = pygame.math.Vector2(self.pos_x, self.pos_y))
+        #self.image = pygame.image.load(self.image).convert_alpha()
+        #self.image = pygame.transform.scale2x(self.image)
+        #self.rect = self.image.get_rect(topleft = pygame.math.Vector2(self.pos_x, self.pos_y))
         self.obstacles = obstacles
         self.direction = pygame.math.Vector2(self.pos_x, self.pos_y)
 
@@ -439,7 +437,7 @@ class Player(Characters):
             raise objectErrors("The weapon must be an object")
 
     def pickup_weapon(self, weapon):
-        player.weapon = weapon
+        self.weapon = weapon
         self.damage = self.weapon.damage
 
     def shoot(self):
@@ -486,13 +484,13 @@ class Player(Characters):
     def WeaponChanger(self):
         image = "Pygame_GroupProject\Assets\Player\Player_pistol.png"
 
-        if self.weapon == Pistol:
+        if self.weapon == pistol:
             image = "Pygame_GroupProject\Assets\Player\Player_pistol.png"
-        elif self.weapon == SMG:
+        elif self.weapon == smg:
             image = "Pygame_GroupProject\Assets\Player\Player_smg.png"
-        elif self.weapon == Rifle:
+        elif self.weapon == rifle:
             image = "Pygame_GroupProject\Assets\Player\Player_rifle.png"
-        elif self.weapon == Shotgun:
+        elif self.weapon == shotgun:
             image = "Pygame_GroupProject\Assets\Player\Player_shotgun.png"
 
         self.org_image = image
@@ -695,29 +693,29 @@ class Aliens(Characters):
         last_aliens_spawn_rate = self.spawn_rate
         return last_aliens_spawn_rate
 
-    @staticmethod
-    def random_spawn():
-        alien_choice = random.randint(1, 100)
-        door_choice = random.randint(1, 8)
-        if alien_choice >= shield.spawn_rate[0] and alien_choice <= shield.spawn_rate[-1]:
-            alien = GameManager.create_shield()
-            shield.spawn(door_choice)
-        elif alien_choice >= turret.spawn_rate[0] and alien_choice <= turret.spawn_rate[-1]:
-            alien = GameManager.create_turret()
-            turret.spawn(door_choice)
-        elif alien_choice >= armoured_wing.spawn_rate[0] and alien_choice <= armoured_wing.spawn_rate[-1]:
-            alien = GameManager.create_armoured_wing()
-            armoured_wing.spawn(door_choice)
-        elif alien_choice >= sniper.spawn_rate[0] and alien_choice <= sniper.spawn_rate[-1]:
-            alien = GameManager.create_sniper()
-            sniper.spawn(door_choice)
-        elif alien_choice >= bomber.spawn_rate[0] and alien_choice <= bomber.spawn_rate[-1]:
-            alien = GameManager.create_bomber()
-            bomber.spawn(door_choice)
-        else:
-            alien = GameManager.create_mosquito()
-            mosquito.spawn(door_choice)
-        return alien
+#    @staticmethod
+#    def random_spawn():
+#        alien_choice = random.randint(1, 100)
+#        door_choice = random.randint(1, 8)
+#        if alien_choice >= shield.spawn_rate[0] and alien_choice <= shield.spawn_rate[-1]:
+#            alien = GameManager.create_shield()
+#            shield.spawn(door_choice)
+#        elif alien_choice >= turret.spawn_rate[0] and alien_choice <= turret.spawn_rate[-1]:
+#            alien = GameManager.create_turret()
+#            turret.spawn(door_choice)
+#        elif alien_choice >= armoured_wing.spawn_rate[0] and alien_choice <= armoured_wing.spawn_rate[-1]:
+#            alien = GameManager.create_armoured_wing()
+#            armoured_wing.spawn(door_choice)
+#        elif alien_choice >= sniper.spawn_rate[0] and alien_choice <= sniper.spawn_rate[-1]:
+#            alien = GameManager.create_sniper()
+#            sniper.spawn(door_choice)
+#        elif alien_choice >= bomber.spawn_rate[0] and alien_choice <= bomber.spawn_rate[-1]:
+#            alien = GameManager.create_bomber()
+#            bomber.spawn(door_choice)
+#        else:
+#            alien = GameManager.create_mosquito()
+#            mosquito.spawn(door_choice)
+#        return alien
 
     def spawn(self, door_choice: int):
         if door_choice == 1:
@@ -781,20 +779,20 @@ class GameManager():
     def __init__(self):
         pass
 
-    @staticmethod
-    def start_game():
-        game_round = 0
-        try:
-            shield.convert_spawn_rate(True, None)
-            turret.convert_spawn_rate(False, shield.spawn_rate)
-            armoured_wing.convert_spawn_rate(False, turret.spawn_rate)
-            sniper.convert_spawn_rate(False, armoured_wing.spawn_rate)
-            bomber.convert_spawn_rate(False, sniper.spawn_rate)
-            mosquito.convert_spawn_rate(False, bomber.spawn_rate)
-        except:
-            raise entryErrors("The spawn rates are incorrect")
-        GameManager.manage_rounds(game_round)
-        return game_round
+#    @staticmethod
+#    def start_game():
+#        game_round = 0
+#        try:
+#            shield.convert_spawn_rate(True, None)
+#            turret.convert_spawn_rate(False, shield.spawn_rate)
+#            armoured_wing.convert_spawn_rate(False, turret.spawn_rate)
+#            sniper.convert_spawn_rate(False, armoured_wing.spawn_rate)
+#            bomber.convert_spawn_rate(False, sniper.spawn_rate)
+#            mosquito.convert_spawn_rate(False, bomber.spawn_rate)
+#        except:
+#            raise entryErrors("The spawn rates are incorrect")
+#        GameManager.manage_rounds(game_round)
+#        return game_round
 
     @staticmethod
     def find_aliens(alien, lst):
@@ -811,24 +809,24 @@ class GameManager():
         if alien.name in lst:
             lst.remove(alien.name)
 
-    @staticmethod
-    def manage_spawns(game_round: int):
-        spawn_rate_total = len(shield.spawn_rate) + len(turret.spawn_rate) + len(armoured_wing.spawn_rate) + len(bomber.spawn_rate) + len(mosquito.spawn_rate) + len(sniper.spawn_rate)
-        if spawn_rate_total == 100:
-            aliens_needed = game_round * 5
-            i = 0
-            while(aliens_needed >= i):
-                alien = Aliens.random_spawn()
-                duplicate_aliens = GameManager.find_aliens(alien, GameManager.__aliens_alive)
-                if duplicate_aliens > 0:
-                    alien.name += str(duplicate_aliens + 1)
-                GameManager.__aliens_alive.append(str(alien))
-                i+= 1
-            print(GameManager.__aliens_alive)
-            GameManager.remove_alien(alien, GameManager.__aliens_alive)
-            print(GameManager.__aliens_alive)
-        else:
-            raise numErrors("The spawn rates must add up to 100")
+#    @staticmethod
+#    def manage_spawns(game_round: int):
+#        spawn_rate_total = len(shield.spawn_rate) + len(turret.spawn_rate) + len(armoured_wing.spawn_rate) + len(bomber.spawn_rate) + len(mosquito.spawn_rate) + len(sniper.spawn_rate)
+#        if spawn_rate_total == 100:
+#            aliens_needed = game_round * 5
+#            i = 0
+#            while(aliens_needed >= i):
+#                alien = Aliens.random_spawn()
+#                duplicate_aliens = GameManager.find_aliens(alien, GameManager.__aliens_alive)
+#                if duplicate_aliens > 0:
+#                    alien.name += str(duplicate_aliens + 1)
+#                GameManager.__aliens_alive.append(str(alien))
+#                i+= 1
+#            print(GameManager.__aliens_alive)
+#            GameManager.remove_alien(alien, GameManager.__aliens_alive)
+#            print(GameManager.__aliens_alive)
+#        else:
+#            raise numErrors("The spawn rates must add up to 100")
 
     @staticmethod
     def manage_rounds(game_round: int):
@@ -842,56 +840,52 @@ class GameManager():
 #parameters - (health, speed, damage, pos_x, pos_y, target, spawn_rate, image, obstacles)
 #    @staticmethod
 #    def create_shield():
-#        shield = Aliens("Shield", 200, 1, 20, 1, 1, player, 25, "Pygame_GroupProject\Assets\Alien\Shield_armor.png", None)
+#        shield = Aliens("Shield", 200, 1, 20, 1, 1, player, 25, "Pygame_GroupProject\Pygame_GroupProject\Assets\Alien\Shield_armor.png", None)
 #        return shield
 
 #    @staticmethod
 #    def create_turret():
-#        turret = Aliens("Turret", 200, 1, 15, 1, 1, player, 10, None, None)
+#        turret = Aliens("Turret", 200, 1, 15, 1, 1, player, 10, "Pygame_GroupProject\Pygame_GroupProject\Assets\Alien\turret.png", None)
 #        return turret
     
 #    @staticmethod
 #    def create_armoured_wing():
-#        armoured_wing = Aliens("Armoured-wing", 150, 2, 30, 1, 1, player, 15, None, None)
+#        armoured_wing = Aliens("Armoured-wing", 150, 2, 30, 1, 1, player, 15, "Pygame_GroupProject\Pygame_GroupProject\Assets\Alien\armoured_wing.png", None)
 #        return armoured_wing
     
 #    @staticmethod
 #    def create_bomber():
-#        bomber = Aliens("Bomber", 30, 5, 100, 1, 1, player, 10, None, None)
+#        bomber = Aliens("Bomber", 30, 5, 100, 1, 1, player, 10, "Pygame_GroupProject\Pygame_GroupProject\Assets\Alien\bomber.png", None)
 #        return bomber
     
 #    @staticmethod
 #    def create_mosquito():
-#        mosquito = Aliens("Mosquito", 50, 3, 50, 1, 1, player, 25, None, None)
+#        mosquito = Aliens("Mosquito", 50, 3, 50, 1, 1, player, 25, "Pygame_GroupProject\Pygame_GroupProject\Assets\Alien\mosquito.png", None)
 #        return mosquito
     
 #    @staticmethod
 #    def create_sniper():
-#        sniper = Aliens("Sniper", 40, 1, 75, 1, 1, player, 15, None, None)
+#        sniper = Aliens("Sniper", 40, 1, 75, 1, 1, player, 15, "Pygame_GroupProject\Pygame_GroupProject\Assets\Alien\sniper.png", None)
 #        return sniper
 
 #parameters - (health, speed, damage, pos_x, pos_y, power_up, weapon, image, obstacles)
     @staticmethod
     def create_player(weapon: object):
         if weapon == pistol:
-            print("Zoinks!")
-            image = "Pygame_GroupProject\Assets\Player\Player_pistol.png"
-            print("I have the power!")
+            image = "Pygame_GroupProject\Pygame_GroupProject\Assets\Player\Player_pistol.png"
         
         elif weapon == shotgun:
-            image = "Pygame_GroupProject\Assets\Player\Player_shotgun.png"
+            image = "Pygame_GroupProject\Pygame_GroupProject\Assets\Player\Player_shotgun.png"
 
         elif weapon == smg:
-            image = "Pygame_GroupProject\Assets\Player\Player_smg.png"
+            image = "Pygame_GroupProject\Pygame_GroupProject\Assets\Player\Player_smg.png"
 
         elif weapon == rifle:
-            image = "Pygame_GroupProject\Assets\Player\Player_rifle.png"
+            image = "Pygame_GroupProject\Pygame_GroupProject\Assets\Player\Player_rifle.png"
 
         else:
             raise entryErrors("You must enter a weapon object")
-
-        player = Player(100, 2, 20, 112, 112, None, weapon, image, [visible_sprites])
-        print("BRUH")
+        player = Player(100, 2, 20, 112, 112, None, weapon, image, None)
         return player
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -901,7 +895,7 @@ shotgun = Weapons("Shotgun", 100, 1)
 smg = Weapons("Sub-machine-gun", 10, 10)
 rifle = Weapons("Rifle", 20, 5)
 #----------------------------------------------------------------------------------------------------#
-#player = GameManager.create_player("Pistol")
+player = GameManager.create_player(pistol)
 #player = Player(100, 2, 20, 1, 1, None, pistol, "Pygame_GroupProject\Assets\Player\Player_pistol.png", None)
 #----------------------------------------------------------------------------------------------------
 #shield = GameManager.create_shield()
