@@ -1,11 +1,7 @@
 import pygame, sys
+
 visible_sprites = pygame.sprite.Group()
 obstacle_sprites = pygame.sprite.Group()
-
-global Pistol
-global SMG   
-global Rifle   
-global Shotgun
 
 #Changes have occured once more, in the form of door animations (work-in-progress | "space" to try) 
 # and weapon / player classes, leaving Character() open for both player and alien use
@@ -21,27 +17,27 @@ class Settings:
     Tilesize = 32
 
     MAP = [
-    ['c','w','w','w','w','l','d','l','w','w','w','w','w','l','d','l','w','w','w','w','c'], #1 | [0]
+    ['c','w','w','w','w','w','d','w','w','w','w','w','w','w','d','w','w','w','w','w','c'], #1 | [0]
     ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #2 | [1]
     ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #3 | [2]
     ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #4 | [3]
     ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #5 | [4]
-    ['l','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','l'], #6 | [5]
+    ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #6 | [5]
     ['d','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','d'], #7 | [6]
-    ['l','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','l'], #8 | [7]
+    ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #8 | [7]
     ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #9 | [8]
     ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #10 | [9]
-    ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #11 | [10]
+    ['w','f','f','f','f','f','f','f','f','f','fp','f','f','f','f','f','f','f','f','f','w'], #11 | [10]
     ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #12 | [11]
     ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #13 | [12]
-    ['l','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','l'], #14 | [13]
+    ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #14 | [13]
     ['d','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','d'], #15 | [14]
-    ['l','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','l'], #16 | [15]
+    ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #16 | [15]
     ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #17 | [16]
     ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #18 | [17]
     ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'], #19 | [18]
-    ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','fp','w'],#20 | [19]
-    ['c','w','w','w','w','l','d','l','w','w','w','w','w','l','d','l','w','w','w','w','c']  #21 | [20]
+    ['w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'],#20 | [19]
+    ['c','w','w','w','w','w','d','w','w','w','w','w','w','w','d','w','w','w','w','w','c']  #21 | [20]
     ]
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 class Game:
@@ -131,7 +127,7 @@ class Map():
                     AreaSprite((x, y), image, [visible_sprites])
 
                     image = "Pygame_GroupProject\Assets\Player\Player_pistol.png"
-                    global player 
+                    global player
                     player = Player(100, 5, 20, x, y, image, [visible_sprites])
 
     def run(self):
@@ -171,6 +167,7 @@ class Animations():
 
         self.LED_frames = [self.LEDOne, self.LEDTwo, self.LEDThree, self.LEDFour]
         self.LED_current = 0
+        self.LED_List = [] #Step 1
 
         self.DoorOne = "Pygame_GroupProject\Assets\Area\Door.png"
         self.DoorTwo = "Pygame_GroupProject\Assets\Area\Door_frame2.png"
@@ -181,34 +178,47 @@ class Animations():
         self.Door_current = 0
         self.DoorOpening = False
 
-    def LED_animations(self):
-        for row_index, row in enumerate(self.map):
-            for col_index, col in enumerate(row):
-                x = col_index * self.TILESIZE
-                y = row_index * self.TILESIZE
+    #def LED_animations(self):
+    #    for row_index, row in enumerate(self.map):
+    #        for col_index, col in enumerate(row):
+    #            x = col_index * self.TILESIZE
+    #            y = row_index * self.TILESIZE
 
-                self.LED_indexes = [5, 7, 13, 15]
+    #            self.LED_indexes = [5, 7, 13, 15]
 
-                if col == "l" and row_index == 0:
-                    image = self.LED_frames[int(self.LED_current)]
-                    AreaSprite((x, y), image, [visible_sprites])
+    #            if col == "l" and row_index == 0:
+    #                image = self.LED_frames[int(self.LED_current)]
+    #                LED = AreaSprite((x, y), image, [visible_sprites])
+    #                self.LED_List.append(LED) #Step 2
 
-                elif col == "l" and row_index in self.LED_indexes and col_index == 0:
-                    image = ImageTransformer(self.LED_frames[int(self.LED_current)], 90)
-                    image = image.ReturnImage((x, y), [visible_sprites])
+    #            elif col == "l" and row_index in self.LED_indexes and col_index == 0:
+    #                image = ImageTransformer(self.LED_frames[int(self.LED_current)], 90)
+    #                LED = image.ReturnImage((x, y), [visible_sprites])
+    #                self.LED_List.append(LED) #Step 3
 
-                elif col == "l" and row_index == 20:
-                    image = ImageTransformer(self.LED_frames[int(self.LED_current)], 180)
-                    image = image.ReturnImage((x, y), [visible_sprites])
+    #            elif col == "l" and row_index == 20:
+    #                image = ImageTransformer(self.LED_frames[int(self.LED_current)], 180)
+    #                LED = image.ReturnImage((x, y), [visible_sprites])
+    #                self.LED_List.append(LED) #Step 4
 
-                elif col == "l" and row_index in self.LED_indexes and col_index == 20:
-                    image = ImageTransformer(self.LED_frames[int(self.LED_current)], 270)
-                    image = image.ReturnImage((x, y), [visible_sprites])
+    #            elif col == "l" and row_index in self.LED_indexes and col_index == 20:
+    #                image = ImageTransformer(self.LED_frames[int(self.LED_current)], 270)
+    #                LED = image.ReturnImage((x, y), [visible_sprites])
+    #                self.LED_List.append(LED) #Step 5
 
-                self.LED_current += 0.2
+    #            del(LED)
+    #            self.LED_List.clear()
+    #            self.LED_current += 1
 
-                if self.LED_current >= len(self.LED_frames):
-                    self.LED_current = 0
+    #            if self.LED_current >= len(self.LED_frames):
+    #                self.LED_current = 0
+
+                    #for l in self.LED_List:
+                    #    l.kill()
+                    #    del(l)
+
+    def LED_Maker(self):
+        pass
 
     def Door_animations(self):
         for row_index, row in enumerate(self.map):
@@ -271,7 +281,7 @@ class Animations():
             self.DoorOpening = True
 
     def Update(self):
-        self.LED_animations()      
+        #self.LED_animations()
         self.DoorPress()
 
         if self.DoorOpening:
@@ -413,5 +423,6 @@ Shotgun = Weapon(50, 5, 2)
 # - Adam
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 game = Game()
+
 while True:
     game.run()
