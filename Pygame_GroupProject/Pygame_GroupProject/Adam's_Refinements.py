@@ -316,7 +316,7 @@ class Bullet(pygame.sprite.Sprite):
         self.x = x
         self.y = y
         self.speed = 20
-        self.image = "Pygame_GroupProject\Pygame_GroupProject\"
+        self.image = "Pygame_GroupProject\Pygame_GroupProject\Assets\Bullet\Bullet.png"
 
 Pistol = Weapon(15, 2, 10)
 SMG = Weapon(10, 1, 5)

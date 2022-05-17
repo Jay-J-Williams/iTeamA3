@@ -497,15 +497,18 @@ class GameManager():
         i = 0
         duplicate_aliens = 0
         while(i < len(lst)):
-            if alien.name in lst[i]:
+            if alien.name in lst[i].name:
                 duplicate_aliens+= 1
             i+= 1
         return duplicate_aliens
 
     @staticmethod
-    def remove_alien(alien, lst):
-        if alien.name in lst:
-            lst.remove(alien.name)
+    def remove_alien(alien_name, lst):
+        i = 0
+        while(i < len(lst)):
+            if lst[i].name == alien_name:
+                del lst[i]
+            i+= 1
 
     @staticmethod
     def manage_spawns(game_round: int):
@@ -519,11 +522,19 @@ class GameManager():
                 duplicate_aliens = GameManager.find_aliens(alien, GameManager.__aliens_alive)
                 if duplicate_aliens > 0:
                     alien.name += str(duplicate_aliens + 1)
-                GameManager.__aliens_alive.append(str(alien))
+                GameManager.__aliens_alive.append(alien)
+                del(alien)
+                print(GameManager.__aliens_alive[i - 1])
                 i+= 1
-            print(GameManager.__aliens_alive)
-            GameManager.remove_alien(alien, GameManager.__aliens_alive)
-            print(GameManager.__aliens_alive)
+            GameManager.remove_alien("Shield2", GameManager.__aliens_alive)
+            print("\n")
+            i = 0
+            while(i < len(GameManager.__aliens_alive)):
+                print(GameManager.__aliens_alive[i])
+                i+= 1
+            #print(GameManager.__aliens_alive)
+            #GameManager.remove_alien(alien, GameManager.__aliens_alive)
+            #print(GameManager.__aliens_alive)
         else:
             raise numErrors("The spawn rates must add up to 100")
 
