@@ -154,7 +154,7 @@ class Map():
                 if col == "p":
                     image = "Pygame_GroupProject\Pygame_GroupProject\Assets\Player\Player_pistol.png"
                     global player
-                    player = Player(100, 5, 20, x, y, image, [Entities])
+                    player = Player(100, 2, 20, x, y, image, [Entities])
 
         background.draw(self.display_surface)
         Entities.draw(self.display_surface)
@@ -316,7 +316,7 @@ class Bullet(pygame.sprite.Sprite):
         self.x = x
         self.y = y
         self.speed = 20
-        self.image = "Pygame_GroupProject\Pygame_GroupProject\"
+        #self.image = "Pygame_GroupProject\Pygame_GroupProject\"
 
 Pistol = Weapon(15, 2, 10)
 SMG = Weapon(10, 1, 5)

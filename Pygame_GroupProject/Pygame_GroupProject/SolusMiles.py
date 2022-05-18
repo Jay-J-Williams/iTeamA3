@@ -199,6 +199,7 @@ class Map():
 class AreaSprite(pygame.sprite.Sprite):
     def __init__(self, pos, image, groups):
         super().__init__(groups)
+        print(image)
         try:
             self.image = pygame.image.load(image).convert_alpha()
         except:
@@ -567,6 +568,7 @@ class Aliens(Characters):
     @name.setter
     def name(self, value):
         if "Shield" in value or "Turret" in value:
+            print("Testing 3... 2... ~_~")
             self.__name = value
         elif "Armoured-wing" in value or "Bomber" in value:
             self.__name = value
@@ -718,7 +720,7 @@ class GameManager():
     @staticmethod
     def remove_alien(alien, lst):
         if alien.name in lst:
-            lst.remove(alien.name)
+            lst.remove(alien)
 
     @staticmethod
     def manage_spawns(game_round: int):
@@ -731,7 +733,8 @@ class GameManager():
                 duplicate_aliens = GameManager.find_aliens(alien, GameManager.__aliens_alive)
                 if duplicate_aliens > 0:
                     alien.name += str(duplicate_aliens + 1)
-                GameManager.__aliens_alive.append(str(alien))
+                GameManager.__aliens_alive.append(alien)
+                del(alien)
                 i+= 1
             print(GameManager.__aliens_alive)
             GameManager.remove_alien(alien, GameManager.__aliens_alive)
