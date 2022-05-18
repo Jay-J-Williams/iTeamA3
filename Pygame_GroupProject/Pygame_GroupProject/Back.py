@@ -344,42 +344,6 @@ class Aliens(Characters):
 #all the numbers in the list must be used, and this is the quickest, and most
 #readable way of doing it.
 
-#Spawn Number = 15
-#Rand = randint(0, 99)
-# if Rand < 25:
-# spawn shield
-# if Rand > 24 and Rand < 34
-# spawn bomber
-#while len(listTotal) <= 100:
- #~~~~~~
-
-#shield 10, turret 20,
-#shield list = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-#15
-
-#    @staticmethod
-#    def rando_spawn(shieldSpawn, turretSpawn, wingSpawn, sniperSpawn, bomberSpawn, mosquitoSpawn, total):
-#        i = 0
-#
-#        while i < total:
-#            alien = random.randint(0, 100)
-#
-#            if alien == range(shieldSpawn[0], shieldSpawn[-1]):
-#                yield shield
-#            elif alien == range(turretSpawn[0], turretSpawn[-1]):
-#                yield turret
-#            elif alien == range(wingSpawn[0], wingSpawn[-1]):
-#                yield wing 
-#            elif alien == range(sniperSpawn[0], sniperSpawn[-1]):
-#                yield sniper 
-#            elif alien == range(bomberSpawn[0], bomberSpawn[-1]):
-#                yield bomber 
-#            elif alien == range(mosquitoSpawn[0], mosquitoSpawn[-1]):
-#                yield mosquito 
-#
-#            i += 1
-
-
     @staticmethod
     def random_spawn():
         alien_choice = random.randint(1, 100)
@@ -446,32 +410,6 @@ class RangedAliens(Aliens):
 class PhysicalAliens(Aliens):
     pass
 
-#class EnemySpawn():
-#    def AlienCreator():
-#        ListOfAliens = []
-#
-#        return ListOfAliens
-#
-#    def AlienDoorSpawn():
-#        Door1 = pygame.Vector2(0, 1200)
-#        Door2 = pygame.Vector2(0, 100)
-#        Door3 = pygame.Vector2(1200, 50)
-#        Door4 = pygame.Vector2(1200, 600)
-#        
-#        rand = random.randint(0, 3)
-#        Location = None
-#
-#        if rand == 0:
-#            return Door4
-#        elif rand == 1:
-#            return Door2
-#        elif rand == 2:
-#            return Door1
-#        elif rand == 3:
-#            return Door3
-    #I created this sample class to handle the enemy spawns using the rarity system, as well as handle where
-    #the enemies spawn to. I believe we should use door locations in the way that I have
-
 class GameManager():
     __aliens_alive = []
     def __init__(self):
@@ -532,9 +470,6 @@ class GameManager():
             while(i < len(GameManager.__aliens_alive)):
                 print(GameManager.__aliens_alive[i])
                 i+= 1
-            #print(GameManager.__aliens_alive)
-            #GameManager.remove_alien(alien, GameManager.__aliens_alive)
-            #print(GameManager.__aliens_alive)
         else:
             raise numErrors("The spawn rates must add up to 100")
 

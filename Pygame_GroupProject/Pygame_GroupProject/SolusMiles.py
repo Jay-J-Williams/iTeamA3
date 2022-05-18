@@ -89,18 +89,18 @@ class Game:
         self.FPS = S.FPS
         global player
         player = GameManager.create_player(pistol)
-        global shield
-        shield = GameManager.create_shield()
-        global turret
-        turret = GameManager.create_turret()
-        global armoured_wing
-        armoured_wing = GameManager.create_armoured_wing()
-        global sniper
-        sniper = GameManager.create_sniper()
-        global bomber
-        bomber = GameManager.create_bomber()
-        global mosquito
-        mosquito = GameManager.create_mosquito()
+        #global shield
+        #shield = GameManager.create_shield()
+        #global turret
+        #turret = GameManager.create_turret()
+        #global armoured_wing
+        #armoured_wing = GameManager.create_armoured_wing()
+        #global sniper
+        #sniper = GameManager.create_sniper()
+        #global bomber
+        #bomber = GameManager.create_bomber()
+        #global mosquito
+        #mosquito = GameManager.create_mosquito()
 
     def run(self):
 
@@ -185,10 +185,6 @@ class Map():
                     #global player
                     #player = Player(100, 5, 20, x, y, pistol, image)
 
-        background.draw(self.display_surface)
-        Entities.draw(self.display_surface)
-        pygame.display.update()
-
     def run(self):
         player.Update()
         #self.animation.Update()
@@ -199,6 +195,7 @@ class Map():
 class AreaSprite(pygame.sprite.Sprite):
     def __init__(self, pos, image, groups):
         super().__init__(groups)
+        print(image)
         try:
             self.image = pygame.image.load(image).convert_alpha()
         except:
@@ -546,8 +543,8 @@ class Aliens(Characters):
     __spawn_rate = None
     __name = None
 
-    def __init__(self, name, health, speed, damage, pos_x, pos_y, target, spawn_rate, image, groups):
-        super().__init__(health, speed, damage, pos_x, pos_y, image, groups)
+    def __init__(self, name, health, speed, damage, pos_x, pos_y, target, spawn_rate, image, group):
+        super().__init__(health, speed, damage, pos_x, pos_y, image, group)
         self.target = target
         self.spawn_rate = spawn_rate
         self.name = name
@@ -604,29 +601,29 @@ class Aliens(Characters):
         last_aliens_spawn_rate = self.spawn_rate
         return last_aliens_spawn_rate
 
-#    @staticmethod
-#    def random_spawn():
-#        alien_choice = random.randint(1, 100)
-#        door_choice = random.randint(1, 8)
-#        if alien_choice >= shield.spawn_rate[0] and alien_choice <= shield.spawn_rate[-1]:
-#            alien = GameManager.create_shield()
-#            shield.spawn(door_choice)
-#        elif alien_choice >= turret.spawn_rate[0] and alien_choice <= turret.spawn_rate[-1]:
-#            alien = GameManager.create_turret()
-#            turret.spawn(door_choice)
-#        elif alien_choice >= armoured_wing.spawn_rate[0] and alien_choice <= armoured_wing.spawn_rate[-1]:
-#            alien = GameManager.create_armoured_wing()
-#            armoured_wing.spawn(door_choice)
-#        elif alien_choice >= sniper.spawn_rate[0] and alien_choice <= sniper.spawn_rate[-1]:
-#            alien = GameManager.create_sniper()
-#            sniper.spawn(door_choice)
-#        elif alien_choice >= bomber.spawn_rate[0] and alien_choice <= bomber.spawn_rate[-1]:
-#            alien = GameManager.create_bomber()
-#            bomber.spawn(door_choice)
-#        else:
-#            alien = GameManager.create_mosquito()
-#            mosquito.spawn(door_choice)
-#        return alien
+    @staticmethod
+    def random_spawn():
+        alien_choice = random.randint(1, 100)
+        door_choice = random.randint(1, 8)
+        if alien_choice >= shield.spawn_rate[0] and alien_choice <= shield.spawn_rate[-1]:
+            alien = GameManager.create_shield()
+            shield.spawn(door_choice)
+        elif alien_choice >= turret.spawn_rate[0] and alien_choice <= turret.spawn_rate[-1]:
+            alien = GameManager.create_turret()
+            turret.spawn(door_choice)
+        elif alien_choice >= armoured_wing.spawn_rate[0] and alien_choice <= armoured_wing.spawn_rate[-1]:
+            alien = GameManager.create_armoured_wing()
+            armoured_wing.spawn(door_choice)
+        elif alien_choice >= sniper.spawn_rate[0] and alien_choice <= sniper.spawn_rate[-1]:
+            alien = GameManager.create_sniper()
+            sniper.spawn(door_choice)
+        elif alien_choice >= bomber.spawn_rate[0] and alien_choice <= bomber.spawn_rate[-1]:
+            alien = GameManager.create_bomber()
+            bomber.spawn(door_choice)
+        else:
+            alien = GameManager.create_mosquito()
+            mosquito.spawn(door_choice)
+        return alien
 
     def spawn(self, door_choice: int):
         if door_choice == 1:
@@ -693,6 +690,12 @@ class GameManager():
     @staticmethod
     def start_game():
         game_round = 0
+        GameManager.convert_alien_spawn_rates()
+        GameManager.manage_rounds(game_round)
+        return game_round
+
+    @staticmethod
+    def convert_alien_spawn_rates():
         try:
             shield.convert_spawn_rate(True, None)
             turret.convert_spawn_rate(False, shield.spawn_rate)
@@ -702,40 +705,47 @@ class GameManager():
             mosquito.convert_spawn_rate(False, bomber.spawn_rate)
         except:
             raise entryErrors("The spawn rates are incorrect")
-        GameManager.manage_rounds(game_round)
-        return game_round
 
     @staticmethod
     def find_aliens(alien, lst):
         i = 0
         duplicate_aliens = 0
         while(i < len(lst)):
-            if alien.name in lst[i]:
+            if alien.name in lst[i].name:
                 duplicate_aliens+= 1
             i+= 1
         return duplicate_aliens
 
     @staticmethod
-    def remove_alien(alien, lst):
-        if alien.name in lst:
-            lst.remove(alien.name)
+    def remove_alien(alien_name, lst):
+        i = 0
+        while(i < len(lst)):
+            if lst[i].name == alien_name:
+                del lst[i]
+            i+= 1
 
     @staticmethod
     def manage_spawns(game_round: int):
         spawn_rate_total = len(shield.spawn_rate) + len(turret.spawn_rate) + len(armoured_wing.spawn_rate) + len(bomber.spawn_rate) + len(mosquito.spawn_rate) + len(sniper.spawn_rate)
         if spawn_rate_total == 100:
             aliens_needed = game_round * 5
-            i = 0
-            while(aliens_needed >= i):
+            i = 1
+            aliens_needed+= i
+            while(aliens_needed > i):
                 alien = Aliens.random_spawn()
                 duplicate_aliens = GameManager.find_aliens(alien, GameManager.__aliens_alive)
                 if duplicate_aliens > 0:
                     alien.name += str(duplicate_aliens + 1)
-                GameManager.__aliens_alive.append(str(alien))
+                GameManager.__aliens_alive.append(alien)
+                del(alien)
+                print(GameManager.__aliens_alive[i - 1])
                 i+= 1
-            print(GameManager.__aliens_alive)
-            GameManager.remove_alien(alien, GameManager.__aliens_alive)
-            print(GameManager.__aliens_alive)
+            GameManager.remove_alien("Shield2", GameManager.__aliens_alive)
+            print("\n")
+            i = 0
+            while(i < len(GameManager.__aliens_alive)):
+                print(GameManager.__aliens_alive[i])
+                i+= 1
         else:
             raise numErrors("The spawn rates must add up to 100")
 
@@ -749,7 +759,7 @@ class GameManager():
 #parameters - (health, speed, damage, pos_x, pos_y, target, spawn_rate, image, groups)
     @staticmethod
     def create_shield():
-        shield = Aliens("Shield", 200, 1, 20, 1, 1, player, 25, "Pygame_GroupProject\Pygame_GroupProject\Assets\Alien\Shield_armor.png", [Entities])
+        shield = Aliens("Shield", 200, 1, 20, 1, 1, player, 25, "Pygame_GroupProject\Pygame_GroupProject\Assets\Alien\Shield_armour.png", [Entities])
         return shield
 
     @staticmethod
