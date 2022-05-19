@@ -49,7 +49,7 @@ class Game:
                 sys.exit()
 
         self.screen.fill("Black")
-        player.Update(self.Width, self.Height)
+        player.Update(self.Width, self.Height, self.Tilesize)
 
         background.draw(self.display_surface)
         entities.draw(self.display_surface)
@@ -154,16 +154,16 @@ class Player(Character):
             self.char = self.char.ReturnImage((self.x, self.y), self.groups, self.size)
             self.y += self.speed
     #------------------------------------------------------
-    def Shoot(self):
+    def Shoot(self, tilesize):
         keys = pygame.key.get_pressed()
         mouse_clicks = pygame.mouse.get_pressed()
 
         if keys[pygame.K_SPACE] or mouse_clicks[0]:
-            Bullet(self.x, self.y)
+            Bullet(self.x, self.y, tilesize)
     #------------------------------------------------------
-    def Update(self, width, height):
+    def Update(self, width, height, tilesize):
         self.Movement(width, height)
-        self.Shoot()
+        self.Shoot(tilesize)
 #--------------------------------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------------------------------
@@ -187,12 +187,13 @@ class Bullet(pygame.sprite.Sprite):
     speed = None
     image = None
     #------------------------------------------------------
-    def __init__(self, x, y):
+    def __init__(self, x, y, tilesize):
         self.x = x
         self.y = y
         self.speed = 20
         self.image = "Pygame_GroupProject\Pygame_GroupProject\Assets\Bullet\Bullet.png"
-        bullets.add(self)
+        self.char = Sprite(((x + 24 / 2), (y + 24 / 2)), self.image, [bullets], (tilesize / 4))
+        self.rect = self.char.rect
 #--------------------------------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------------------------------
