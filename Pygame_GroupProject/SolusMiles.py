@@ -1,4 +1,4 @@
-import pygame, sys
+import pygame, sys, random
 
 background = pygame.sprite.Group() #Room
 entities = pygame.sprite.Group() #Player/Aliens
@@ -24,16 +24,16 @@ class Game:
     def __init__(self):
         pygame.init()
 
-        self.Width = 1280
-        self.Height = 720
-        self.Tilesize = 48
+        self.Width = 1920
+        self.Height = 1080
+        self.Tilesize = 64
         self.FPS = 60
 
         # Size possibilities -
             # 1280 / 720  | Tilesize = 48
             # 1920 / 1080 | Tilesize = 64
-            # 2560 / 1440 | Tilesize = 96
-            # 3840 / 2160 | Tilesize = 128
+            # 2560 / 1440 | Tilesize = 96 - So far, do not use
+            # 3840 / 2160 | Tilesize = 128 - So far, do not use
 
         # Simply input the size you want to test
         # NOTE - This will change when a main menu is implemented
@@ -46,24 +46,39 @@ class Game:
         pygame.display.set_caption("Solus Miles")
         self.clock = pygame.time.Clock()
 
-        self.Create_Map()
     #------------------------------------------------------
     def Create_Map(self):
         room = "Pygame_GroupProject\Assets\Room\Room.png"
         Room(room, self.Width, self.Height)
-
         image = "Pygame_GroupProject\Assets\Player\Player.png"
         global player
-        player = Player(100, 5, 20, (self.Width / 2), (self.Height / 2), image, [entities], self.Tilesize)
+        player = GameManager.create_player(pistol)
+        global shield
+        shield = GameManager.create_shield(False)
+        global turret
+        turret = GameManager.create_turret(False)
+        global armoured_wing
+        armoured_wing = GameManager.create_armoured_wing(False)
+        global bomber
+        bomber = GameManager.create_bomber(False)
+        global mosquito
+        mosquito = GameManager.create_mosquito(False)
+        global sniper
+        sniper = GameManager.create_sniper(False)
+        GameManager.manage_rounds(0)
+        #GameManager.__aliens_alive.append(test_alien)
     #------------------------------------------------------
     def Run(self):
+        keys = pygame.key.get_pressed()
+
         for event in pygame.event.get():
-            if event.type == pygame.QUIT:
+            if (event.type == pygame.QUIT) or (keys[pygame.K_ESCAPE]):
                 pygame.quit()
                 sys.exit()
 
         self.screen.fill("Black")
         player.Update(self.Width, self.Height, self.Tilesize)
+        GameManager.update_aliens()
 
         for b in Bulls:
             b.Move(self.Height)
@@ -84,7 +99,7 @@ class Sprite(pygame.sprite.Sprite):
             self.image = pygame.image.load(image).convert_alpha()
         except:
             self.image = image
-        self.image = pygame.transform.scale(self.image, (tilesize, tilesize))
+        self.image = pygame.transform.scale(self.image, (tilesize, tilesize)) # <-- HERE | Scales to size
         self.rect = self.image.get_rect(topleft = pos)
 # This class will not be dealing with the background (room) anymore
 #--------------------------------------------------------------------------------------------------------
@@ -114,23 +129,21 @@ class Character():
     health = None
     speed = None
     damage = None
-    x = None
-    y = None
+    pos_x = None
+    pos_y = None
     image = None
-    groups = None
+    group = None
     size = None
     #------------------------------------------------------
-    def __init__(self, health, speed, damage, x, y, image, groups, tilesize):
+    def __init__(self, health, speed, damage, pos_x, pos_y, image, group):
         self.health = health
         self.speed = speed
         self.damage = damage
-        self.x = x
-        self.y = y
+        self.pos_x = pos_x
+        self.pos_y = pos_y
         self.org_image = image
-        self.groups = groups
-        self.size = tilesize
-        self.char = Sprite((x, y), image, groups, tilesize)
-        self.rect = self.char.rect
+        self.group = group
+        self.size = game.Tilesize
 #--------------------------------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------------------------------
@@ -138,57 +151,58 @@ class Player(Character):
     weapon = None
     powerUp = None
     #------------------------------------------------------
-    def __init__(self, health, speed, damage, x, y, image, group, size):
-        super().__init__(health, speed, damage, x, y, image, group, size)
-        self.weapon = None
+    def __init__(self, health, speed, damage, pos_x, pos_y, weapon, image, group):
+        super().__init__(health, speed, damage, pos_x, pos_y, image, group)
+        self.weapon = weapon
         self.powerUp = None
+        self.char = Sprite((pos_x, pos_y), image, group, self.size)
+        self.rect = self.char.rect
     #------------------------------------------------------
     def Movement(self, width, height):
         keys = pygame.key.get_pressed()
         max_move = self.size * 2
 
-        if keys[pygame.K_a] and self.x > self.size:
+        if keys[pygame.K_a] and self.pos_x > self.size:
             self.char.kill()
             self.char = ImageTransformer(self.org_image, 270)
-            self.char = self.char.ReturnImage((self.x, self.y), self.groups, self.size)
-            self.x -= self.speed           
+            self.char = self.char.ReturnImage((self.pos_x, self.pos_y), self.group, self.size)
+            self.pos_x -= self.speed           
         #------------------------------------------------------
-        elif keys[pygame.K_d] and self.x < (width - max_move):
+        elif keys[pygame.K_d] and self.pos_x < (width - max_move):
             self.char.kill()
             self.char = ImageTransformer(self.org_image, 90)
-            self.char = self.char.ReturnImage((self.x, self.y), self.groups, self.size)
-            self.x += self.speed
+            self.char = self.char.ReturnImage((self.pos_x, self.pos_y), self.group, self.size)
+            self.pos_x += self.speed
         #------------------------------------------------------
-        elif keys[pygame.K_w] and self.y > self.size:
+        elif keys[pygame.K_w] and self.pos_y > self.size:
             self.char.kill()
             self.char = ImageTransformer(self.org_image, 180)
-            self.char = self.char.ReturnImage((self.x, self.y), self.groups, self.size)
-            self.y -= self.speed
+            self.char = self.char.ReturnImage((self.pos_x, self.pos_y), self.group, self.size)
+            self.pos_y -= self.speed
         #------------------------------------------------------
-        elif keys[pygame.K_s] and self.y < (height - max_move):
+        elif keys[pygame.K_s] and self.pos_y < (height - max_move):
             self.char.kill()
             self.char = ImageTransformer(self.org_image, 0)
-            self.char = self.char.ReturnImage((self.x, self.y), self.groups, self.size)
-            self.y += self.speed
+            self.char = self.char.ReturnImage((self.pos_x, self.pos_y), self.group, self.size)
+            self.pos_y += self.speed
     #------------------------------------------------------
     def Shoot(self, tilesize):
         keys = pygame.key.get_pressed()
         mouse_clicks = pygame.mouse.get_pressed()
 
         if keys[pygame.K_SPACE] or mouse_clicks[0]: # [0] = Left Click
-            Bullet(self.x, self.y, tilesize)
-            self.weapon.isShot = True
+            Bullet(self.pos_x, self.pos_y, tilesize)
     #------------------------------------------------------
     def Update(self, width, height, tilesize):
-        self.Movement(width, height)      
-        #self.Shoot(tilesize)
+        self.Movement(width, height)  
+        self.Shoot(tilesize)
 #--------------------------------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------------------------------
 class Weapon():
     damage = None 
     fireRate = None 
-    shotRange = None 
+    shotRange = None
     isShot = None
     #------------------------------------------------------
     def __init__(self, damage, fireRate, shotRange):
@@ -220,26 +234,29 @@ class Bullet(pygame.sprite.Sprite):
         max_size = self.size * 2
         try:
             if self.y < (height - max_size):
+                print("|-|-|-|")
                 self.y += self.speed
+                print("...Try_IT_Out...")
         except Exception as e:
             print(e)
             print("Fail")
 #--------------------------------------------------------------------------------------------------------
 
-#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-
-#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#--------------------------------------------------------------------------------------------------------
 class Aliens(Character):
     __target = None
     __spawn_rate = None
     __name = None
 
-    def __init__(self, name, health, speed, damage, pos_x, pos_y, target, spawn_rate, image, group):
+    def __init__(self, name, health, speed, damage, pos_x, pos_y, target, spawn_rate, image, group, showing):
         super().__init__(health, speed, damage, pos_x, pos_y, image, group)
         self.target = target
         self.spawn_rate = spawn_rate
         self.name = name
+        self.showing = showing
+        if showing == True:
+            self.char = Sprite((pos_x, pos_y), image, group, self.size)
+            self.rect = self.char.rect
 
     @property
     def name(self):
@@ -298,23 +315,18 @@ class Aliens(Character):
         alien_choice = random.randint(1, 100)
         door_choice = random.randint(1, 8)
         if alien_choice >= shield.spawn_rate[0] and alien_choice <= shield.spawn_rate[-1]:
-            alien = GameManager.create_shield()
-            shield.spawn(door_choice)
+            alien = GameManager.create_shield(True)
         elif alien_choice >= turret.spawn_rate[0] and alien_choice <= turret.spawn_rate[-1]:
-            alien = GameManager.create_turret()
-            turret.spawn(door_choice)
+            alien = GameManager.create_turret(True)
         elif alien_choice >= armoured_wing.spawn_rate[0] and alien_choice <= armoured_wing.spawn_rate[-1]:
-            alien = GameManager.create_armoured_wing()
-            armoured_wing.spawn(door_choice)
+            alien = GameManager.create_armoured_wing(True)
         elif alien_choice >= sniper.spawn_rate[0] and alien_choice <= sniper.spawn_rate[-1]:
-            alien = GameManager.create_sniper()
-            sniper.spawn(door_choice)
+            alien = GameManager.create_sniper(True)
         elif alien_choice >= bomber.spawn_rate[0] and alien_choice <= bomber.spawn_rate[-1]:
-            alien = GameManager.create_bomber()
-            bomber.spawn(door_choice)
+            alien = GameManager.create_bomber(True)
         else:
-            alien = GameManager.create_mosquito()
-            mosquito.spawn(door_choice)
+            alien = GameManager.create_mosquito(True)
+        alien.spawn(door_choice)
         return alien
 
     def spawn(self, door_choice: int):
@@ -387,18 +399,6 @@ class GameManager():
         return game_round
 
     @staticmethod
-    def convert_alien_spawn_rates():
-        try:
-            shield.convert_spawn_rate(True, None)
-            turret.convert_spawn_rate(False, shield.spawn_rate)
-            armoured_wing.convert_spawn_rate(False, turret.spawn_rate)
-            sniper.convert_spawn_rate(False, armoured_wing.spawn_rate)
-            bomber.convert_spawn_rate(False, sniper.spawn_rate)
-            mosquito.convert_spawn_rate(False, bomber.spawn_rate)
-        except:
-            raise entryErrors("The spawn rates are incorrect")
-
-    @staticmethod
     def find_aliens(alien, lst):
         i = 0
         duplicate_aliens = 0
@@ -409,11 +409,11 @@ class GameManager():
         return duplicate_aliens
 
     @staticmethod
-    def remove_alien(alien_name, lst):
+    def remove_alien(alien_name):
         i = 0
         while(i < len(lst)):
-            if lst[i].name == alien_name:
-                del lst[i]
+            if GameManager.__aliens_alive[i].name == alien_name:
+                del GameManager.__aliens_alive[i]
             i+= 1
 
     @staticmethod
@@ -432,11 +432,10 @@ class GameManager():
                 del(alien)
                 print(GameManager.__aliens_alive[i - 1])
                 i+= 1
-            GameManager.remove_alien("Shield2", GameManager.__aliens_alive)
+            GameManager.remove_alien("Shield2")
             print("\n")
             i = 0
             while(i < len(GameManager.__aliens_alive)):
-                print(GameManager.__aliens_alive[i])
                 i+= 1
         else:
             raise numErrors("The spawn rates must add up to 100")
@@ -448,78 +447,81 @@ class GameManager():
             GameManager.manage_spawns(game_round)
         return game_round
 
-#parameters - (health, speed, damage, pos_x, pos_y, target, spawn_rate, image, groups)
     @staticmethod
-    def create_shield():
-        shield = Aliens("Shield", 200, 1, 20, 1, 1, player, 25, "Pygame_GroupProject\Pygame_GroupProject\Assets\Alien\Shield_armour.png", [Entities])
+    def update_aliens():
+        i = 0
+        while(i + 1 < len(GameManager.__aliens_alive)):
+            GameManager.__aliens_alive[i].char.kill()
+            GameManager.__aliens_alive[i].char = ImageTransformer(GameManager.__aliens_alive[i].org_image, 0)
+            GameManager.__aliens_alive[i].char = GameManager.__aliens_alive[i].char.ReturnImage((GameManager.__aliens_alive[i].pos_x, GameManager.__aliens_alive[i].pos_y), GameManager.__aliens_alive[i].group, GameManager.__aliens_alive[i].size)
+            i += 1
+
+
+#parameters - (health, speed, damage, pos_x, pos_y, target, spawn_rate, image, groups, game width, game height)
+    @staticmethod
+    def create_shield(showing):
+        shield = Aliens("Shield", 200, 2, 20, 1, 1, player, 25, "Pygame_GroupProject\Assets\Aliens\\Normal\Shield_Armour.png", [entities], showing)
+        shield.convert_spawn_rate(True, None)
         return shield
 
     @staticmethod
-    def create_turret():
-        turret = Aliens("Turret", 200, 1, 15, 1, 1, player, 10, "Pygame_GroupProject\Pygame_GroupProject\Assets\Alien\turret.png", [Entities])
+    def create_turret(showing):
+        turret = Aliens("Turret", 200, 2, 15, 1, 1, player, 10, "Pygame_GroupProject\Assets\Aliens\\Normal\Turret.png", [entities], showing)
+        turret.convert_spawn_rate(False, shield.spawn_rate)
         return turret
     
     @staticmethod
-    def create_armoured_wing():
-        armoured_wing = Aliens("Armoured-wing", 150, 2, 30, 1, 1, player, 15, "Pygame_GroupProject\Pygame_GroupProject\Assets\Alien\armoured_wing.png", [Entities])
+    def create_armoured_wing(showing):
+        armoured_wing = Aliens("Armoured-wing", 150, 3, 30, 1, 1, player, 15, "Pygame_GroupProject\Assets\Aliens\\Normal\Armoured_Wing.png", [entities], showing)
+        armoured_wing.convert_spawn_rate(False, turret.spawn_rate)
         return armoured_wing
     
     @staticmethod
-    def create_bomber():
-        bomber = Aliens("Bomber", 30, 5, 100, 1, 1, player, 10, "Pygame_GroupProject\Pygame_GroupProject\Assets\Alien\bomber.png", [Entities])
+    def create_bomber(showing):
+        bomber = Aliens("Bomber", 30, 7, 100, 1, 1, player, 10, "Pygame_GroupProject\Assets\Aliens\\Normal\Bomber.png", [entities], showing)
+        bomber.convert_spawn_rate(False, armoured_wing.spawn_rate)
         return bomber
     
     @staticmethod
-    def create_mosquito():
-        mosquito = Aliens("Mosquito", 50, 3, 50, 1, 1, player, 25, "Pygame_GroupProject\Pygame_GroupProject\Assets\Alien\mosquito.png", [Entities])
+    def create_mosquito(showing):
+        mosquito = Aliens("Mosquito", 50, 5, 50, 1, 1, player, 25, "Pygame_GroupProject\Assets\Aliens\\Normal\Mosquito.png", [entities], showing)
+        mosquito.convert_spawn_rate(False, bomber.spawn_rate)
         return mosquito
     
     @staticmethod
-    def create_sniper():
-        sniper = Aliens("Sniper", 40, 1, 75, 1, 1, player, 15, "Pygame_GroupProject\Pygame_GroupProject\Assets\Alien\sniper.png", [Entities])
+    def create_sniper(showing):
+        sniper = Aliens("Sniper", 40, 1, 75, 1, 1, player, 15, "Pygame_GroupProject\Assets\Aliens\\Normal\Sniper.png", [entities], showing)
+        sniper.convert_spawn_rate(False, mosquito.spawn_rate)
         return sniper
 
 #parameters - (health, speed, damage, pos_x, pos_y, power_up, weapon, image, groups)
     @staticmethod
     def create_player(weapon: object):
         if weapon == pistol:
-            image = "Pygame_GroupProject\Pygame_GroupProject\Assets\Player\Player_pistol.png"
+            image = "Pygame_GroupProject\Assets\Player\Player.png"
         
         elif weapon == shotgun:
-            image = "Pygame_GroupProject\Pygame_GroupProject\Assets\Player\Player_shotgun.png"
+            image = "Pygame_GroupProject\Assets\Player\Player.png"
 
         elif weapon == smg:
-            image = "Pygame_GroupProject\Pygame_GroupProject\Assets\Player\Player_smg.png"
+            image = "Pygame_GroupProject\Assets\Player\Player.png"
 
         elif weapon == rifle:
-            image = "Pygame_GroupProject\Pygame_GroupProject\Assets\Player\Player_rifle.png"
+            image = "Pygame_GroupProject\Assets\Player\Player.png"
 
         else:
             raise entryErrors("You must enter a weapon object")
-        player = Player(100, 2, 20, 112, 112, weapon, image, [Entities])
+        player = Player(100, 3, 20, (game.Width / 2), (game.Height / 2), weapon, image, [entities])
 
         return player
-#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-#parameters - (name, damage, fire_rate(shots per second))
-pistol = Weapons("Pistol", 20, 3)
-shotgun = Weapons("Shotgun", 100, 1)
-smg = Weapons("Sub-machine-gun", 10, 10)
-rifle = Weapons("Rifle", 20, 5)
-#----------------------------------------------------------------------------------------------------#
-
-#player = Player(100, 2, 20, 1, 1, None, pistol, "Pygame_GroupProject\Assets\Player\Player_pistol.png", None)
 #----------------------------------------------------------------------------------------------------
-#shield = GameManager.create_shield()
-#turret = GameManager.create_turret()
-#armoured_wing = GameManager.create_armoured_wing()
-#sniper = GameManager.create_sniper()
-#bomber = GameManager.create_bomber()
-#mosquito = GameManager.create_mosquito()
-#GameManager.start_game()
-#----------------------------------------------------------------------------------------------------#
-#running = True
+pistol = Weapon(20, 3, 30)
+shotgun = Weapon(100, 1, 10)
+smg = Weapon(10, 10, 20)
+rifle = Weapon(30, 5, 50)
+
 game = Game()
-running = True
-while running:
-    game.run()
+game.Create_Map()
+
+while True:
+    game.Run()
