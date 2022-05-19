@@ -50,7 +50,6 @@ class Game:
     def Create_Map(self):
         room = "Pygame_GroupProject\Assets\Room\Room.png"
         Room(room, self.Width, self.Height)
-        image = "Pygame_GroupProject\Assets\Player\Player.png"
         global player
         player = GameManager.create_player(pistol)
         global shield
@@ -329,47 +328,63 @@ class Aliens(Character):
         alien.spawn(door_choice)
         return alien
 
-    def spawn(self, door_choice: int):
-        if door_choice == 1:
-            self.pos_x = 7
-            self.pos_y = 0
-        elif door_choice == 2:
-            self.pos_x = 25
-            self.pos_y = 0
-        elif door_choice == 3:
-            self.pos_x = 442
-            self.pos_y = 10
-        elif door_choice == 4:
-            self.pos_x = 150
-            self.pos_y = 232
-        elif door_choice == 5:
-            self.pos_x = 300
-            self.pos_y = 500
-        elif door_choice == 6:
-            self.pos_x = 11
-            self.pos_y = 200
-        elif door_choice == 7:
-            self.pos_x = 0
-            self.pos_y = 7
-        else:
-            self.pos_x = 0
-            self.pos_y = 25
+    def spawn(self, door_choice: int): 
+        # Door choices from left to top, in relation to the top-left corner (0,0)
+        #------------------------------------------------------
+        if door_choice == 1: # Left 1
+            self.pos_x = 0 * game.Tilesize # 0 x tilesize
+            self.pos_y = 5 * game.Tilesize # 5 x tilesize
+        #------------------------------------------------------
+        elif door_choice == 2: # Left 2
+            self.pos_x = 0 * game.Tilesize # 0 x tilesize
+            self.pos_y = 11 * game.Tilesize # 11 x tilesize
+        #------------------------------------------------------
+        elif door_choice == 3: # Bottom 1
+            self.pos_x = 8 * game.Tilesize # 8 x tilesize
+            self.pos_y = 16 * game.Tilesize # 16 x tilesize
+        #------------------------------------------------------
+        elif door_choice == 4: # Bottom 2 
+            self.pos_x = 21 * game.Tilesize # 21 x tilesize
+            self.pos_y = 16 * game.Tilesize # 16 x tilesize
+        #------------------------------------------------------
+        elif door_choice == 5: # Right 1 
+            self.pos_x = 29 * game.Tilesize # 29 x tilesize
+            self.pos_y = 5 * game.Tilesize # 5 x tilesize
+        #------------------------------------------------------
+        elif door_choice == 6: # Right 2
+            self.pos_x = 29 * game.Tilesize # 29 x tilesize
+            self.pos_y = 11 * game.Tilesize # 11 x tilesize
+        #------------------------------------------------------
+        elif door_choice == 7: # Top 1
+            self.pos_x = 21 * game.Tilesize # 21 x tilesize
+            self.pos_y = 0 * game.Tilesize # 0 x tilesize
+        #------------------------------------------------------
+        elif door_choice == 8: # Top 2
+            self.pos_x = 8 * game.Tilesize # 8 x tilesize
+            self.pos_y = 0 * game.Tilesize # 0 x tilesize
+        #------------------------------------------------------
+        print(door_choice)
 
     def move(self):
-        if self.pos_x - self.target.pos_x > self.pos_y - self.target.pos_y:
-            if self.target.pos_x > Settings.Width / 2:
-                while(self.pos_x < self.target.pos_x):
-                    self.pos_x += self.speed
-            elif self.target.pos_x < Settings.Width / 2:
-                while(self.pos_x > self.target.pos_x):
-                    self.pos_x -= self.speed
-        elif self.pos_y - self.target.pos_y > self.pos_x - self.target.pos_x:
-            if self.target.pos_y > Settings.Height / 2:
-                while(self.pos_y > self.target.pos_y):
-                    self.pos_y -= self.speed
-            elif self.target.pos_y < Settings.Height / 2:
-                while(self.pos_y < self.target.pos_y):
-                    self.pos_y += self.speed
+        #------------------------------------------------------
+        self.pos_x = 1
+        if (self.pos_x - self.target.pos_x) > (self.pos_y - self.target.pos_y):
+            if self.target.pos_x > game.Width / 2:
+                #while(self.pos_x < self.target.pos_x):
+                self.pos_x += self.speed
+            #------------------------------------------------------
+            elif self.target.pos_x < game.Width / 2:
+                #while(self.pos_x > self.target.pos_x):
+                self.pos_x -= self.speed
+        #------------------------------------------------------
+        elif (self.pos_y - self.target.pos_y) > (self.pos_x - self.target.pos_x):
+            if self.target.pos_y > game.Height / 2:
+                #while(self.pos_y > self.target.pos_y):
+                self.pos_y -= self.speed
+            #------------------------------------------------------
+            elif self.target.pos_y < game.Height / 2:
+                #while(self.pos_y < self.target.pos_y):
+                self.pos_y += self.speed
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
@@ -387,7 +402,7 @@ class PhysicalAliens(Aliens):
 
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 class GameManager():
-    __aliens_alive = []
+    aliens_alive = []
     def __init__(self):
         pass
 
@@ -399,21 +414,22 @@ class GameManager():
         return game_round
 
     @staticmethod
-    def find_aliens(alien, lst):
+    def find_aliens(alien):
         i = 0
         duplicate_aliens = 0
-        while(i < len(lst)):
-            if alien.name in lst[i].name:
+        while(i < len(GameManager.aliens_alive)):
+            if alien.name in GameManager.aliens_alive[i].name:
                 duplicate_aliens+= 1
-            i+= 1
+            i += 1
         return duplicate_aliens
 
     @staticmethod
     def remove_alien(alien_name):
         i = 0
-        while(i < len(lst)):
-            if GameManager.__aliens_alive[i].name == alien_name:
-                del GameManager.__aliens_alive[i]
+        while(i < len(GameManager.aliens_alive)):
+            if GameManager.aliens_alive[i].name == alien_name:
+                GameManager.aliens_alive[i].char.kill()
+                del GameManager.aliens_alive[i]
             i+= 1
 
     @staticmethod
@@ -425,24 +441,26 @@ class GameManager():
             aliens_needed+= i
             while(aliens_needed > i):
                 alien = Aliens.random_spawn()
-                duplicate_aliens = GameManager.find_aliens(alien, GameManager.__aliens_alive)
-                if duplicate_aliens > 0:
-                    alien.name += str(duplicate_aliens + 1)
-                GameManager.__aliens_alive.append(alien)
+                if i > 1:
+                    duplicate_aliens = GameManager.find_aliens(alien)
+                    if duplicate_aliens > 0:
+                        alien.name += str(duplicate_aliens + 1)
+                GameManager.aliens_alive.append(alien)
+                print(GameManager.aliens_alive[i - 1].pos_x, GameManager.aliens_alive[i - 1].pos_y)
                 del(alien)
-                print(GameManager.__aliens_alive[i - 1])
+                print(GameManager.aliens_alive[i - 1])
                 i+= 1
-            GameManager.remove_alien("Shield2")
+            #GameManager.remove_alien("Shield2")
             print("\n")
             i = 0
-            while(i < len(GameManager.__aliens_alive)):
+            while(i < len(GameManager.aliens_alive)):
                 i+= 1
         else:
             raise numErrors("The spawn rates must add up to 100")
 
     @staticmethod
     def manage_rounds(game_round: int):
-        if len(GameManager.__aliens_alive) == 0:
+        if len(GameManager.aliens_alive) == 0:
             game_round+= 1
             GameManager.manage_spawns(game_round)
         return game_round
@@ -450,47 +468,48 @@ class GameManager():
     @staticmethod
     def update_aliens():
         i = 0
-        while(i + 1 < len(GameManager.__aliens_alive)):
-            GameManager.__aliens_alive[i].char.kill()
-            GameManager.__aliens_alive[i].char = ImageTransformer(GameManager.__aliens_alive[i].org_image, 0)
-            GameManager.__aliens_alive[i].char = GameManager.__aliens_alive[i].char.ReturnImage((GameManager.__aliens_alive[i].pos_x, GameManager.__aliens_alive[i].pos_y), GameManager.__aliens_alive[i].group, GameManager.__aliens_alive[i].size)
+        while(i < len(GameManager.aliens_alive)):
+            GameManager.aliens_alive[i].char.kill()
+            GameManager.aliens_alive[i].char = ImageTransformer(GameManager.aliens_alive[i].org_image, 0)
+            GameManager.aliens_alive[i].char = GameManager.aliens_alive[i].char.ReturnImage((GameManager.aliens_alive[i].pos_x, GameManager.aliens_alive[i].pos_y), GameManager.aliens_alive[i].group, GameManager.aliens_alive[i].size)
+            #GameManager.aliens_alive[i].move()
             i += 1
 
 
 #parameters - (health, speed, damage, pos_x, pos_y, target, spawn_rate, image, groups, game width, game height)
     @staticmethod
     def create_shield(showing):
-        shield = Aliens("Shield", 200, 2, 20, 1, 1, player, 25, "Pygame_GroupProject\Assets\Aliens\\Normal\Shield_Armour.png", [entities], showing)
+        shield = Aliens("Shield", 200, 2, 20, 100, 100, player, 25, "Pygame_GroupProject\Assets\Aliens\\Normal\Shield_Armour.png", [entities], showing)
         shield.convert_spawn_rate(True, None)
         return shield
 
     @staticmethod
     def create_turret(showing):
-        turret = Aliens("Turret", 200, 2, 15, 1, 1, player, 10, "Pygame_GroupProject\Assets\Aliens\\Normal\Turret.png", [entities], showing)
+        turret = Aliens("Turret", 200, 2, 15, 200, 200, player, 10, "Pygame_GroupProject\Assets\Aliens\\Normal\Turret.png", [entities], showing)
         turret.convert_spawn_rate(False, shield.spawn_rate)
         return turret
     
     @staticmethod
     def create_armoured_wing(showing):
-        armoured_wing = Aliens("Armoured-wing", 150, 3, 30, 1, 1, player, 15, "Pygame_GroupProject\Assets\Aliens\\Normal\Armoured_Wing.png", [entities], showing)
+        armoured_wing = Aliens("Armoured-wing", 150, 3, 30, 300, 300, player, 15, "Pygame_GroupProject\Assets\Aliens\\Normal\Armoured_Wing.png", [entities], showing)
         armoured_wing.convert_spawn_rate(False, turret.spawn_rate)
         return armoured_wing
     
     @staticmethod
     def create_bomber(showing):
-        bomber = Aliens("Bomber", 30, 7, 100, 1, 1, player, 10, "Pygame_GroupProject\Assets\Aliens\\Normal\Bomber.png", [entities], showing)
+        bomber = Aliens("Bomber", 30, 7, 100, 400, 400, player, 10, "Pygame_GroupProject\Assets\Aliens\\Normal\Bomber.png", [entities], showing)
         bomber.convert_spawn_rate(False, armoured_wing.spawn_rate)
         return bomber
     
     @staticmethod
     def create_mosquito(showing):
-        mosquito = Aliens("Mosquito", 50, 5, 50, 1, 1, player, 25, "Pygame_GroupProject\Assets\Aliens\\Normal\Mosquito.png", [entities], showing)
+        mosquito = Aliens("Mosquito", 50, 5, 50, 500, 500, player, 25, "Pygame_GroupProject\Assets\Aliens\\Normal\Mosquito.png", [entities], showing)
         mosquito.convert_spawn_rate(False, bomber.spawn_rate)
         return mosquito
     
     @staticmethod
     def create_sniper(showing):
-        sniper = Aliens("Sniper", 40, 1, 75, 1, 1, player, 15, "Pygame_GroupProject\Assets\Aliens\\Normal\Sniper.png", [entities], showing)
+        sniper = Aliens("Sniper", 40, 1, 75, 600, 600, player, 15, "Pygame_GroupProject\Assets\Aliens\\Normal\Sniper.png", [entities], showing)
         sniper.convert_spawn_rate(False, mosquito.spawn_rate)
         return sniper
 

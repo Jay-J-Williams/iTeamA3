@@ -1,8 +1,11 @@
 {
   "ExpandedNodes": [
     "",
-    "\\Pygame_GroupProject"
+    "\\Pygame_GroupProject",
+    "\\Pygame_GroupProject\\Assets",
+    "\\Pygame_GroupProject\\Assets\\Aliens",
+    "\\Pygame_GroupProject\\Assets\\Aliens\\Normal"
   ],
-  "SelectedNode": "\\Pygame_GroupProject\\Adam's_Refinements.py",
+  "SelectedNode": "\\Pygame_GroupProject\\SolusMiles.py",
   "PreviewInSolutionExplorer": false
 }
