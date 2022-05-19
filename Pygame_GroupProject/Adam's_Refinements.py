@@ -3,6 +3,7 @@ import pygame, sys
 background = pygame.sprite.Group() #Room
 entities = pygame.sprite.Group() #Player/Aliens
 bullets = pygame.sprite.Group() #Bullets
+Bulls = []
 #--------------------------------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------------------------------
@@ -35,10 +36,10 @@ class Game:
         self.Create_Map()
     #------------------------------------------------------
     def Create_Map(self):
-        room = "Pygame_GroupProject\Pygame_GroupProject\Assets\Room\Room.png"
+        room = "Pygame_GroupProject\Assets\Room\Room.png"
         Room(room, self.Width, self.Height)
 
-        image = "Pygame_GroupProject\Pygame_GroupProject\Assets\Player\Player.png"
+        image = "Pygame_GroupProject\Assets\Player\Player.png"
         global player
         player = Player(100, 5, 20, (self.Width / 2), (self.Height / 2), image, [entities], self.Tilesize)
     #------------------------------------------------------
@@ -50,6 +51,9 @@ class Game:
 
         self.screen.fill("Black")
         player.Update(self.Width, self.Height, self.Tilesize)
+
+        for b in Bulls:
+            b.Move(self.Height)
 
         background.draw(self.display_surface)
         entities.draw(self.display_surface)
@@ -158,12 +162,13 @@ class Player(Character):
         keys = pygame.key.get_pressed()
         mouse_clicks = pygame.mouse.get_pressed()
 
-        if keys[pygame.K_SPACE] or mouse_clicks[0]:
+        if keys[pygame.K_SPACE] or mouse_clicks[0]: # [0] = Left Click
             Bullet(self.x, self.y, tilesize)
+            self.weapon.isShot = True
     #------------------------------------------------------
     def Update(self, width, height, tilesize):
-        self.Movement(width, height)
-        self.Shoot(tilesize)
+        self.Movement(width, height)      
+        #self.Shoot(tilesize)
 #--------------------------------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------------------------------
@@ -191,9 +196,21 @@ class Bullet(pygame.sprite.Sprite):
         self.x = x
         self.y = y
         self.speed = 20
-        self.image = "Pygame_GroupProject\Pygame_GroupProject\Assets\Bullet\Bullet.png"
+        self.size = tilesize
+        self.image = "Pygame_GroupProject\Assets\Bullet\Bullet.png"
         self.char = Sprite(((x + 24 / 2), (y + 24 / 2)), self.image, [bullets], (tilesize / 4))
         self.rect = self.char.rect
+
+        Bulls.append(self)
+    #------------------------------------------------------
+    def Move(self, height):
+        max_size = self.size * 2
+        try:
+            if self.y < (height - max_size):
+                self.y += self.speed
+        except Exception as e:
+            print(e)
+            print("Fail")
 #--------------------------------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------------------------------
