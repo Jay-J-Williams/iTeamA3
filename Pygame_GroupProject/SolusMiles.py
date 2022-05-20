@@ -76,11 +76,12 @@ class Game:
                 sys.exit()
 
         self.screen.fill("Black")
-        player.Update(self.Width, self.Height, self.Tilesize)
+        player.Update()
         GameManager.update_aliens()
+        Bullet.update_bullets()
 
         for b in Bulls:
-            b.Move(self.Height)
+            b.Move()
 
         background.draw(self.display_surface)
         entities.draw(self.display_surface)
@@ -154,10 +155,11 @@ class Player(Character):
         super().__init__(health, speed, damage, pos_x, pos_y, image, group)
         self.weapon = weapon
         self.powerUp = None
+        self.last_move = None
         self.char = Sprite((pos_x, pos_y), image, group, self.size)
         self.rect = self.char.rect
     #------------------------------------------------------
-    def Movement(self, width, height):
+    def Movement(self):
         keys = pygame.key.get_pressed()
         max_move = self.size * 2
 
@@ -165,80 +167,120 @@ class Player(Character):
             self.char.kill()
             self.char = ImageTransformer(self.org_image, 270)
             self.char = self.char.ReturnImage((self.pos_x, self.pos_y), self.group, self.size)
-            self.pos_x -= self.speed           
+            self.pos_x -= self.speed    
+            self.last_move = "left"
         #------------------------------------------------------
-        elif keys[pygame.K_d] and self.pos_x < (width - max_move):
+        elif keys[pygame.K_d] and self.pos_x < (game.Width - max_move):
             self.char.kill()
             self.char = ImageTransformer(self.org_image, 90)
             self.char = self.char.ReturnImage((self.pos_x, self.pos_y), self.group, self.size)
             self.pos_x += self.speed
+            self.last_move = "right"
         #------------------------------------------------------
         elif keys[pygame.K_w] and self.pos_y > self.size:
             self.char.kill()
             self.char = ImageTransformer(self.org_image, 180)
             self.char = self.char.ReturnImage((self.pos_x, self.pos_y), self.group, self.size)
             self.pos_y -= self.speed
+            self.last_move = "up"
         #------------------------------------------------------
-        elif keys[pygame.K_s] and self.pos_y < (height - max_move):
+        elif keys[pygame.K_s] and self.pos_y < (game.Height - max_move):
             self.char.kill()
             self.char = ImageTransformer(self.org_image, 0)
             self.char = self.char.ReturnImage((self.pos_x, self.pos_y), self.group, self.size)
             self.pos_y += self.speed
+            self.last_move = "down"
     #------------------------------------------------------
-    def Shoot(self, tilesize):
+    def Shoot(self):
         keys = pygame.key.get_pressed()
         mouse_clicks = pygame.mouse.get_pressed()
 
         if keys[pygame.K_SPACE] or mouse_clicks[0]: # [0] = Left Click
-            Bullet(self.pos_x, self.pos_y, tilesize)
+            Bullet(self.pos_x, self.pos_y)
     #------------------------------------------------------
-    def Update(self, width, height, tilesize):
-        self.Movement(width, height)  
-        self.Shoot(tilesize)
+    def Update(self):
+        self.Movement()  
+        self.Shoot()
 #--------------------------------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------------------------------
 class Weapon():
     damage = None 
-    fireRate = None 
-    shotRange = None
+    fire_rate = None 
+    shot_range = None
     isShot = None
     #------------------------------------------------------
-    def __init__(self, damage, fireRate, shotRange):
+    def __init__(self, damage, fire_rate, shot_range):
         self.damage = damage
-        self.fireRate = fireRate
-        self.shotRange = shotRange
+        self.fire_rate = fire_rate
+        self.shot_range = shot_range
         self.isShot = False
 #--------------------------------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------------------------------
-class Bullet(pygame.sprite.Sprite):   
+class Bullet():   
     x = None
     y = None
     speed = None
     image = None
     #------------------------------------------------------
-    def __init__(self, x, y, tilesize):
+    def __init__(self, x, y):
         self.x = x
         self.y = y
-        self.speed = 20
-        self.size = tilesize
+        self.speed = player.weapon.fire_rate
+        self.size = game.Tilesize * 0.2
         self.image = "Pygame_GroupProject\Assets\Bullet\Bullet.png"
-        self.char = Sprite(((x + 24 / 2), (y + 24 / 2)), self.image, [bullets], (tilesize / 4))
+        self.org_image = self.image
+        self.char = Sprite(((x + 24 / 2), (y + 24 / 2)), self.image, [bullets], (game.Tilesize / 4))
         self.rect = self.char.rect
+        self.group = bullets
+        self.direction = player.last_move
 
         Bulls.append(self)
     #------------------------------------------------------
-    def Move(self, height):
-        max_size = self.size * 2
-        try:
-            if self.y < (height - max_size):
-                print("|-|-|-|")
-                self.y += self.speed
-                print("...Try_IT_Out...")
-        except Exception as e:
-            print(e)
-            print("Fail")
+    def Move(self):
+        #try:                                             
+        if self.direction == "up":
+            self.y -= self.speed
+        elif self.direction == "down":
+            self.y += self.speed
+        elif self.direction == "right":
+            self.x += self.speed
+        elif self.direction == "left":
+            self.x -= self.speed
+
+        #except Exception as e:
+        #    print(e)
+        #    print("Fail")
+
+#Old move method
+        #max_size = self.size * 2
+        #try:
+        #    if self.y < (height - max_size):
+        #        print("|-|-|-|")
+        #        self.y += self.speed
+        #        print("...Try_IT_Out...")
+        #except Exception as e:
+        #    print(e)
+        #    print("Fail")
+
+    @staticmethod
+    def update_bullets():
+        if len(Bulls) > 0:
+            i = 0
+            while(i < len(Bulls)):
+                Bulls[i].char.kill()
+                Bulls[i].char = ImageTransformer(Bulls[i].org_image, 0)
+                Bulls[i].char = Bulls[i].char.ReturnImage((Bulls[i].x, Bulls[i].y), Bulls[i].group, Bulls[i].size)
+                if Bulls[i].x > game.Tilesize * 29 or Bulls[i].x < game.Tilesize:
+                    Bulls[i].char.kill()
+                    del(Bulls[i])
+                elif Bulls[i].y > game.Tilesize * 16 or Bulls[i].y < game.Tilesize:
+                    Bulls[i].char.kill()
+                    del(Bulls[i])
+                else:
+                    Bulls[i].Move()
+                i+= 1
 #--------------------------------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------------------------------
@@ -545,13 +587,13 @@ class GameManager():
     
     @staticmethod
     def create_bomber(showing):
-        bomber = Aliens("Bomber", 30, 6, 100, 400, 400, player, 10, "Pygame_GroupProject\Assets\Aliens\\Normal\Bomber.png", [entities], showing)
+        bomber = Aliens("Bomber", 30, 4, 100, 400, 400, player, 10, "Pygame_GroupProject\Assets\Aliens\\Normal\Bomber.png", [entities], showing)
         bomber.convert_spawn_rate(False, armoured_wing.spawn_rate)
         return bomber
     
     @staticmethod
     def create_mosquito(showing):
-        mosquito = Aliens("Mosquito", 50, 5, 50, 500, 500, player, 25, "Pygame_GroupProject\Assets\Aliens\\Normal\Mosquito.png", [entities], showing)
+        mosquito = Aliens("Mosquito", 50, 4, 50, 500, 500, player, 25, "Pygame_GroupProject\Assets\Aliens\\Normal\Mosquito.png", [entities], showing)
         mosquito.convert_spawn_rate(False, bomber.spawn_rate)
         return mosquito
     
