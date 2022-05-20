@@ -1,8 +1,9 @@
 import pygame, sys, random
 
-background = pygame.sprite.Group() #Room
-entities = pygame.sprite.Group() #Player/Aliens
-bullets = pygame.sprite.Group() #Bullets
+background = pygame.sprite.Group() #Room | For visible spawning
+entities = pygame.sprite.Group() #Player/Aliens | For visible spawning
+aliens = pygame.sprite.Group() #Aliens | For collisions
+bullets = pygame.sprite.Group() #Bullets | For visible spawning
 Bulls = []
 
 class allErrors(Exception):
@@ -26,19 +27,15 @@ class Game:
 
         self.Width = 1280
         self.Height = 720
-        self.Tilesize = 48
+        
+        if self.Width == 1280:
+            self.Tilesize = 48
+        elif self.Width == 1920:
+            self.Tilesize = 64
+        else:
+            raise numErrors("Width must be either 1280 or 1920")
+
         self.FPS = 60
-
-        # Size possibilities -
-            # 1280 / 720  | Tilesize = 48
-            # 1920 / 1080 | Tilesize = 64
-            # 2560 / 1440 | Tilesize = 96 - So far, do not use
-            # 3840 / 2160 | Tilesize = 128 - So far, do not use
-
-        # Simply input the size you want to test
-        # NOTE - This will change when a main menu is implemented
-
-        # - Adam
 
         self.screen = pygame.display.set_mode((self.Width, self.Height), pygame.FULLSCREEN)
         self.display_surface = pygame.display.get_surface()
@@ -51,7 +48,7 @@ class Game:
         room = "Pygame_GroupProject\Assets\Room\Room.png"
         Room(room, self.Width, self.Height)
         global player
-        player = GameManager.create_player(pistol)
+        player = GameManager.create_player(shotgun)
         global shield
         shield = GameManager.create_shield(False)
         global turret
@@ -158,6 +155,8 @@ class Player(Character):
         self.last_move = None
         self.char = Sprite((pos_x, pos_y), image, group, self.size)
         self.rect = self.char.rect
+
+        self.cooldown = 500
     #------------------------------------------------------
     def Movement(self):
         keys = pygame.key.get_pressed()
@@ -195,11 +194,19 @@ class Player(Character):
         keys = pygame.key.get_pressed()
         mouse_clicks = pygame.mouse.get_pressed()
 
-        if keys[pygame.K_SPACE] or mouse_clicks[0]: # [0] = Left Click
-            Bullet(self.pos_x, self.pos_y)
+         # [0] = Left Click
+        if self.cooldown >= 100:
+            if (keys[pygame.K_SPACE] or mouse_clicks[0]):
+                Bullet(self.pos_x, self.pos_y)
+                self.cooldown = 0
+        else:
+            self.cooldown += self.weapon.fire_rate
+
+        #if keys[pygame.K_SPACE] or mouse_clicks[0]:
+        #    Bullet(self.pos_x, self.pos_y)
     #------------------------------------------------------
     def Update(self):
-        self.Movement()  
+        self.Movement()
         self.Shoot()
 #--------------------------------------------------------------------------------------------------------
 
@@ -214,7 +221,6 @@ class Weapon():
         self.damage = damage
         self.fire_rate = fire_rate
         self.shot_range = shot_range
-        self.isShot = False
 #--------------------------------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------------------------------
@@ -227,7 +233,7 @@ class Bullet():
     def __init__(self, x, y):
         self.x = x
         self.y = y
-        self.speed = player.weapon.fire_rate
+        self.speed = 5
         self.size = game.Tilesize * 0.2
         self.image = "Pygame_GroupProject\Assets\Bullet\Bullet.png"
         self.org_image = self.image
@@ -235,7 +241,7 @@ class Bullet():
         self.rect = self.char.rect
         self.group = bullets
         self.direction = player.last_move
-
+        self.hit = False
         Bulls.append(self)
     #------------------------------------------------------
     def Move(self):
@@ -248,21 +254,18 @@ class Bullet():
             self.x += self.speed
         elif self.direction == "left":
             self.x -= self.speed
-
-        #except Exception as e:
-        #    print(e)
-        #    print("Fail")
-
-#Old move method
-        #max_size = self.size * 2
-        #try:
-        #    if self.y < (height - max_size):
-        #        print("|-|-|-|")
-        #        self.y += self.speed
-        #        print("...Try_IT_Out...")
-        #except Exception as e:
-        #    print(e)
-        #    print("Fail")
+    #------------------------------------------------------
+    def Collision(self):
+        if len(GameManager.aliens_alive) > 0 and len(Bulls) > 0:
+            i = 0
+            while(i < len(GameManager.aliens_alive)):
+                  print(self.x)
+                  if self.x == GameManager.aliens_alive[i].pos_x and self.y == GameManager.aliens_alive[i].pos_y:
+                     GameManager.aliens_alive[i].health -= player.weapon.damage
+                     self.char.kill()
+                     del(self)
+                     print("It's Aliiiiiiive! ...wait")
+                  i += 1
 
     @staticmethod
     def update_bullets():
@@ -272,14 +275,19 @@ class Bullet():
                 Bulls[i].char.kill()
                 Bulls[i].char = ImageTransformer(Bulls[i].org_image, 0)
                 Bulls[i].char = Bulls[i].char.ReturnImage((Bulls[i].x, Bulls[i].y), Bulls[i].group, Bulls[i].size)
+                #------------------------------------------------------
                 if Bulls[i].x > game.Tilesize * 29 or Bulls[i].x < game.Tilesize:
                     Bulls[i].char.kill()
                     del(Bulls[i])
+                #------------------------------------------------------
                 elif Bulls[i].y > game.Tilesize * 16 or Bulls[i].y < game.Tilesize:
                     Bulls[i].char.kill()
                     del(Bulls[i])
+                #------------------------------------------------------
                 else:
                     Bulls[i].Move()
+                    #Bulls[i].Collision()
+                #------------------------------------------------------
                 i+= 1
 #--------------------------------------------------------------------------------------------------------
 
@@ -378,11 +386,11 @@ class Aliens(Character):
             self.pos_y = 5 * game.Tilesize # 5 x tilesize
         #------------------------------------------------------
         elif door_choice == 2: # Left 2
-            self.pos_x = 0 * game.Tilesize # 0 x tilesize
+            self.pos_x = 0 * game.Tilesize  # 0 x tilesize
             self.pos_y = 11 * game.Tilesize # 11 x tilesize
         #------------------------------------------------------
         elif door_choice == 3: # Bottom 1
-            self.pos_x = 8 * game.Tilesize # 8 x tilesize
+            self.pos_x = 8 * game.Tilesize  # 8 x tilesize
             self.pos_y = 16 * game.Tilesize # 16 x tilesize
         #------------------------------------------------------
         elif door_choice == 4: # Bottom 2 
@@ -391,7 +399,7 @@ class Aliens(Character):
         #------------------------------------------------------
         elif door_choice == 5: # Right 1 
             self.pos_x = 29 * game.Tilesize # 29 x tilesize
-            self.pos_y = 5 * game.Tilesize # 5 x tilesize
+            self.pos_y = 5 * game.Tilesize  # 5 x tilesize
         #------------------------------------------------------
         elif door_choice == 6: # Right 2
             self.pos_x = 29 * game.Tilesize # 29 x tilesize
@@ -399,7 +407,7 @@ class Aliens(Character):
         #------------------------------------------------------
         elif door_choice == 7: # Top 1
             self.pos_x = 21 * game.Tilesize # 21 x tilesize
-            self.pos_y = 0 * game.Tilesize # 0 x tilesize
+            self.pos_y = 0 * game.Tilesize  # 0 x tilesize
         #------------------------------------------------------
         elif door_choice == 8: # Top 2
             self.pos_x = 8 * game.Tilesize # 8 x tilesize
@@ -519,7 +527,7 @@ class GameManager():
         while(i < len(GameManager.aliens_alive)):
             if GameManager.aliens_alive[i].name == alien_name:
                 GameManager.aliens_alive[i].char.kill()
-                del (GameManager.aliens_alive[i])
+                del(GameManager.aliens_alive[i])
             i+= 1
 
     @staticmethod
@@ -563,7 +571,9 @@ class GameManager():
             GameManager.aliens_alive[i].char = ImageTransformer(GameManager.aliens_alive[i].org_image, 0)
             GameManager.aliens_alive[i].char = GameManager.aliens_alive[i].char.ReturnImage((GameManager.aliens_alive[i].pos_x, GameManager.aliens_alive[i].pos_y), GameManager.aliens_alive[i].group, GameManager.aliens_alive[i].size)
             GameManager.aliens_alive[i].move()
-            i+= 1
+            if GameManager.aliens_alive[i].health < 1:
+                GameManager.remove_alien(GameManager.aliens_alive[i].name)
+            i += 1
 
 
 #parameters - (health, speed, damage, pos_x, pos_y, target, spawn_rate, image, groups, game width, game height)
@@ -607,16 +617,16 @@ class GameManager():
     @staticmethod
     def create_player(weapon: object):
         if weapon == pistol:
-            image = "Pygame_GroupProject\Assets\Player\Player.png"
+            image = "Pygame_GroupProject\Assets\Player\Player_Pistol.png"
         
         elif weapon == shotgun:
-            image = "Pygame_GroupProject\Assets\Player\Player.png"
+            image = "Pygame_GroupProject\Assets\Player\Player_Shotgun.png"
 
         elif weapon == smg:
-            image = "Pygame_GroupProject\Assets\Player\Player.png"
+            image = "Pygame_GroupProject\Assets\Player\Player_SMG.png"
 
         elif weapon == rifle:
-            image = "Pygame_GroupProject\Assets\Player\Player.png"
+            image = "Pygame_GroupProject\Assets\Player\Player_Rifle.png"
 
         else:
             raise entryErrors("You must enter a weapon object")
