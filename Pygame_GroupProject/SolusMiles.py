@@ -24,9 +24,9 @@ class Game:
     def __init__(self):
         pygame.init()
 
-        self.Width = 1920
-        self.Height = 1080
-        self.Tilesize = 64
+        self.Width = 1280
+        self.Height = 720
+        self.Tilesize = 48
         self.FPS = 60
 
         # Size possibilities -
