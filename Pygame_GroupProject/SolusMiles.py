@@ -365,26 +365,74 @@ class Aliens(Character):
         #------------------------------------------------------
         print(door_choice)
 
+#Physical attacker movement
     def move(self):
         #------------------------------------------------------
-        self.pos_x = 1
-        if (self.pos_x - self.target.pos_x) > (self.pos_y - self.target.pos_y):
-            if self.target.pos_x > game.Width / 2:
-                #while(self.pos_x < self.target.pos_x):
-                self.pos_x += self.speed
-            #------------------------------------------------------
-            elif self.target.pos_x < game.Width / 2:
-                #while(self.pos_x > self.target.pos_x):
-                self.pos_x -= self.speed
+        if self.pos_x != player.pos_x:
+             if self.pos_x < player.pos_x:
+                    self.pos_x += self.speed * 0.5
         #------------------------------------------------------
-        elif (self.pos_y - self.target.pos_y) > (self.pos_x - self.target.pos_x):
-            if self.target.pos_y > game.Height / 2:
-                #while(self.pos_y > self.target.pos_y):
-                self.pos_y -= self.speed
-            #------------------------------------------------------
-            elif self.target.pos_y < game.Height / 2:
-                #while(self.pos_y < self.target.pos_y):
-                self.pos_y += self.speed
+             elif self.pos_x > player.pos_x:
+                self.pos_x -= self.speed * 0.5
+        #------------------------------------------------------
+        if self.pos_y != player.pos_y:
+             if self.pos_y > player.pos_y:
+                self.pos_y -= self.speed * 0.5
+        #------------------------------------------------------
+             elif self.pos_y < player.pos_y:
+                self.pos_y += self.speed * 0.5
+
+# Door exiting
+         #i = 0
+         #if self.pos_x == 0 and self.pos_y == 5 * game.Tilesize: # Left 1
+         #    while (i < len(GameManager.aliens_alive)):
+         #        if GameManager.aliens_alive[i].pos_x != self.pos_x + game.Tilesize and GameManager.aliens_alive[i].pos_y != self.pos_y + game.Tilesize:
+         #            can_move = True
+         #        else:
+         #            can_move = False
+         #elif self.pos_x == 0 and self.pos_y == 11 * game.Tilesize: # Left 2
+         #    while (i < len(GameManager.aliens_alive)):
+         #        if GameManager.aliens_alive[i].pos_x != self.pos_x + game.Tilesize and GameManager.aliens_alive[i].pos_y != self.pos_y + game.Tilesize:
+         #            can_move = True
+         #        else:
+         #            can_move = False
+         #elif self.pos_x == 8 * game.Tilesize and self.pos_y == 16 * game.Tilesize: # Bottom 1
+         #    while (i < len(GameManager.aliens_alive)):
+         #        if GameManager.aliens_alive[i].pos_x != self.pos_x + game.Tilesize and GameManager.aliens_alive[i].pos_y != self.pos_y + game.Tilesize:
+         #            can_move = True
+         #        else:
+         #            can_move = False
+         #elif self.pos_x == 21 * game.Tilesize and self.pos_y == 16 * game.Tilesize: # Bottom 2
+         #    while (i < len(GameManager.aliens_alive)):
+         #        if GameManager.aliens_alive[i].pos_x != self.pos_x + game.Tilesize and GameManager.aliens_alive[i].pos_y != self.pos_y + game.Tilesize:
+         #            can_move = True
+         #        else:
+         #            can_move = False
+         #elif self.pos_x == 29 * game.Tilesize and self.pos_y == 5 * game.Tilesize: # Right 1
+         #    while (i < len(GameManager.aliens_alive)):
+         #        if GameManager.aliens_alive[i].pos_x != self.pos_x + game.Tilesize and GameManager.aliens_alive[i].pos_y != self.pos_y + game.Tilesize:
+         #            can_move = True
+         #        else:
+         #            can_move = False
+         #elif self.pos_x == 29 * game.Tilesize and self.pos_y == 11 * game.Tilesize: # Right 2
+         #    while (i < len(GameManager.aliens_alive)):
+         #        if GameManager.aliens_alive[i].pos_x != self.pos_x + game.Tilesize and GameManager.aliens_alive[i].pos_y != self.pos_y + game.Tilesize:
+         #            can_move = True
+         #        else:
+         #            can_move = False
+         #elif self.pos_x == 21 * game.Tilesize and self.pos_y == 0 * game.Tilesize: # Top 1
+         #    while (i < len(GameManager.aliens_alive)):
+         #        if GameManager.aliens_alive[i].pos_x != self.pos_x + game.Tilesize and GameManager.aliens_alive[i].pos_y != self.pos_y + game.Tilesize:
+         #            can_move = True
+         #        else:
+         #            can_move = False
+         #elif self.pos_x == 8 * game.Tilesize and self.pos_y == 0 * game.Tilesize: # Top 2
+         #    while (i < len(GameManager.aliens_alive)):
+         #        if GameManager.aliens_alive[i].pos_x != self.pos_x + game.Tilesize and GameManager.aliens_alive[i].pos_y != self.pos_y + game.Tilesize:
+         #            can_move = True
+         #        else:
+         #            can_move = False
+         #print(can_move)
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
@@ -429,7 +477,7 @@ class GameManager():
         while(i < len(GameManager.aliens_alive)):
             if GameManager.aliens_alive[i].name == alien_name:
                 GameManager.aliens_alive[i].char.kill()
-                del GameManager.aliens_alive[i]
+                del (GameManager.aliens_alive[i])
             i+= 1
 
     @staticmethod
@@ -472,8 +520,8 @@ class GameManager():
             GameManager.aliens_alive[i].char.kill()
             GameManager.aliens_alive[i].char = ImageTransformer(GameManager.aliens_alive[i].org_image, 0)
             GameManager.aliens_alive[i].char = GameManager.aliens_alive[i].char.ReturnImage((GameManager.aliens_alive[i].pos_x, GameManager.aliens_alive[i].pos_y), GameManager.aliens_alive[i].group, GameManager.aliens_alive[i].size)
-            #GameManager.aliens_alive[i].move()
-            i += 1
+            GameManager.aliens_alive[i].move()
+            i+= 1
 
 
 #parameters - (health, speed, damage, pos_x, pos_y, target, spawn_rate, image, groups, game width, game height)
@@ -497,7 +545,7 @@ class GameManager():
     
     @staticmethod
     def create_bomber(showing):
-        bomber = Aliens("Bomber", 30, 7, 100, 400, 400, player, 10, "Pygame_GroupProject\Assets\Aliens\\Normal\Bomber.png", [entities], showing)
+        bomber = Aliens("Bomber", 30, 6, 100, 400, 400, player, 10, "Pygame_GroupProject\Assets\Aliens\\Normal\Bomber.png", [entities], showing)
         bomber.convert_spawn_rate(False, armoured_wing.spawn_rate)
         return bomber
     
@@ -537,7 +585,7 @@ class GameManager():
 pistol = Weapon(20, 3, 30)
 shotgun = Weapon(100, 1, 10)
 smg = Weapon(10, 10, 20)
-rifle = Weapon(30, 5, 50)
+rifle = Weapon(20, 5, 50)
 
 game = Game()
 game.Create_Map()
