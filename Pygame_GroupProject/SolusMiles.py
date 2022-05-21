@@ -76,7 +76,6 @@ class Game:
 
         self.screen.fill("Black")
         player.Update()
-        hud.update_healthbar()
         GameManager.update_aliens()
         Bullet.update_bullets()
 
@@ -86,6 +85,7 @@ class Game:
         background.draw(self.display_surface)
         entities.draw(self.display_surface)
         bullets.draw(self.display_surface)
+        hud.update_healthbar()
         pygame.display.update()
 
         self.clock.tick(self.FPS)
@@ -127,19 +127,11 @@ class ImageTransformer(pygame.sprite.Sprite):
 class HUD:
     def __init__(self):
         self.healthbar_length = player.health * 2
-        #self.image = image
-        #self.size = game.Tilesize
-        #self.group = [entities]
-        #self.char = Sprite((pos_x, pos_y), image, group, self.size)
-        #self.rect = self.char.rect
     #------------------------------------------------------
     def update_healthbar(self):
         if player.health < 101:
             pygame.draw.rect(game.display_surface, (255, 0, 0), pygame.Rect(10, 10, player.health * 2, 25))
             pygame.draw.rect (game.display_surface, (255,255,255), pygame.Rect(10, 10, self.healthbar_length, 25),4)
-            pygame.display.update()
-        #pygame.draw.rect (game.display_surface(255,0,0),(10,10,player.health/self.healthbar_length,25))
-        #pygame.draw.rect (game.display_surface(255,255,255),(10,10,self.healthbar_length,25),4)
 #--------------------------------------------------------------------------------------------------------
 class Character():
     health = None
