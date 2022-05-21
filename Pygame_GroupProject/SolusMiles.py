@@ -153,10 +153,33 @@ class Player(Character):
         self.weapon = weapon
         self.powerUp = None
         self.last_move = "down"
+        self.player_health = health
+        self.maximum_health = 100
+        self.healthbar_length = 200
+        self.health_ratio = self.maximum_health / self.healthbar_length
         self.char = Sprite((pos_x, pos_y), image, group, self.size)
         self.rect = self.char.rect
 
         self.cooldown = 500
+
+    #------------------------------------------------------
+    def get_damage(self, amount):
+        if self.player_health > 0:
+            self.player_health -= amount
+        if self.player_health <=0:
+            self.player_health = 0
+    #------------------------------------------------------
+    def get_health(self, amount):
+        if self.player_health < self.maximum_health:
+            self.player_health += amount
+        if self.player_health > self.maximum_health:
+            self.player_health = self.maximum_health
+    #------------------------------------------------------
+    def basic_health(self):
+        pygame.draw.rect (game.screen(255,0,0),(10,10,self.player_health/self.health_ratio,25))
+        pygame.draw.rect (game.screen(255,255,255),(10,10,self.healthbar_length,25),4)
+
+
     #------------------------------------------------------
     def Movement(self):
         keys = pygame.key.get_pressed()
@@ -207,6 +230,7 @@ class Player(Character):
     #------------------------------------------------------
     def Update(self):
         self.Movement()
+        self.basic_health()
         self.Shoot()
 #--------------------------------------------------------------------------------------------------------
 
