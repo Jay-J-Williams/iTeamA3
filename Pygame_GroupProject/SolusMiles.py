@@ -169,11 +169,7 @@ class Player(Character):
         self.cooldown = 500
     #------------------------------------------------------
     def take_damage(self, amount):
-        if self.health > 0:
-            self.health -= amount
-        if self.health < 1:
-            pygame.quit()
-            sys.exit()
+        self.health -= amount
     #------------------------------------------------------
     def heal(self, amount):
         if self.health < 100:
@@ -231,6 +227,9 @@ class Player(Character):
     def Update(self):
         self.Movement()
         self.Shoot()
+        if self.health < 1:
+            pygame.quit()
+            sys.exit()
 #--------------------------------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------------------------------
