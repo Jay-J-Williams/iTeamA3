@@ -40,6 +40,8 @@ class Game:
         #------------------------------------------------------
 
         self.FPS = 60
+        self.run = False
+        self.keys = pygame.key.get_pressed()
 
         self.screen = pygame.display.set_mode((self.Width, self.Height), pygame.FULLSCREEN)
         self.display_surface = pygame.display.get_surface()
@@ -135,18 +137,9 @@ class HUD:
     def update_healthbar(self):
         if player.health < 101:
             pygame.draw.rect(game.display_surface, (255, 0, 0), pygame.Rect(10, 10, player.health * 2, 25))
-            pygame.draw.rect (game.display_surface, (255,255,255), pygame.Rect(10, 10, self.healthbar_length, 25),4)
+            pygame.draw.rect(game.display_surface, (255,255,255), pygame.Rect(10, 10, self.healthbar_length, 25),4)
 #--------------------------------------------------------------------------------------------------------
 class Character():
-    health = None
-    speed = None
-    damage = None
-    pos_x = None
-    pos_y = None
-    image = None
-    group = None
-    size = None
-    #------------------------------------------------------
     def __init__(self, health, speed, damage, pos_x, pos_y, image, group):
         self.health = health
         self.speed = speed
@@ -160,8 +153,6 @@ class Character():
 
 #--------------------------------------------------------------------------------------------------------
 class Player(Character):
-    weapon = None
-    powerUp = None
     #------------------------------------------------------
     def __init__(self, health, speed, damage, pos_x, pos_y, weapon, image, group):
         super().__init__(health, speed, damage, pos_x, pos_y, image, group)
@@ -216,17 +207,22 @@ class Player(Character):
     def Shoot(self):
         keys = pygame.key.get_pressed()
         mouse_clicks = pygame.mouse.get_pressed()
-
-         # [0] = Left Click
+         
+        #------------------------------------------------------
         if self.cooldown >= 100:
-            if (keys[pygame.K_SPACE] or mouse_clicks[0]):
-                Bullet(self.pos_x, self.pos_y)
+            if (keys[pygame.K_SPACE] or mouse_clicks[0]): # [0] = Left Click
+                if player.last_move == "up":
+                    Bullet((self.pos_x + (game.Tilesize / 2)), (self.pos_y - (game.Tilesize / 2)))
+                elif player.last_move == "down":
+                    Bullet((self.pos_x + (game.Tilesize / 2)), (self.pos_y + (game.Tilesize / 2)))
+                elif player.last_move == "left":
+                    Bullet((self.pos_x - (game.Tilesize / 2)), (self.pos_y + (game.Tilesize / 2)))
+                elif player.last_move == "right":
+                    Bullet((self.pos_x + (game.Tilesize / 2)), (self.pos_y + (game.Tilesize / 2)))
                 self.cooldown = 0
+        #------------------------------------------------------
         else:
             self.cooldown += self.weapon.fire_rate
-
-        #if keys[pygame.K_SPACE] or mouse_clicks[0]:
-        #    Bullet(self.pos_x, self.pos_y)
     #------------------------------------------------------
     def Update(self):
         self.Movement()
@@ -238,10 +234,6 @@ class Player(Character):
 
 #--------------------------------------------------------------------------------------------------------
 class Weapon():
-    damage = None 
-    fire_rate = None 
-    shot_range = None
-    #------------------------------------------------------
     def __init__(self, damage, fire_rate, shot_range):
         self.damage = damage
         self.fire_rate = fire_rate
@@ -250,11 +242,6 @@ class Weapon():
 
 #--------------------------------------------------------------------------------------------------------
 class Bullet():   
-    x = None
-    y = None
-    speed = None
-    image = None
-    #------------------------------------------------------
     def __init__(self, x, y):
         self.x = x
         self.y = y
@@ -262,7 +249,7 @@ class Bullet():
         self.size = game.Tilesize * 0.2
         self.image = "Pygame_GroupProject\Assets\Bullet\Bullet.png"
         self.org_image = self.image
-        self.char = Sprite(((x + 24 / 2), (y + 24 / 2)), self.image, [bullets], (game.Tilesize / 4))
+        self.char = Sprite((self.x, self.y), self.image, [bullets], (game.Tilesize / 8))
         self.rect = self.char.rect
         self.group = bullets
         self.direction = player.last_move
@@ -318,10 +305,6 @@ class Bullet():
 
 #--------------------------------------------------------------------------------------------------------
 class Aliens(Character):
-    __target = None
-    __spawn_rate = None
-    __name = None
-
     def __init__(self, name, health, speed, damage, pos_x, pos_y, target, spawn_rate, image, group, showing):
         super().__init__(health, speed, damage, pos_x, pos_y, image, group)
         self.target = target
@@ -331,48 +314,7 @@ class Aliens(Character):
         self.can_move = None
         if showing == True:
             self.char = Sprite((pos_x, pos_y), image, group, self.size)
-            self.rect = self.char.rect
-
-    @property
-    def name(self):
-        return self.__name
-    
-    @property
-    def target(self):
-        return self.__target
-
-    @property
-    def spawn_rate(self):
-        return self.__spawn_rate
-
-    @name.setter
-    def name(self, value):
-        if "Shield" in value or "Turret" in value:
-            self.__name = value
-        elif "Armoured-wing" in value or "Bomber" in value:
-            self.__name = value
-        elif "Sniper" in value or "Mosquito" in value:
-            self.__name = value
-        else:
-            raise strErrors("You must enter a name of an alien")
-            
-        
-    @target.setter
-    def target(self, value: object):
-        if type(value) == object:
-            self.__target = value
-        else:
-            objectErrors("Target must be an object")
-
-    @spawn_rate.setter
-    def spawn_rate(self, value):
-        if type(value) == list or type(value) == int:
-            self.__spawn_rate = value
-        else:
-            entryErrors("The spawn rate must be initialised as an int, then turned into a list")
-
-    def __str__(self):
-        return self.__name
+            self.rect = self.char.rect 
 
     def convert_spawn_rate(self, first_conversion: bool, last_aliens_spawn_rate: list):
         if first_conversion == False:
@@ -465,6 +407,15 @@ class Aliens(Character):
         #------------------------------------------------------
              elif self.pos_y < player.pos_y:
                 self.pos_y += self.speed * 0.5
+
+#Ranged attacker movement
+    def ranged_move(self):
+        if self.door < 3:
+            if self.pos_y != player.pos_y:
+                self.pos_y += self.speed
+        elif self.door == 2 or self.door == 3:
+            if self.pos_x != player.pos_x:
+                self.pos_x += self.speed
 
 # Door exiting
     def exit_door(self):
@@ -700,5 +651,14 @@ rifle = Weapon(25, 5, 50)
 
 game = Game()
 game.Create_Map()
-while True:
+running = False
+
+#Press "r" to start the game. Note: this is where the menu will be
+while(running == False):
+    for event in pygame.event.get():
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_r:
+                running = True
+
+while(running):
     game.Run()
