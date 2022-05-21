@@ -25,7 +25,7 @@ class Game:
     def __init__(self):
         pygame.init()
 
-        self.Width = 1280 
+        self.Width = 1920
         #Either 1280 or 1920
         #------------------------------------------------------
         if self.Width == 1280:
@@ -55,7 +55,7 @@ class Game:
         room = "Pygame_GroupProject\Assets\Room\Room.png"
         Room(room, self.Width, self.Height)
         global player
-        player = GameManager.create_player(smg)
+        player = GameManager.create_player(pistol)
         global shield
         shield = GameManager.create_shield(False)
         global turret
@@ -90,12 +90,13 @@ class Game:
         player.Update()
         GameManager.update_aliens()
         Bullet.update_bullets()
-        hud.update_healthbar()
         GameManager.manage_rounds()
 
         background.draw(self.display_surface)
         entities.draw(self.display_surface)
+        aliens.draw(self.display_surface)
         bullets.draw(self.display_surface)
+        hud.update_healthbar()
         
         pygame.display.update()
         self.clock.tick(self.FPS)
@@ -179,7 +180,7 @@ class Player(Character):
     def Movement(self):
         keys = pygame.key.get_pressed()
         max_move = self.size * 2
-
+        #------------------------------------------------------
         if keys[pygame.K_a] and self.pos_x > self.size:
             self.char.kill()
             self.char = ImageTransformer(self.org_image, 270)
@@ -210,8 +211,7 @@ class Player(Character):
     #------------------------------------------------------
     def Shoot(self):
         keys = pygame.key.get_pressed()
-        mouse_clicks = pygame.mouse.get_pressed()
-         
+        mouse_clicks = pygame.mouse.get_pressed()         
         #------------------------------------------------------
         if self.cooldown >= 100:
             if (keys[pygame.K_SPACE] or mouse_clicks[0]): # [0] = Left Click
@@ -271,17 +271,25 @@ class Bullet():
         elif self.direction == "left":
             self.x -= self.speed
     #------------------------------------------------------
-    def Collision(self):
-        if len(GameManager.aliens_alive) > 0:
-            i = 0
-            while(i < len(GameManager.aliens_alive)):
-                  print(self.x)
-                  if self.x == GameManager.aliens_alive[i].pos_x and self.y == GameManager.aliens_alive[i].pos_y:
-                     GameManager.aliens_alive[i].health -= player.weapon.damage
-                     self.char.kill()
-                     del(self)
-                     print("It's Aliiiiiiive! ...wait")
-                  i += 1
+    #def Collision(self):
+        #if len(GameManager.aliens_alive) > 0:
+        #    i = 0
+        #    while(i < len(GameManager.aliens_alive)):
+        #          print(self.x)
+        #          if self.x == GameManager.aliens_alive[i].pos_x and self.y == GameManager.aliens_alive[i].pos_y:
+        #             GameManager.aliens_alive[i].health -= player.weapon.damage
+        #             self.char.kill()
+        #             del(self)
+        #             print("It's Aliiiiiiive! ...wait")
+        #          i += 1
+
+    def Collide(self):
+        hit = pygame.sprite.spritecollide(self.char, aliens, False)
+
+        if hit:
+            self.char.kill()
+            del(self)
+            print("Something happened")
 
     @staticmethod
     def update_bullets():
@@ -291,6 +299,7 @@ class Bullet():
                 Bulls[i].char.kill()
                 Bulls[i].char = ImageTransformer(Bulls[i].org_image, 0)
                 Bulls[i].char = Bulls[i].char.ReturnImage((Bulls[i].x, Bulls[i].y), Bulls[i].group, Bulls[i].size)
+                #Bulls[i].Collide()
                 #------------------------------------------------------
                 if Bulls[i].x > game.Tilesize * 29 or Bulls[i].x < game.Tilesize:
                     Bulls[i].char.kill()
@@ -302,7 +311,6 @@ class Bullet():
                 #------------------------------------------------------
                 else:
                     Bulls[i].Move()
-                    #Bulls[i].Collision()
                 #------------------------------------------------------
                 i+= 1
 #--------------------------------------------------------------------------------------------------------
@@ -330,6 +338,14 @@ class Aliens(Character):
             self.spawn_rate = list(range(starting_point, end_point))
         last_aliens_spawn_rate = self.spawn_rate
         return last_aliens_spawn_rate
+
+    def Collide(self):
+        hit = pygame.sprite.spritecollide(self.char, bullets, False)
+
+        if hit:
+            hit[0].kill()
+            del(hit[0])
+            self.health -= player.weapon.damage
 
     @staticmethod
     def random_spawn():
@@ -558,7 +574,7 @@ class GameManager():
                 GameManager.aliens_alive.append(alien)
                 print(GameManager.aliens_alive[i - 1].pos_x, GameManager.aliens_alive[i - 1].pos_y)
                 del(alien)
-                print(GameManager.aliens_alive[i - 1])
+                print(GameManager.aliens_alive[i - 1].__str__)
                 i+= 1
             #GameManager.remove_alien("Shield2")
             print("\n")
@@ -584,6 +600,7 @@ class GameManager():
             #GameManager.aliens_alive[i].exit_door()
             #if GameManager.aliens_alive[i].can_move == True:
             GameManager.aliens_alive[i].move()
+            GameManager.aliens_alive[i].Collide()
             if GameManager.aliens_alive[i].health < 1:
                 GameManager.remove_alien(GameManager.aliens_alive[i].name)
             i += 1
@@ -592,37 +609,37 @@ class GameManager():
 #parameters - (health, speed, damage, pos_x, pos_y, target, spawn_rate, image, groups, game width, game height)
     @staticmethod
     def create_shield(showing):
-        shield = Aliens("Shield", 200, 2, 20, 100, 100, player, 25, "Pygame_GroupProject\Assets\Aliens\\Normal\Shield_Armour.png", [entities], showing)
+        shield = Aliens("Shield", 200, 2, 20, 100, 100, player, 25, "Pygame_GroupProject\Assets\Aliens\\Normal\Shield_Armour.png", [aliens], showing)
         shield.convert_spawn_rate(True, None)
         return shield
 
     @staticmethod
     def create_turret(showing):
-        turret = Aliens("Turret", 200, 1, 15, 200, 200, player, 10, "Pygame_GroupProject\Assets\Aliens\\Normal\Turret.png", [entities], showing)
+        turret = Aliens("Turret", 200, 1, 15, 200, 200, player, 10, "Pygame_GroupProject\Assets\Aliens\\Normal\Turret.png", [aliens], showing)
         turret.convert_spawn_rate(False, shield.spawn_rate)
         return turret
     
     @staticmethod
     def create_armoured_wing(showing):
-        armoured_wing = Aliens("Armoured-wing", 150, 3, 30, 300, 300, player, 15, "Pygame_GroupProject\Assets\Aliens\\Normal\Armoured_Wing.png", [entities], showing)
+        armoured_wing = Aliens("Armoured-wing", 150, 3, 30, 300, 300, player, 15, "Pygame_GroupProject\Assets\Aliens\\Normal\Armoured_Wing.png", [aliens], showing)
         armoured_wing.convert_spawn_rate(False, turret.spawn_rate)
         return armoured_wing
     
     @staticmethod
     def create_bomber(showing):
-        bomber = Aliens("Bomber", 30, 4, 100, 400, 400, player, 10, "Pygame_GroupProject\Assets\Aliens\\Normal\Bomber.png", [entities], showing)
+        bomber = Aliens("Bomber", 30, 4, 100, 400, 400, player, 10, "Pygame_GroupProject\Assets\Aliens\\Normal\Bomber.png", [aliens], showing)
         bomber.convert_spawn_rate(False, armoured_wing.spawn_rate)
         return bomber
     
     @staticmethod
     def create_mosquito(showing):
-        mosquito = Aliens("Mosquito", 50, 4, 50, 500, 500, player, 25, "Pygame_GroupProject\Assets\Aliens\\Normal\Mosquito.png", [entities], showing)
+        mosquito = Aliens("Mosquito", 50, 4, 50, 500, 500, player, 25, "Pygame_GroupProject\Assets\Aliens\\Normal\Mosquito.png", [aliens], showing)
         mosquito.convert_spawn_rate(False, bomber.spawn_rate)
         return mosquito
     
     @staticmethod
     def create_sniper(showing):
-        sniper = Aliens("Sniper", 40, 1.5, 75, 600, 600, player, 15, "Pygame_GroupProject\Assets\Aliens\\Normal\Sniper.png", [entities], showing)
+        sniper = Aliens("Sniper", 40, 1.5, 75, 600, 600, player, 15, "Pygame_GroupProject\Assets\Aliens\\Normal\Sniper.png", [aliens], showing)
         sniper.convert_spawn_rate(False, mosquito.spawn_rate)
         return sniper
 
@@ -649,9 +666,9 @@ class GameManager():
         return player
 #----------------------------------------------------------------------------------------------------
 pistol = Weapon(20, 3, 30)
-shotgun = Weapon(200, 1, 10)
-smg = Weapon(15, 10, 20)
-rifle = Weapon(25, 5, 50)
+shotgun = Weapon(150, 1, 10)
+smg = Weapon(10, 10, 20)
+rifle = Weapon(20, 5, 50)
 
 game = Game()
 game.Create_Map()
