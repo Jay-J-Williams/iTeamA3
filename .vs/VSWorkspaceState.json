@@ -2,10 +2,10 @@
   "ExpandedNodes": [
     "",
     "\\Pygame_GroupProject",
-    "\\Pygame_GroupProject\\Pygame_GroupProject",
-    "\\Pygame_GroupProject\\Pygame_GroupProject\\Assets",
-    "\\Pygame_GroupProject\\Pygame_GroupProject\\Assets\\Alien"
+    "\\Pygame_GroupProject\\Assets",
+    "\\Pygame_GroupProject\\Assets\\Aliens",
+    "\\Pygame_GroupProject\\Assets\\Player"
   ],
-  "SelectedNode": "\\Pygame_GroupProject\\Pygame_GroupProject\\SolusMiles.py",
+  "SelectedNode": "\\Pygame_GroupProject\\Assets\\Bullet",
   "PreviewInSolutionExplorer": false
 }
