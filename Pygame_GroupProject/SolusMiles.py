@@ -61,6 +61,8 @@ class Game:
         mosquito = GameManager.create_mosquito(False)
         global sniper
         sniper = GameManager.create_sniper(False)
+        global hud
+        hud = HUD()
         GameManager.manage_rounds(0)
         #GameManager.__aliens_alive.append(test_alien)
     #------------------------------------------------------
@@ -74,6 +76,7 @@ class Game:
 
         self.screen.fill("Black")
         player.Update()
+        hud.update_healthbar()
         GameManager.update_aliens()
         Bullet.update_bullets()
 
@@ -121,6 +124,22 @@ class ImageTransformer(pygame.sprite.Sprite):
         return Sprite(pos, self.image, groups, size)
 #--------------------------------------------------------------------------------------------------------
 
+class HUD:
+    def __init__(self):
+        self.healthbar_length = player.health * 2
+        #self.image = image
+        #self.size = game.Tilesize
+        #self.group = [entities]
+        #self.char = Sprite((pos_x, pos_y), image, group, self.size)
+        #self.rect = self.char.rect
+    #------------------------------------------------------
+    def update_healthbar(self):
+        if player.health < 101:
+            pygame.draw.rect(game.display_surface, (255, 0, 0), pygame.Rect(10, 10, player.health * 2, 25))
+            pygame.draw.rect (game.display_surface, (255,255,255), pygame.Rect(10, 10, self.healthbar_length, 25),4)
+            pygame.display.update()
+        #pygame.draw.rect (game.display_surface(255,0,0),(10,10,player.health/self.healthbar_length,25))
+        #pygame.draw.rect (game.display_surface(255,255,255),(10,10,self.healthbar_length,25),4)
 #--------------------------------------------------------------------------------------------------------
 class Character():
     health = None
@@ -153,33 +172,22 @@ class Player(Character):
         self.weapon = weapon
         self.powerUp = None
         self.last_move = "down"
-        self.player_health = health
-        self.maximum_health = 100
-        self.healthbar_length = 200
-        self.health_ratio = self.maximum_health / self.healthbar_length
         self.char = Sprite((pos_x, pos_y), image, group, self.size)
         self.rect = self.char.rect
-
         self.cooldown = 500
-
     #------------------------------------------------------
-    def get_damage(self, amount):
-        if self.player_health > 0:
-            self.player_health -= amount
-        if self.player_health <=0:
-            self.player_health = 0
+    def take_damage(self, amount):
+        if self.health > 0:
+            self.health -= amount
+        if self.health < 1:
+            pygame.quit()
+            sys.exit()
     #------------------------------------------------------
-    def get_health(self, amount):
-        if self.player_health < self.maximum_health:
-            self.player_health += amount
-        if self.player_health > self.maximum_health:
-            self.player_health = self.maximum_health
-    #------------------------------------------------------
-    def basic_health(self):
-        pygame.draw.rect (game.screen(255,0,0),(10,10,self.player_health/self.health_ratio,25))
-        pygame.draw.rect (game.screen(255,255,255),(10,10,self.healthbar_length,25),4)
-
-
+    def heal(self, amount):
+        if self.health < 100:
+            self.health += amount
+        if self.health > 100:
+            self.health = 100
     #------------------------------------------------------
     def Movement(self):
         keys = pygame.key.get_pressed()
@@ -230,7 +238,6 @@ class Player(Character):
     #------------------------------------------------------
     def Update(self):
         self.Movement()
-        self.basic_health()
         self.Shoot()
 #--------------------------------------------------------------------------------------------------------
 
@@ -698,6 +705,5 @@ rifle = Weapon(25, 5, 50)
 
 game = Game()
 game.Create_Map()
-
 while True:
     game.Run()
