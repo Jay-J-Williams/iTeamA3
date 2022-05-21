@@ -25,7 +25,8 @@ class Game:
     def __init__(self):
         pygame.init()
 
-        self.Width = 1280
+        self.Width = 1280 
+        #Either 1280 or 1920
         #------------------------------------------------------
         if self.Width == 1280:
             self.Height = 720
@@ -41,14 +42,14 @@ class Game:
 
         self.FPS = 60
         self.run = False
-        self.keys = pygame.key.get_pressed()
+        pygame.mouse.set_visible(False)
+        self.game_round = 0
 
         self.screen = pygame.display.set_mode((self.Width, self.Height), pygame.FULLSCREEN)
         self.display_surface = pygame.display.get_surface()
 
         pygame.display.set_caption("Solus Miles")
         self.clock = pygame.time.Clock()
-
     #------------------------------------------------------
     def Create_Map(self):
         room = "Pygame_GroupProject\Assets\Room\Room.png"
@@ -69,7 +70,7 @@ class Game:
         sniper = GameManager.create_sniper(False)
         global hud
         hud = HUD()
-        GameManager.manage_rounds(0)
+        GameManager.manage_rounds()
         #GameManager.__aliens_alive.append(test_alien)
     #------------------------------------------------------
     def Run(self):
@@ -79,21 +80,24 @@ class Game:
             if (event.type == pygame.QUIT) or (keys[pygame.K_ESCAPE]):
                 pygame.quit()
                 sys.exit()
+            elif (keys[pygame.K_o]):
+                if len(GameManager.aliens_alive) > 0:
+                    GameManager.aliens_alive[0].char.kill()
+                    del(GameManager.aliens_alive[0])
 
         self.screen.fill("Black")
+
         player.Update()
         GameManager.update_aliens()
         Bullet.update_bullets()
-
-        for b in Bulls:
-            b.Move()
+        hud.update_healthbar()
+        GameManager.manage_rounds()
 
         background.draw(self.display_surface)
         entities.draw(self.display_surface)
         bullets.draw(self.display_surface)
-        hud.update_healthbar()
+        
         pygame.display.update()
-
         self.clock.tick(self.FPS)
 #--------------------------------------------------------------------------------------------------------
 
@@ -539,10 +543,10 @@ class GameManager():
             i+= 1
 
     @staticmethod
-    def manage_spawns(game_round: int):
+    def manage_spawns():
         spawn_rate_total = len(shield.spawn_rate) + len(turret.spawn_rate) + len(armoured_wing.spawn_rate) + len(bomber.spawn_rate) + len(mosquito.spawn_rate) + len(sniper.spawn_rate)
         if spawn_rate_total == 100:
-            aliens_needed = game_round * 3
+            aliens_needed = game.game_round * 3
             i = 1
             aliens_needed+= i
             while(aliens_needed > i):
@@ -565,11 +569,10 @@ class GameManager():
             raise numErrors("The spawn rates must add up to 100")
 
     @staticmethod
-    def manage_rounds(game_round: int):
+    def manage_rounds():
         if len(GameManager.aliens_alive) == 0:
-            game_round+= 1
-            GameManager.manage_spawns(game_round)
-        return game_round
+            game.game_round += 1
+            GameManager.manage_spawns()
 
     @staticmethod
     def update_aliens():
@@ -628,18 +631,19 @@ class GameManager():
     def create_player(weapon: object):
         if weapon == pistol:
             image = "Pygame_GroupProject\Assets\Player\Player_Pistol.png"
-        
+        #------------------------------------------------------
         elif weapon == shotgun:
             image = "Pygame_GroupProject\Assets\Player\Player_Shotgun.png"
-
+        #------------------------------------------------------
         elif weapon == smg:
             image = "Pygame_GroupProject\Assets\Player\Player_SMG.png"
-
+        #------------------------------------------------------
         elif weapon == rifle:
             image = "Pygame_GroupProject\Assets\Player\Player_Rifle.png"
-
+        #------------------------------------------------------
         else:
             raise entryErrors("You must enter a weapon object")
+        #------------------------------------------------------
         player = Player(100, 3, 20, (game.Width / 2), (game.Height / 2), weapon, image, [entities])
 
         return player
