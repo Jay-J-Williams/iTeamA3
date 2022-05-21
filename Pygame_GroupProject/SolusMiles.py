@@ -26,14 +26,18 @@ class Game:
         pygame.init()
 
         self.Width = 1280
-        self.Height = 720
-        
+        #------------------------------------------------------
         if self.Width == 1280:
+            self.Height = 720
             self.Tilesize = 48
+        #------------------------------------------------------
         elif self.Width == 1920:
+            self.Height = 1080
             self.Tilesize = 64
+        #------------------------------------------------------
         else:
             raise numErrors("Width must be either 1280 or 1920")
+        #------------------------------------------------------
 
         self.FPS = 60
 
