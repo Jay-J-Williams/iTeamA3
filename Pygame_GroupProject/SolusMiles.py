@@ -48,7 +48,7 @@ class Game:
         room = "Pygame_GroupProject\Assets\Room\Room.png"
         Room(room, self.Width, self.Height)
         global player
-        player = GameManager.create_player(shotgun)
+        player = GameManager.create_player(smg)
         global shield
         shield = GameManager.create_shield(False)
         global turret
@@ -152,7 +152,7 @@ class Player(Character):
         super().__init__(health, speed, damage, pos_x, pos_y, image, group)
         self.weapon = weapon
         self.powerUp = None
-        self.last_move = None
+        self.last_move = "down"
         self.char = Sprite((pos_x, pos_y), image, group, self.size)
         self.rect = self.char.rect
 
@@ -215,7 +215,6 @@ class Weapon():
     damage = None 
     fire_rate = None 
     shot_range = None
-    isShot = None
     #------------------------------------------------------
     def __init__(self, damage, fire_rate, shot_range):
         self.damage = damage
@@ -256,7 +255,7 @@ class Bullet():
             self.x -= self.speed
     #------------------------------------------------------
     def Collision(self):
-        if len(GameManager.aliens_alive) > 0 and len(Bulls) > 0:
+        if len(GameManager.aliens_alive) > 0:
             i = 0
             while(i < len(GameManager.aliens_alive)):
                   print(self.x)
@@ -303,6 +302,7 @@ class Aliens(Character):
         self.spawn_rate = spawn_rate
         self.name = name
         self.showing = showing
+        self.can_move = None
         if showing == True:
             self.char = Sprite((pos_x, pos_y), image, group, self.size)
             self.rect = self.char.rect
@@ -384,34 +384,42 @@ class Aliens(Character):
         if door_choice == 1: # Left 1
             self.pos_x = 0 * game.Tilesize # 0 x tilesize
             self.pos_y = 5 * game.Tilesize # 5 x tilesize
+            self.door = 1
         #------------------------------------------------------
         elif door_choice == 2: # Left 2
             self.pos_x = 0 * game.Tilesize  # 0 x tilesize
             self.pos_y = 11 * game.Tilesize # 11 x tilesize
+            self.door = 2
         #------------------------------------------------------
         elif door_choice == 3: # Bottom 1
             self.pos_x = 8 * game.Tilesize  # 8 x tilesize
             self.pos_y = 16 * game.Tilesize # 16 x tilesize
+            self.door = 3
         #------------------------------------------------------
         elif door_choice == 4: # Bottom 2 
             self.pos_x = 21 * game.Tilesize # 21 x tilesize
             self.pos_y = 16 * game.Tilesize # 16 x tilesize
+            self.door = 4
         #------------------------------------------------------
         elif door_choice == 5: # Right 1 
             self.pos_x = 29 * game.Tilesize # 29 x tilesize
             self.pos_y = 5 * game.Tilesize  # 5 x tilesize
+            self.door = 5
         #------------------------------------------------------
         elif door_choice == 6: # Right 2
             self.pos_x = 29 * game.Tilesize # 29 x tilesize
             self.pos_y = 11 * game.Tilesize # 11 x tilesize
+            self.door = 6
         #------------------------------------------------------
         elif door_choice == 7: # Top 1
             self.pos_x = 21 * game.Tilesize # 21 x tilesize
             self.pos_y = 0 * game.Tilesize  # 0 x tilesize
+            self.door = 7
         #------------------------------------------------------
         elif door_choice == 8: # Top 2
             self.pos_x = 8 * game.Tilesize # 8 x tilesize
             self.pos_y = 0 * game.Tilesize # 0 x tilesize
+            self.door = 8
         #------------------------------------------------------
         print(door_choice)
 
@@ -433,56 +441,79 @@ class Aliens(Character):
                 self.pos_y += self.speed * 0.5
 
 # Door exiting
-         #i = 0
-         #if self.pos_x == 0 and self.pos_y == 5 * game.Tilesize: # Left 1
-         #    while (i < len(GameManager.aliens_alive)):
-         #        if GameManager.aliens_alive[i].pos_x != self.pos_x + game.Tilesize and GameManager.aliens_alive[i].pos_y != self.pos_y + game.Tilesize:
-         #            can_move = True
-         #        else:
-         #            can_move = False
-         #elif self.pos_x == 0 and self.pos_y == 11 * game.Tilesize: # Left 2
-         #    while (i < len(GameManager.aliens_alive)):
-         #        if GameManager.aliens_alive[i].pos_x != self.pos_x + game.Tilesize and GameManager.aliens_alive[i].pos_y != self.pos_y + game.Tilesize:
-         #            can_move = True
-         #        else:
-         #            can_move = False
-         #elif self.pos_x == 8 * game.Tilesize and self.pos_y == 16 * game.Tilesize: # Bottom 1
-         #    while (i < len(GameManager.aliens_alive)):
-         #        if GameManager.aliens_alive[i].pos_x != self.pos_x + game.Tilesize and GameManager.aliens_alive[i].pos_y != self.pos_y + game.Tilesize:
-         #            can_move = True
-         #        else:
-         #            can_move = False
-         #elif self.pos_x == 21 * game.Tilesize and self.pos_y == 16 * game.Tilesize: # Bottom 2
-         #    while (i < len(GameManager.aliens_alive)):
-         #        if GameManager.aliens_alive[i].pos_x != self.pos_x + game.Tilesize and GameManager.aliens_alive[i].pos_y != self.pos_y + game.Tilesize:
-         #            can_move = True
-         #        else:
-         #            can_move = False
-         #elif self.pos_x == 29 * game.Tilesize and self.pos_y == 5 * game.Tilesize: # Right 1
-         #    while (i < len(GameManager.aliens_alive)):
-         #        if GameManager.aliens_alive[i].pos_x != self.pos_x + game.Tilesize and GameManager.aliens_alive[i].pos_y != self.pos_y + game.Tilesize:
-         #            can_move = True
-         #        else:
-         #            can_move = False
-         #elif self.pos_x == 29 * game.Tilesize and self.pos_y == 11 * game.Tilesize: # Right 2
-         #    while (i < len(GameManager.aliens_alive)):
-         #        if GameManager.aliens_alive[i].pos_x != self.pos_x + game.Tilesize and GameManager.aliens_alive[i].pos_y != self.pos_y + game.Tilesize:
-         #            can_move = True
-         #        else:
-         #            can_move = False
-         #elif self.pos_x == 21 * game.Tilesize and self.pos_y == 0 * game.Tilesize: # Top 1
-         #    while (i < len(GameManager.aliens_alive)):
-         #        if GameManager.aliens_alive[i].pos_x != self.pos_x + game.Tilesize and GameManager.aliens_alive[i].pos_y != self.pos_y + game.Tilesize:
-         #            can_move = True
-         #        else:
-         #            can_move = False
-         #elif self.pos_x == 8 * game.Tilesize and self.pos_y == 0 * game.Tilesize: # Top 2
-         #    while (i < len(GameManager.aliens_alive)):
-         #        if GameManager.aliens_alive[i].pos_x != self.pos_x + game.Tilesize and GameManager.aliens_alive[i].pos_y != self.pos_y + game.Tilesize:
-         #            can_move = True
-         #        else:
-         #            can_move = False
-         #print(can_move)
+    def exit_door(self):
+         i = 0
+         if self.can_move != True:
+             old_pos_x = self.pos_x
+             old_pos_y = self.pos_y
+             while(i < len(GameManager.aliens_alive)):
+                 if GameManager.aliens_alive[i].name != self.name:
+                     if self.door == 1: # Left 1
+                             if GameManager.aliens_alive[i].door == self.door:
+                                 if self.pos_x != old_pos_x + game.Tilesize:
+                                    self.pos_x += self.speed
+                                 elif self.pos_y != old_pos_y - game.Tilesize:
+                                    self.pos_y -= self.speed
+                                 elif self.pos_x != GameManager.aliens_alive[i].pos_x and self.pos_y != GameManager.aliens_alive[i].pos_y:
+                                    self.can_move = True
+                     elif self.door == 2: # Left 2
+                             if GameManager.aliens_alive[i].door == self.door:
+                                 if self.pos_x != old_pos_x + game.Tilesize:
+                                    self.pos_x += self.speed
+                                 elif self.pos_y != old_pos_y + game.Tilesize:
+                                    self.pos_y += self.speed
+                                 elif self.pos_x != GameManager.aliens_alive[i].pos_x and self.pos_y != GameManager.aliens_alive[i].pos_y:
+                                    self.can_move = True
+                     elif self.door == 3: # Bottom 1
+                             if GameManager.aliens_alive[i].door == self.door:
+                                 if self.pos_y != old_pos_y - game.Tilesize:
+                                    self.pos_y -= self.speed
+                                 elif self.pos_x != old_pos_x - game.Tilesize:
+                                    self.pos_x -= self.speed
+                                 elif self.pos_x != GameManager.aliens_alive[i].pos_x and self.pos_y != GameManager.aliens_alive[i].pos_y:
+                                    self.can_move = True
+                     elif self.door == 4: # Bottom 2
+                             if GameManager.aliens_alive[i].door == self.door:
+                                 if self.pos_y != old_pos_y - game.Tilesize:
+                                    self.pos_y -= self.speed
+                                 elif self.pos_x != old_pos_x + game.Tilesize:
+                                    self.pos_x += self.speed
+                                 elif self.pos_x != GameManager.aliens_alive[i].pos_x and self.pos_y != GameManager.aliens_alive[i].pos_y:
+                                    self.can_move = True
+                     elif self.door == 5: # Right 1
+                             if GameManager.aliens_alive[i].door == self.door:
+                                 if self.pos_x != old_pos_x - game.Tilesize:
+                                    self.pos_x -= self.speed
+                                 elif self.pos_y != old_pos_y + game.Tilesize:
+                                    self.pos_y += self.speed
+                                 elif self.pos_x == old_pos_x - game.Tilesize and self.pos_y == old_pos_y + game.Tilesize:
+                                    self.can_move = True
+                     elif self.door == 6: # Right 2
+                             if GameManager.aliens_alive[i].door == self.door:
+                                 if self.pos_x != old_pos_x - game.Tilesize:
+                                    self.pos_x -= self.speed
+                                 elif self.pos_y != old_pos_y - game.Tilesize:
+                                    self.pos_y -= self.speed
+                                 elif self.pos_x == old_pos_x - game.Tilesize and self.pos_y == old_pos_y - game.Tilesize:
+                                    self.can_move = True
+                     elif self.door == 7: # Top 1
+                             if GameManager.aliens_alive[i].door == self.door:
+                                 if self.pos_y != old_pos_y + game.Tilesize:
+                                    self.pos_y += self.speed
+                                 elif self.pos_x != old_pos_x + game.Tilesize:
+                                    self.pos_x += self.speed
+                                 elif self.pos_x != GameManager.aliens_alive[i].pos_x and self.pos_y != GameManager.aliens_alive[i].pos_y:
+                                    self.can_move = True
+                     elif self.door == 8: # Top 2
+                             if GameManager.aliens_alive[i].door == self.door:
+                                 if self.pos_y != old_pos_y + game.Tilesize:
+                                    self.pos_y += self.speed
+                                 elif self.pos_x != old_pos_x - game.Tilesize:
+                                    self.pos_x -= self.speed
+                                 elif self.pos_x != GameManager.aliens_alive[i].pos_x and self.pos_y != GameManager.aliens_alive[i].pos_y:
+                                    self.can_move = True
+                     print(self.door, self.can_move)
+                     i+= 1
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
@@ -534,7 +565,7 @@ class GameManager():
     def manage_spawns(game_round: int):
         spawn_rate_total = len(shield.spawn_rate) + len(turret.spawn_rate) + len(armoured_wing.spawn_rate) + len(bomber.spawn_rate) + len(mosquito.spawn_rate) + len(sniper.spawn_rate)
         if spawn_rate_total == 100:
-            aliens_needed = game_round * 5
+            aliens_needed = game_round * 3
             i = 1
             aliens_needed+= i
             while(aliens_needed > i):
@@ -570,6 +601,8 @@ class GameManager():
             GameManager.aliens_alive[i].char.kill()
             GameManager.aliens_alive[i].char = ImageTransformer(GameManager.aliens_alive[i].org_image, 0)
             GameManager.aliens_alive[i].char = GameManager.aliens_alive[i].char.ReturnImage((GameManager.aliens_alive[i].pos_x, GameManager.aliens_alive[i].pos_y), GameManager.aliens_alive[i].group, GameManager.aliens_alive[i].size)
+            #GameManager.aliens_alive[i].exit_door()
+            #if GameManager.aliens_alive[i].can_move == True:
             GameManager.aliens_alive[i].move()
             if GameManager.aliens_alive[i].health < 1:
                 GameManager.remove_alien(GameManager.aliens_alive[i].name)
@@ -585,7 +618,7 @@ class GameManager():
 
     @staticmethod
     def create_turret(showing):
-        turret = Aliens("Turret", 200, 2, 15, 200, 200, player, 10, "Pygame_GroupProject\Assets\Aliens\\Normal\Turret.png", [entities], showing)
+        turret = Aliens("Turret", 200, 1, 15, 200, 200, player, 10, "Pygame_GroupProject\Assets\Aliens\\Normal\Turret.png", [entities], showing)
         turret.convert_spawn_rate(False, shield.spawn_rate)
         return turret
     
@@ -609,7 +642,7 @@ class GameManager():
     
     @staticmethod
     def create_sniper(showing):
-        sniper = Aliens("Sniper", 40, 1, 75, 600, 600, player, 15, "Pygame_GroupProject\Assets\Aliens\\Normal\Sniper.png", [entities], showing)
+        sniper = Aliens("Sniper", 40, 1.5, 75, 600, 600, player, 15, "Pygame_GroupProject\Assets\Aliens\\Normal\Sniper.png", [entities], showing)
         sniper.convert_spawn_rate(False, mosquito.spawn_rate)
         return sniper
 
@@ -635,9 +668,9 @@ class GameManager():
         return player
 #----------------------------------------------------------------------------------------------------
 pistol = Weapon(20, 3, 30)
-shotgun = Weapon(100, 1, 10)
-smg = Weapon(10, 10, 20)
-rifle = Weapon(20, 5, 50)
+shotgun = Weapon(200, 1, 10)
+smg = Weapon(15, 10, 20)
+rifle = Weapon(25, 5, 50)
 
 game = Game()
 game.Create_Map()
