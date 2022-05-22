@@ -4,9 +4,9 @@ pygame.init()
 background = pygame.sprite.Group()
 user = pygame.sprite.Group()
 bullets = pygame.sprite.Group()
-enemies = pygame.sprite.Group()
+aliens = pygame.sprite.Group()
 bulls = []
-ens = []
+enemies = []
 
 pistol = [20, 3, 30]
 shotgun = [150, 1, 10]
@@ -29,6 +29,7 @@ class Game():
         self.FPS = 60
         self.clock = pygame.time.Clock()
         pygame.mouse.set_visible(False)
+        self.round_manager = Rounds_Manager()
 
         self.screen = pygame.display.set_mode((self.width, self.height), pygame.FULLSCREEN)
         self.display = pygame.display.get_surface()
@@ -60,8 +61,12 @@ class Game():
         player.Update()
         Bullet.Update()
 
+        self.round_manager.Rounds()
+        Alien.Update()
+
         background.draw(self.display)
         user.draw(self.display)
+        aliens.draw(self.display)
         bullets.draw(self.display)
 
         pygame.display.update()
@@ -191,6 +196,7 @@ class Bullet():
         elif self.direction == "right":
             self.x += self.speed
     #------------------------------------------------------
+    staticmethod
     def Update():
         for b in bulls:
             b.char.kill()
@@ -266,6 +272,7 @@ class Alien(Character):
             self.x = 8 * game.size
             self.y = 0 * game.size
     #------------------------------------------------------
+    staticmethod
     def Random_Spawn(self):
         alien = random.randint(1, 100)
         door = random.randint(1, 8)
@@ -285,39 +292,76 @@ class Alien(Character):
 
         self.Spawn(door)
     #------------------------------------------------------
-    def Update(self):
-        self.Move()
+    staticmethod
+    def Update():
+        for e in enemies:
+            e.Move()
 #--------------------------------------------------------------------------------------------------------
 class Rounds_Manager():
     def __init__(self):
         self.round = 0
     #------------------------------------------------------
-    def Game_Start(self):
-        self.round = 0
+    staticmethod
+    def Duplicates(alien):
+        dupliCount = 0
+        for e in enemies:
+            if alien.name in e.name:
+                dupliCount += 1
+        return dupliCount
+    #------------------------------------------------------
+    staticmethod
+    def Remove(alien):
+        for e in enemies:
+            if alien.name in e.name:
+                e.char.kill()
+                del(e)
+    #------------------------------------------------------
+    staticmethod
+    def Spawns(self):
+        needed = (game.round_manager.round * 3) + 1
+        i = 0
+
+        while i < needed:
+           alien = Alien.Random_Spawn()
+           #------------------------------------------------------
+           if i > 1:
+                duplicates = game.round_manager.Duplicates(alien)
+                #------------------------------------------------------
+                if duplicates > 1:
+                    alien.name += str(duplicates + 1)
+                    #------------------------------------------------------
+           enemies.append(alien)
+           i += 1
+    #------------------------------------------------------
+    staticmethod
+    def Rounds(self):
+        if len(enemies) == 0:
+            game.round_manager.round += 1
+            game.round_manager.Spawns()
     #------------------------------------------------------
     def Create_Shield(self):       
         shieldImage = "Pygame_GroupProject/Assets/Aliens/Normal/Shield_Armour.png"
-        shield = Alien("Shield", 200, 2, 20, 100, 100, 25, shieldImage, [enemies], True, "short")
+        shield = Alien("Shield", 200, 2, 20, 100, 100, 25, shieldImage, [aliens], True, "short")
     #------------------------------------------------------
     def Create_Turret(self):  
         turretImage = "Pygame_GroupProject/Assets/Aliens/Normal/Turret.png"
-        turret = Alien("Turret", 200, 1, 15, 200, 200, 10, turretImage, [enemies], True, "long")
+        turret = Alien("Turret", 200, 1, 15, 200, 200, 10, turretImage, [aliens], True, "long")
     #------------------------------------------------------
     def Create_Armoured_Wing(self):
         wingImage = "Pygame_GroupProject/Assets/Aliens/Normal/Armoured_Wing.png"
-        armoured_wing = Alien("Armoured Wing", 150, 3, 30, 300, 300, 15, wingImage, [enemies], True, "long")
+        armoured_wing = Alien("Armoured Wing", 150, 3, 30, 300, 300, 15, wingImage, [aliens], True, "long")
     #------------------------------------------------------
     def Create_Mosquito(self):
         mosquitoImage = "Pygame_GroupProject/Assets/Aliens/Normal/Mosquito.png"
-        mosquito = Alien("Mosquito", 50, 4, 50, 400, 400, 25, mosquitoImage, True, [enemies], "short")
+        mosquito = Alien("Mosquito", 50, 4, 50, 400, 400, 25, mosquitoImage, True, [aliens], "short")
     #------------------------------------------------------
     def Create_Bomber(self):
         bomberImage = "Pygame_GroupProject/Assets/Aliens/Normal/Bomber.png"
-        bomber = Alien("Bomber", 30, 4, 100, 500, 500, 10, bomberImage, True, [enemies], "short")
+        bomber = Alien("Bomber", 30, 4, 100, 500, 500, 10, bomberImage, True, [aliens], "short")
     #------------------------------------------------------
     def Create_Sniper(self):
         sniperImage = "Pygame_GroupProject/Assets/Aliens/Normal/Sniper.png"
-        sniper = Alien("Sniper", 40, 1.5, 75, 600, 600, 15, sniperImage, True, [enemies], "long")
+        sniper = Alien("Sniper", 40, 1.5, 75, 600, 600, 15, sniperImage, True, [aliens], "long")
 #--------------------------------------------------------------------------------------------------------
 game = Game()
 game.Initialize() 
