@@ -258,7 +258,7 @@ class Alien(Character):
             self.x = 29 * game.size
             self.y = 11 * game.size
             #------------------------------------------------------
-        elif door = 7: # Top 1
+        elif door == 7: # Top 1
             self.x = 21 * game.size
             self.y = 0 * game.size
             #------------------------------------------------------
