@@ -25,7 +25,7 @@ class Game:
     def __init__(self):
         pygame.init()
 
-        self.Width = 1920
+        self.Width = 1280
         #Either 1280 or 1920
         #------------------------------------------------------
         if self.Width == 1280:
@@ -89,7 +89,7 @@ class Game:
 
         player.Update()
         GameManager.update_aliens()
-        Bullet.update_bullets()
+        Bullet.Update()
         GameManager.manage_rounds()
 
         background.draw(self.display_surface)
@@ -271,35 +271,17 @@ class Bullet():
         elif self.direction == "left":
             self.x -= self.speed
     #------------------------------------------------------
-    #def Collision(self):
-        #if len(GameManager.aliens_alive) > 0:
-        #    i = 0
-        #    while(i < len(GameManager.aliens_alive)):
-        #          print(self.x)
-        #          if self.x == GameManager.aliens_alive[i].pos_x and self.y == GameManager.aliens_alive[i].pos_y:
-        #             GameManager.aliens_alive[i].health -= player.weapon.damage
-        #             self.char.kill()
-        #             del(self)
-        #             print("It's Aliiiiiiive! ...wait")
-        #          i += 1
-
-    def Collide(self):
-        hit = pygame.sprite.spritecollide(self.char, aliens, False)
-
-        if hit:
-            self.char.kill()
-            del(self)
-            print("Something happened")
-
-    @staticmethod
-    def update_bullets():
+    def Update(self):
+        self.Move()
         if len(Bulls) > 0:
-            i = 0
-            while(i < len(Bulls)):
+            hit = pygame.sprite.spritecollide(self, aliens, False)
+            if hit:
+                self.char.kill()
+                del()
+            else:
                 Bulls[i].char.kill()
                 Bulls[i].char = ImageTransformer(Bulls[i].org_image, 0)
                 Bulls[i].char = Bulls[i].char.ReturnImage((Bulls[i].x, Bulls[i].y), Bulls[i].group, Bulls[i].size)
-                #Bulls[i].Collide()
                 #------------------------------------------------------
                 if Bulls[i].x > game.Tilesize * 29 or Bulls[i].x < game.Tilesize:
                     Bulls[i].char.kill()
@@ -308,11 +290,6 @@ class Bullet():
                 elif Bulls[i].y > game.Tilesize * 16 or Bulls[i].y < game.Tilesize:
                     Bulls[i].char.kill()
                     del(Bulls[i])
-                #------------------------------------------------------
-                else:
-                    Bulls[i].Move()
-                #------------------------------------------------------
-                i+= 1
 #--------------------------------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------------------------------
@@ -343,8 +320,6 @@ class Aliens(Character):
         hit = pygame.sprite.spritecollide(self.char, bullets, False)
 
         if hit:
-            hit[0].kill()
-            del(hit[0])
             self.health -= player.weapon.damage
 
     @staticmethod

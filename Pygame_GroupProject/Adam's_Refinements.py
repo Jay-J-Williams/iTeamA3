@@ -1,220 +1,203 @@
-import pygame, sys
+import pygame, random, sys
+pygame.init()
 
-background = pygame.sprite.Group() #Room
-entities = pygame.sprite.Group() #Player/Aliens
-bullets = pygame.sprite.Group() #Bullets
-Bulls = []
-#--------------------------------------------------------------------------------------------------------
+background = pygame.sprite.Group()
+user = pygame.sprite.Group()
+bullets = pygame.sprite.Group()
+bulls = []
 
+pistol = [20, 3, 30]
+shotgun = [150, 1, 10]
+smg = [10, 10, 20]
+rifle = [20, 5, 50]
+# Damage [0] | Fire_Rate [1] | Shot_Range [2]
 #--------------------------------------------------------------------------------------------------------
-class Game:
+class Game():
     def __init__(self):
-        pygame.init()
+        self.width = 1280 #Either 1280 or 1920
 
-        self.Width = 1920
-        self.Height = 1080
-        self.Tilesize = 64
+        if self.width == 1280:
+            self.height = 720
+            self.size = 48
+        #------------------------------------------------------
+        elif self.width == 1920:
+            self.height = 1080
+            self.size = 64
+        
         self.FPS = 60
-
-        # Size possibilities -
-            # 1280 / 720  | Tilesize = 48
-            # 1920 / 1080 | Tilesize = 64
-            # 2560 / 1440 | Tilesize = 96
-            # 3840 / 2160 | Tilesize = 128
-
-        # Simply input the size you want to test
-        # NOTE - This will change when a main menu is implemented
-
-        # - Adam
-
-        self.screen = pygame.display.set_mode((self.Width, self.Height), pygame.FULLSCREEN)
-        self.display_surface = pygame.display.get_surface()
-
-        pygame.display.set_caption("Solus Miles")
+        self.round = 0
         self.clock = pygame.time.Clock()
+        pygame.mouse.set_visible(False)
 
-        self.Create_Map()
+        self.screen = pygame.display.set_mode((self.width, self.height), pygame.FULLSCREEN)
+        self.display = pygame.display.get_surface()
+        pygame.display.set_caption("Solus Miles | Lone Soldier")
     #------------------------------------------------------
-    def Create_Map(self):
+    def Initialize(self): 
         room = "Pygame_GroupProject\Assets\Room\Room.png"
-        Room(room, self.Width, self.Height)
+        Room(room) 
 
-        image = "Pygame_GroupProject\Assets\Player\Player.png"
         global player
-        player = Player(100, 5, 20, (self.Width / 2), (self.Height / 2), image, [entities], self.Tilesize)
+        playerImage = "Pygame_GroupProject\Assets\Player\Player_Pistol.png"
+        player = Player(100, 5, (game.width / 2), (game.height / 2), playerImage, user, game.size)
     #------------------------------------------------------
     def Run(self):
+        keys = pygame.key.get_pressed()
+
         for event in pygame.event.get():
-            if event.type == pygame.QUIT:
+            if keys[pygame.K_ESCAPE] or event.type == pygame.QUIT or player.health < 1:
                 pygame.quit()
                 sys.exit()
 
-        self.screen.fill("Black")
-        player.Update(self.Width, self.Height, self.Tilesize)
+        self.screen.fill("black")
+        player.Update()
+        Bullet.Update()
 
-        for b in Bulls:
-            b.Move(self.Height)
+        background.draw(self.display)
+        user.draw(self.display)
+        bullets.draw(self.display)
 
-        background.draw(self.display_surface)
-        entities.draw(self.display_surface)
-        bullets.draw(self.display_surface)
         pygame.display.update()
-
         self.clock.tick(self.FPS)
 #--------------------------------------------------------------------------------------------------------
-
-#--------------------------------------------------------------------------------------------------------
 class Sprite(pygame.sprite.Sprite):
-    def __init__(self, pos, image, groups, tilesize):
-        super().__init__(groups)
+    def __init__(self, pos, image, group, size):
+        super().__init__(group)
         try:
             self.image = pygame.image.load(image).convert_alpha()
         except:
             self.image = image
-        self.image = pygame.transform.scale(self.image, (tilesize, tilesize))
+        self.image = pygame.transform.scale(self.image, (size, size))
         self.rect = self.image.get_rect(topleft = pos)
-# This class will not be dealing with the background (room) anymore
-#--------------------------------------------------------------------------------------------------------
-
 #--------------------------------------------------------------------------------------------------------
 class Room(pygame.sprite.Sprite):
-    def __init__(self, image, width, height):
+    def __init__(self, image):
         super().__init__(background)
         self.image = pygame.image.load(image).convert_alpha()
-        self.image = pygame.transform.scale(self.image, (width, height))
+        self.image = pygame.transform.scale(self.image, (game.width, game.height))
         self.rect = self.image.get_rect(topleft = (0,0))
-# This class has been made to handle the background (room)
-#--------------------------------------------------------------------------------------------------------
-
 #--------------------------------------------------------------------------------------------------------
 class ImageTransformer(pygame.sprite.Sprite):
     def __init__(self, image, degrees):
         self.image = pygame.image.load(image).convert_alpha()
         self.image = pygame.transform.rotate(self.image, degrees)
     #------------------------------------------------------
-    def ReturnImage(self, pos, groups, size):
-        return Sprite(pos, self.image, groups, size)
-#--------------------------------------------------------------------------------------------------------
-
+    def ReturnImage(self, pos, group, size):
+        return Sprite(pos, self.image, group, size)
 #--------------------------------------------------------------------------------------------------------
 class Character():
-    health = None
-    speed = None
-    damage = None
-    x = None
-    y = None
-    image = None
-    groups = None
-    size = None
-    #------------------------------------------------------
-    def __init__(self, health, speed, damage, x, y, image, groups, tilesize):
+    def __init__(self, health, speed, x, y, image, group, size):
         self.health = health
         self.speed = speed
-        self.damage = damage
         self.x = x
         self.y = y
-        self.org_image = image
-        self.groups = groups
-        self.size = tilesize
-        self.char = Sprite((x, y), image, groups, tilesize)
+        self.image = image
+        self.group = group
+        self.size = size
+        self.char = Sprite((x, y), image, group, size) 
         self.rect = self.char.rect
-#--------------------------------------------------------------------------------------------------------
-
 #--------------------------------------------------------------------------------------------------------
 class Player(Character):
-    weapon = None
-    powerUp = None
-    #------------------------------------------------------
-    def __init__(self, health, speed, damage, x, y, image, group, size):
-        super().__init__(health, speed, damage, x, y, image, group, size)
-        self.weapon = None
+    def __init__(self, health, speed, x, y, image, group, size):
+        super().__init__(health, speed, x, y, image, group, size)
+        self.weapon = pistol
         self.powerUp = None
+        self.last_move = "down"
+        self.cooldown = 100
     #------------------------------------------------------
-    def Movement(self, width, height):
+    def Move(self):
         keys = pygame.key.get_pressed()
-        max_move = self.size * 2
+        max_move = game.size * 2
 
-        if keys[pygame.K_a] and self.x > self.size:
+        if keys[pygame.K_a] and self.x > game.size:
             self.char.kill()
-            self.char = ImageTransformer(self.org_image, 270)
-            self.char = self.char.ReturnImage((self.x, self.y), self.groups, self.size)
-            self.x -= self.speed           
-        #------------------------------------------------------
-        elif keys[pygame.K_d] and self.x < (width - max_move):
+            self.char = ImageTransformer(self.image, 270)
+            self.char = self.char.ReturnImage((self.x, self.y), [user], self.size)
+            self.x -= self.speed
+            self.last_move = "left"
+            #------------------------------------------------------
+        elif keys[pygame.K_d] and self.x < game.width - max_move:
             self.char.kill()
-            self.char = ImageTransformer(self.org_image, 90)
-            self.char = self.char.ReturnImage((self.x, self.y), self.groups, self.size)
+            self.char = ImageTransformer(self.image, 90)
+            self.char = self.char.ReturnImage((self.x, self.y), [user], self.size)
             self.x += self.speed
-        #------------------------------------------------------
-        elif keys[pygame.K_w] and self.y > self.size:
+            self.last_move = "right"
+            #------------------------------------------------------
+        elif keys[pygame.K_w] and self.y > game.size:
             self.char.kill()
-            self.char = ImageTransformer(self.org_image, 180)
-            self.char = self.char.ReturnImage((self.x, self.y), self.groups, self.size)
+            self.char = ImageTransformer(self.image, 180)
+            self.char = self.char.ReturnImage((self.x, self.y), [user], self.size)
             self.y -= self.speed
-        #------------------------------------------------------
-        elif keys[pygame.K_s] and self.y < (height - max_move):
+            self.last_move = "up"
+            #------------------------------------------------------
+        elif keys[pygame.K_s] and self.y < game.height - max_move:
             self.char.kill()
-            self.char = ImageTransformer(self.org_image, 0)
-            self.char = self.char.ReturnImage((self.x, self.y), self.groups, self.size)
+            self.char = ImageTransformer(self.image, 0)
+            self.char = self.char.ReturnImage((self.x, self.y), [user], self.size)
             self.y += self.speed
+            self.last_move = "down"
     #------------------------------------------------------
-    def Shoot(self, tilesize):
+    def Shoot(self):
         keys = pygame.key.get_pressed()
-        mouse_clicks = pygame.mouse.get_pressed()
-
-        if keys[pygame.K_SPACE] or mouse_clicks[0]: # [0] = Left Click
-            Bullet(self.x, self.y, tilesize)
-            self.weapon.isShot = True
+        mouse = pygame.mouse.get_pressed()
+        #------------------------------------------------------
+        if self.cooldown >= 100:
+            if keys[pygame.K_SPACE] or mouse[0]:
+                if self.last_move == "up":
+                    B = Bullet((self.x + (game.size / 2)), (self.y - (game.size / 2)))
+                elif self.last_move == "down":
+                    B = Bullet((self.x + (game.size / 2)), (self.y + (game.size / 2)))
+                elif self.last_move == "left":
+                    B = Bullet((self.x - (game.size / 2)), (self.y + (game.size / 2)))
+                elif self.last_move == "right":
+                    B = Bullet((self.x + (game.size / 2)), (self.y + (game.size / 2)))
+                self.cooldown = 0
+                bulls.append(B)
+        else:
+            self.cooldown += self.weapon[0]
     #------------------------------------------------------
-    def Update(self, width, height, tilesize):
-        self.Movement(width, height)      
-        #self.Shoot(tilesize)
+    def Update(self):
+        self.Move()
+        self.Shoot()
 #--------------------------------------------------------------------------------------------------------
-
-#--------------------------------------------------------------------------------------------------------
-class Weapon():
-    damage = None 
-    fireRate = None 
-    shotRange = None 
-    isShot = None
-    #------------------------------------------------------
-    def __init__(self, damage, fireRate, shotRange):
-        self.damage = damage
-        self.fireRate = fireRate
-        self.shotRange = shotRange
-        self.isShot = False
-#--------------------------------------------------------------------------------------------------------
-
-#--------------------------------------------------------------------------------------------------------
-class Bullet(pygame.sprite.Sprite):   
-    x = None
-    y = None
-    speed = None
-    image = None
-    #------------------------------------------------------
-    def __init__(self, x, y, tilesize):
+class Bullet():
+    def __init__(self, x, y):
         self.x = x
         self.y = y
-        self.speed = 20
-        self.size = tilesize
-        self.image = "Pygame_GroupProject\Assets\Bullet\Bullet.png"
-        self.char = Sprite(((x + 24 / 2), (y + 24 / 2)), self.image, [bullets], (tilesize / 4))
+        self.speed = 5
+        self.direction = player.last_move
+        self.size = game.size / 8
+        self.group = bullets
+        self.image = "Pygame_GroupProject/Assets/Bullet/Bullet.png"
+        self.char = Sprite((x, y), self.image, [bullets], self.size)
         self.rect = self.char.rect
-
-        Bulls.append(self)
     #------------------------------------------------------
-    def Move(self, height):
-        max_size = self.size * 2
-        try:
-            if self.y < (height - max_size):
-                self.y += self.speed
-        except Exception as e:
-            print(e)
-            print("Fail")
-#--------------------------------------------------------------------------------------------------------
-
+    def Move(self):
+        if self.direction == "up":
+            self.y -= self.speed
+        elif self.direction == "down":
+            self.y += self.speed 
+        elif self.direction == "left":
+            self.x -= self.speed
+        elif self.direction == "right":
+            self.x += self.speed
+    #------------------------------------------------------
+    def Update():
+        for b in bulls:
+            b.char.kill()
+            b.char = Sprite((b.x, b.y), b.image, b.group, b.size)
+            b.rect = b.char.rect
+            if b.x > (game.width - game.size) or b.x < game.size:          
+                b.char.kill()
+                del(b)
+            elif b.y > (game.height - game.size) or b.y < game.size:
+                b.char.kill()
+                del(b)
+            else:
+                b.Move()
 #--------------------------------------------------------------------------------------------------------
 game = Game()
+game.Initialize() 
 
 while True:
     game.Run()
