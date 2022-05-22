@@ -89,7 +89,7 @@ class Game:
 
         player.Update()
         GameManager.update_aliens()
-        Bullet.Update()
+        #Bullet.Update()
         GameManager.manage_rounds()
 
         background.draw(self.display_surface)
@@ -510,7 +510,6 @@ class GameManager():
     @staticmethod
     def start_game():
         game_round = 0
-        GameManager.convert_alien_spawn_rates()
         GameManager.manage_rounds(game_round)
         return game_round
 
