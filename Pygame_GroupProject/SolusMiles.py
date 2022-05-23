@@ -26,11 +26,11 @@ class Game:
     def __init__(self):
         pygame.init()
         self.difficulty = "Normal"
-        self.Height = 1080
-        #Either 1280 or 1920
+        self.Height = 720
+        #Either 720 or 1080
         #------------------------------------------------------
         if self.Height == 720:
-            self.Height = 1280
+            self.Width = 1280
             self.Tilesize = 42.7
         #------------------------------------------------------
         elif self.Height == 1080:
@@ -92,15 +92,13 @@ class Game:
         GameManager.update_aliens()
         Bullet.Update()
         GameManager.manage_rounds()
+        hud.draw_heart() 
 
         background.draw(self.display_surface)
         entities.draw(self.display_surface)
         aliens.draw(self.display_surface)
         bullets.draw(self.display_surface)
-        hud.draw_healthbar()
-        hud.draw_heart()
-
-        hud_components.draw(self.display_surface)
+        hud_components.draw(self.display_surface)             
         
         pygame.display.update()
         self.clock.tick(self.FPS)
@@ -108,13 +106,13 @@ class Game:
 
 #--------------------------------------------------------------------------------------------------------
 class Sprite(pygame.sprite.Sprite):
-    def __init__(self, pos, image, groups, tilesize):
+    def __init__(self, pos, image, groups, size):
         super().__init__(groups)
         try:
             self.image = pygame.image.load(image).convert_alpha()
         except:
             self.image = image
-        self.image = pygame.transform.scale(self.image, (tilesize, tilesize)) # <-- HERE | Scales to size
+        self.image = pygame.transform.scale(self.image, size) # <-- HERE | Scales to size
         self.rect = self.image.get_rect(topleft = pos)
 # This class will not be dealing with the background (room) anymore
 #--------------------------------------------------------------------------------------------------------
@@ -136,30 +134,27 @@ class ImageTransformer(pygame.sprite.Sprite):
         self.image = pygame.transform.rotate(self.image, degrees)
     #------------------------------------------------------
     def ReturnImage(self, pos, groups, size):
-        return Sprite(pos, self.image, groups, size)
+        return Sprite(pos, self.image, groups, (size, size))
 #--------------------------------------------------------------------------------------------------------
 
-class HUD:
+class HUD():
     def __init__(self):
-        self.healthbar_length = player.health * 2
-        self.fullHeart = "Pygame_GroupProject/Assets/Heart/Heart_Full.png"
-        self.halfHeart = "Pygame_GroupProject/Assets/Heart/Heart_Half.png"
-        self.QuarterOne_Heart = "Pygame_GroupProject/Assets/Heart/Heart_1Quarter.png"
-        self.QuarterThree_Heart = "Pygame_GroupProject/Assets/Heart/Heart_3Quarter.png"
+        self.image = "Pygame_GroupProject/Assets/Heart/FullBar.png"
+        self.char = Sprite((0,0), self.image, [hud_components], (game.Tilesize * 2, game.Tilesize))
     #------------------------------------------------------
-    def draw_healthbar(self):
-        if player.health < 1001:
-            pygame.draw.rect(game.display_surface, (255, 0, 0), pygame.Rect(10, 10, player.health * 2, 25))
-            pygame.draw.rect(game.display_surface, (255,255,255), pygame.Rect(10, 10, self.healthbar_length, 25),4)
     def draw_heart(self):
+        self.char.kill()
+
         if player.health > 75:
-            Sprite((0,0), self.fullHeart, [hud_components], game.Tilesize)
+            self.image = "Pygame_GroupProject/Assets/Heart/FullBar.png"
         elif player.health > 50 and player.health <= 75:
-            Sprite((0,0), self.QuarterOne_Heart, [hud_components], game.Tilesize)
+            self.image = "Pygame_GroupProject/Assets/Heart/QuarterBar.png"
         elif player.health > 25 and player.health <= 50:
-            Sprite((0,0), self.halfHeart, [hud_components], 48)
+            self.image = "Pygame_GroupProject/Assets/Heart/HalfBar.png"
         elif player.health > 0 and player.health <= 25:
-            Sprite((0,0), self.QuarterThree_Heart, [hud_components], game.Tilesize)
+            self.image = "Pygame_GroupProject/Assets/Heart/3QuarterBar.png"
+
+        self.char = Sprite((0,0), self.image, [hud_components], (game.Tilesize * 2, game.Tilesize))
 #--------------------------------------------------------------------------------------------------------
 class Character():
     def __init__(self, health, speed, damage, pos_x, pos_y, image, group):
@@ -181,7 +176,7 @@ class Player(Character):
         self.weapon = weapon
         self.powerUp = None
         self.last_move = "down"
-        self.char = Sprite((pos_x, pos_y), image, group, self.size)
+        self.char = Sprite((pos_x, pos_y), image, group, (self.size, self.size))
         self.rect = self.char.rect
         self.cooldown = 500
     #------------------------------------------------------
@@ -272,7 +267,8 @@ class Bullet():
         self.size = game.Tilesize * 0.2
         self.image = "Pygame_GroupProject\Assets\Bullet\Bullet.png"
         self.org_image = self.image
-        self.char = Sprite((self.x, self.y), self.image, [bullets], (game.Tilesize / 8))
+        self.size = game.Tilesize / 8
+        self.char = Sprite((self.x, self.y), self.image, [bullets], (self.size, self.size))
         self.rect = self.char.rect
         self.group = bullets
         self.direction = player.last_move
@@ -326,7 +322,7 @@ class Aliens(Character):
         self.old_pos_y = None
         print(game.Tilesize)
         if showing == True:
-            self.char = Sprite((pos_x, pos_y), image, group, self.size)
+            self.char = Sprite((pos_x, pos_y), image, group, (self.size, self.size))
             self.rect = self.char.rect
 
     def convert_spawn_rate(self, first_conversion: bool, last_aliens_spawn_rate: list):
