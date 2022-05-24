@@ -137,6 +137,7 @@ class ImageTransformer(pygame.sprite.Sprite):
         return Sprite(pos, self.image, groups, (size, size))
 #--------------------------------------------------------------------------------------------------------
 
+#--------------------------------------------------------------------------------------------------------
 class HUD():
     def __init__(self):
         self.health = "Pygame_GroupProject/Assets/HUD/FullBar.png"
