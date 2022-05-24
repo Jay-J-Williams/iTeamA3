@@ -1,6 +1,8 @@
 import pygame, sys, random, gc
+pygame.init()
 
 background = pygame.sprite.Group() #Room | For visible spawning
+menu_screen = pygame.sprite.Group() # For the menu
 entities = pygame.sprite.Group() #Player/Aliens | For visible spawning
 aliens = pygame.sprite.Group() #Aliens | For collisions
 bullets = pygame.sprite.Group() #Bullets | For visible spawning
@@ -24,12 +26,86 @@ class entryErrors(allErrors):
 #--------------------------------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------------------------------
-class Game:
-    def __init__(self):
-        pygame.init()
+class Menu:
+    def __init__(self, height):
+        self.Height = height
+
+        if self.Height == 720:
+            self.Width = 1280
+            self.size = 48
+        elif self.Height == 1080:
+            self.Width = 1920
+            self.size = 64 
+
         self.difficulty = "Normal"
-        self.Height = 1080
-        #Either 1280 or 1920
+
+        self.screen = pygame.display.set_mode((self.Width, self.Height), pygame.FULLSCREEN)
+        self.display_surface = pygame.display.get_surface()
+        self.FPS = 60
+        self.clock = pygame.time.Clock()
+
+        self.running = True
+        self.haveTried = False
+
+        self.start_left = self.size * 14
+        self.start_right = self.size * 16
+        self.start_up = self.size * 11
+        self.start_down = self.size * 5
+
+        self.easy_left = self.size * 13.5
+        self.easy_right = self.size * 14.5
+
+        self.normal_left = self.size * 14.5
+        self.normal_right = self.size * 15.5
+
+        self.hard_left = self.size * 15.5
+        self.hard_right = self.size * 16.5
+
+        self.diff_up = self.size * 12
+        self.diff_down = self.size * 4
+
+        self.p720_left = self.size * 13
+        self.p720_right = self.size * 15
+
+        self.p1080_left = self.size * 15
+        self.p1080_right = self.size * 17
+
+        self.res_up = self.size * 13
+        self.res_down = self.size * 3
+
+    def StartUp(self):
+        room = "Pygame_GroupProject/Assets/Room/Menu.png"
+        Room(room, self.Width, self.Height, menu_screen)
+
+    def Update(self):
+        mouse = pygame.mouse.get_pressed()
+        keys = pygame.key.get_pressed()
+
+        if (mouse[0] > self.start_down and mouse[0] < self.start_up) or keys[pygame.K_r]:
+            if (mouse[0] > self.start_left and mouse[0] < self.start_right) or keys[pygame.K_r]:
+                self.running = False
+
+    def StartGame(self):
+        if self.running == False and self.haveTried == False:
+            self.haveTried = True
+            game = Game(self.Height, self.difficulty)
+            game.Create_Map()
+            return game
+
+    def Run(self):
+        self.screen.fill("black")
+        self.Update()
+        menu_screen.draw(self.display_surface)
+
+        pygame.display.update()
+        self.clock.tick(self.FPS)
+#--------------------------------------------------------------------------------------------------------
+
+#--------------------------------------------------------------------------------------------------------
+class Game:
+    def __init__(self, height, difficulty):
+        self.difficulty = difficulty
+        self.Height = height
         #------------------------------------------------------
         if self.Height == 720:
             self.Width = 1280
@@ -44,7 +120,6 @@ class Game:
         #------------------------------------------------------
 
         self.FPS = 60
-        self.run = False
         self.game_round = 0
 
         self.screen = pygame.display.set_mode((self.Width, self.Height), pygame.FULLSCREEN)
@@ -55,7 +130,7 @@ class Game:
     #------------------------------------------------------
     def Create_Map(self):
         room = "Pygame_GroupProject\Assets\Room\Room.png"
-        Room(room, self.Width, self.Height)
+        Room(room, self.Width, self.Height, background)
         global player
         player = GameManager.create_player(rifle)
         global shield
@@ -76,18 +151,6 @@ class Game:
         #GameManager.__aliens_alive.append(test_alien)
     #------------------------------------------------------
     def Run(self):
-        keys = pygame.key.get_pressed()
-
-        for event in pygame.event.get():
-            if (event.type == pygame.QUIT) or (keys[pygame.K_ESCAPE]):
-                pygame.quit()
-                sys.exit()
-            elif (keys[pygame.K_o]):
-                if len(GameManager.aliens_alive) > 0:
-                    GameManager.aliens_alive[0].char.kill()
-                    del(GameManager.aliens_alive[0])
-                    gc.collect()
-
         self.screen.fill("Black")
 
         player.Update()
@@ -121,8 +184,8 @@ class Sprite(pygame.sprite.Sprite):
 
 #--------------------------------------------------------------------------------------------------------
 class Room(pygame.sprite.Sprite):
-    def __init__(self, image, width, height):
-        super().__init__(background)
+    def __init__(self, image, width, height, group):
+        super().__init__(group)
         self.image = pygame.image.load(image).convert_alpha()
         self.image = pygame.transform.scale(self.image, (width, height))
         self.rect = self.image.get_rect(topleft = (0,0))
@@ -393,7 +456,7 @@ class PowerUp:
         location_choice_width = random.randint(Game.Width + Game.Tilesize, Game.Width - Game.Tilesize)
         if power_up_choice == 1:
             double_damage = GameManager.create_shield(True)
-        elif power_up choice == 2:
+        elif power_up_choice == 2:
             alien = GameManager.create_turret(True)
         else:
             alien = GameManager.create_mosquito(True)
@@ -867,18 +930,20 @@ shotgun = Weapon(150, 1.5, 10)
 smg = Weapon(20, 10, 20)
 rifle = Weapon(40, 5, 50)
 
-game = Game()
-game.Create_Map()
-running = False
+menu = Menu(720)
+menu.StartUp()
 
 #Press "r" to start the game. Note: this is where the menu will be
-while(running == False):
+while True:
+    keys = pygame.key.get_pressed()
+
     for event in pygame.event.get():
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_r:
-                running = True
+            if (event.type == pygame.QUIT) or (keys[pygame.K_ESCAPE]):
+                pygame.quit()
+                sys.exit()
 
-pygame.mouse.set_visible(False)
-
-while(running):
-    game.Run()
+    if menu.running == True:
+        menu.Run()
+    else:
+        game = menu.StartGame()
+        game.Run()
