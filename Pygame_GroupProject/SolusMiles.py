@@ -92,7 +92,7 @@ class Game:
         GameManager.update_aliens()
         Bullet.Update()
         GameManager.manage_rounds()
-        hud.draw_heart() 
+        hud.Update()
 
         background.draw(self.display_surface)
         entities.draw(self.display_surface)
@@ -139,22 +139,25 @@ class ImageTransformer(pygame.sprite.Sprite):
 
 class HUD():
     def __init__(self):
-        self.image = "Pygame_GroupProject/Assets/Heart/FullBar.png"
-        self.char = Sprite((0,0), self.image, [hud_components], (game.Tilesize * 2, game.Tilesize))
+        self.health = "Pygame_GroupProject/Assets/HUD/FullBar.png"
+        self.char = Sprite((0,0), self.health, [hud_components], (game.Tilesize * 2, game.Tilesize))
     #------------------------------------------------------
     def draw_heart(self):
         self.char.kill()
 
         if player.health > 75:
-            self.image = "Pygame_GroupProject/Assets/Heart/FullBar.png"
+            self.health = "Pygame_GroupProject/Assets/HUD/FullBar.png"
         elif player.health > 50 and player.health <= 75:
-            self.image = "Pygame_GroupProject/Assets/Heart/QuarterBar.png"
+            self.health = "Pygame_GroupProject/Assets/HUD/QuarterBar.png"
         elif player.health > 25 and player.health <= 50:
-            self.image = "Pygame_GroupProject/Assets/Heart/HalfBar.png"
+            self.health = "Pygame_GroupProject/Assets/HUD/HalfBar.png"
         elif player.health > 0 and player.health <= 25:
-            self.image = "Pygame_GroupProject/Assets/Heart/3QuarterBar.png"
+            self.health = "Pygame_GroupProject/Assets/HUD/3QuarterBar.png"
 
-        self.char = Sprite((0,0), self.image, [hud_components], (game.Tilesize * 2, game.Tilesize))
+        self.char = Sprite((0,0), self.health, [hud_components], (game.Tilesize * 2, game.Tilesize))
+    #------------------------------------------------------
+    def Update(self):
+        self.draw_heart()
 #--------------------------------------------------------------------------------------------------------
 class Character():
     def __init__(self, health, speed, damage, pos_x, pos_y, image, group):
