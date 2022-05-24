@@ -148,7 +148,6 @@ class Game:
         global hud
         hud = HUD()
         GameManager.manage_rounds()
-        #GameManager.__aliens_alive.append(test_alien)
     #------------------------------------------------------
     def Run(self):
         self.screen.fill("Black")
@@ -448,6 +447,9 @@ class PowerUp:
         if hit:
             player.powerUp = self
             self.char.kill()
+            i = power_ups_lst.index(self)
+            del(power_ups_lst[i])
+            del(i)
             gc.collect()
 
     @staticmethod
@@ -638,25 +640,15 @@ class Aliens(Character):
         self.no_down = None
         gap = game.Tilesize / 2
         gap = int(gap)
-        #self.pos_x = int(self.pos_x)
-        #self.pos_y = int(self.pos_y)
-        #self.speed = int(self.speed)
         for a in GameManager.aliens_alive:
             if a.name != self.name:
-                #a.pos_x = int(a.pos_x)
-                #a.pos_y = int(a.pos_y)
-                #a.speed = int(a.speed)
                 if self.pos_x + self.speed / 2 > a.pos_x - gap and self.pos_x + self.speed / 2 < a.pos_x:
-                #if self.pos_x + self.speed / 2 in range(a.pos_x - gap, a.pos_x):
                     self.no_right = True
                 if self.pos_x - self.speed / 2 > a.pos_x and self.pos_x - self.speed / 2 < a.pos_x + gap:
-                #if self.pos_x - self.speed / 2 in range(a.pos_x, a.pos_x + gap):
                     self.no_left = True
                 if self.pos_y - self.speed > a.pos_y and self.pos_y - self.speed < a.pos_y + gap:
-                #if self.pos_y - self.speed / 2 in range(a.pos_y, a.pos_y + gap):
                     self.no_up = True
                 if self.pos_y + self.speed / 2 > a.pos_y - gap and self.pos_y + self.speed / 2 < a.pos_y:
-                #if self.pos_y + self.speed / 2 in range(a.pos_y - gap, a.pos_y):
                     self.no_down = True
         if self.pos_x < game.Tilesize and self.no_right != True:
             self.pos_x += self.speed
@@ -808,13 +800,10 @@ class GameManager():
                     if duplicate_aliens > 0:
                         alien.name += str(duplicate_aliens + 1)
                 GameManager.aliens_alive.append(alien)
-                print(GameManager.aliens_alive[i - 1].pos_x, GameManager.aliens_alive[i - 1].pos_y)
                 del(alien)
                 print(str(GameManager.aliens_alive[i - 1]))
                 i+= 1
-            #GameManager.remove_alien("Shield2")
             gc.collect()
-            print("\n")
         else:
             raise numErrors("The spawn rates must add up to 100")
 
@@ -831,18 +820,15 @@ class GameManager():
         while(i < len(GameManager.aliens_alive)):
             GameManager.aliens_alive[i].update_last_move()
             #if GameManager.aliens_alive[i].can_move == True:
-            #if "Turret" in GameManager.aliens_alive[i].name or "Armoured-wing" in GameManager.aliens_alive[i].name:
-            #    GameManager.aliens_alive[i].ranged_move()
-            #elif "Sniper" in GameManager.aliens_alive[i].name:
-            #    GameManager.aliens_alive[i].ranged_move()
-            #elif "Shield" in GameManager.aliens_alive[i].name or "Mosquito" in GameManager.aliens_alive[i].name:
-            #    GameManager.aliens_alive[i].move()
-            #elif "Bomber" in GameManager.aliens_alive[i].name:
-            #    GameManager.aliens_alive[i].move()
-            #if GameManager.aliens_alive[i].can_move != True:
-            #    GameManager.aliens_alive[i].exit_door()
-            #elif GameManager.aliens_alive[i].can_move == True:
-            GameManager.aliens_alive[i].move()
+            if "Turret" in GameManager.aliens_alive[i].name or "Armoured-wing" in GameManager.aliens_alive[i].name:
+                GameManager.aliens_alive[i].ranged_move()
+            elif "Sniper" in GameManager.aliens_alive[i].name:
+                GameManager.aliens_alive[i].ranged_move()
+            elif "Shield" in GameManager.aliens_alive[i].name or "Mosquito" in GameManager.aliens_alive[i].name:
+                GameManager.aliens_alive[i].move()
+            elif "Bomber" in GameManager.aliens_alive[i].name:
+                GameManager.aliens_alive[i].move()
+            #GameManager.aliens_alive[i].move()
             GameManager.aliens_alive[i].Collide()
             if GameManager.aliens_alive[i].health < 1:
                 GameManager.remove_alien(GameManager.aliens_alive[i].name)
