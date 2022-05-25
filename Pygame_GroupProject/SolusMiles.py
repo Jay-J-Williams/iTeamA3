@@ -45,52 +45,17 @@ class Menu:
         self.clock = pygame.time.Clock()
 
         self.running = True
-        self.haveTried = False
-
-        self.start_left = self.size * 14
-        self.start_right = self.size * 16
-        self.start_up = self.size * 11
-        self.start_down = self.size * 5
-
-        self.easy_left = self.size * 13.5
-        self.easy_right = self.size * 14.5
-
-        self.normal_left = self.size * 14.5
-        self.normal_right = self.size * 15.5
-
-        self.hard_left = self.size * 15.5
-        self.hard_right = self.size * 16.5
-
-        self.diff_up = self.size * 12
-        self.diff_down = self.size * 4
-
-        self.p720_left = self.size * 13
-        self.p720_right = self.size * 15
-
-        self.p1080_left = self.size * 15
-        self.p1080_right = self.size * 17
-
-        self.res_up = self.size * 13
-        self.res_down = self.size * 3
 
     def StartUp(self):
         room = "Pygame_GroupProject/Assets/Room/Menu.png"
         Room(room, self.Width, self.Height, menu_screen)
 
     def Update(self):
-        mouse = pygame.mouse.get_pressed()
         keys = pygame.key.get_pressed()
 
-        if (mouse[0] > self.start_down and mouse[0] < self.start_up) or keys[pygame.K_r]:
-            if (mouse[0] > self.start_left and mouse[0] < self.start_right) or keys[pygame.K_r]:
-                self.running = False
-
-    def StartGame(self):
-        if self.running == False and self.haveTried == False:
-            self.haveTried = True
-            game = Game(self.Height, self.difficulty)
-            game.Create_Map()
-            return game
+        if keys[pygame.K_r]:
+            self.running = False
+            game.running = True
 
     def Run(self):
         self.screen.fill("black")
@@ -919,6 +884,9 @@ rifle = Weapon(40, 5, 50)
 menu = Menu(720)
 menu.StartUp()
 
+game = Game(720, "Normal")
+game.Create_Map()
+
 #Press "r" to start the game. Note: this is where the menu will be
 while True:
     keys = pygame.key.get_pressed()
@@ -930,6 +898,5 @@ while True:
 
     if menu.running == True:
         menu.Run()
-    else:
-        game = menu.StartGame()
+    elif game.running == True:
         game.Run()
