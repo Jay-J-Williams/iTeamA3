@@ -256,9 +256,6 @@ class Player(Character):
         self.rect = self.char.rect
         self.cooldown = 500
     #------------------------------------------------------
-    def take_damage(self, amount):
-        self.health -= amount
-    #------------------------------------------------------
     def heal(self, amount):
         if self.health < 100:
             self.health += amount
@@ -596,6 +593,23 @@ class Aliens(Character):
             else:
                 self.cooldown_2 += 2
 
+        self.no_right = None
+        self.no_left = None
+        self.no_up = None
+        self.no_down = None
+        gap = game.Tilesize / 2
+        gap = int(gap)
+        for a in GameManager.aliens_alive:
+            if a.name != self.name:
+                if self.pos_x + self.speed / 2 > a.pos_x - gap and self.pos_x + self.speed / 2 < a.pos_x:
+                    self.no_right = True
+                if self.pos_x - self.speed / 2 > a.pos_x and self.pos_x - self.speed / 2 < a.pos_x + gap:
+                    self.no_left = True
+                if self.pos_y - self.speed > a.pos_y and self.pos_y - self.speed < a.pos_y + gap:
+                    self.no_up = True
+                if self.pos_y + self.speed / 2 > a.pos_y - gap and self.pos_y + self.speed / 2 < a.pos_y:
+                    self.no_down = True
+
     @staticmethod
     def random_spawn():
         alien_choice = random.randint(1, 100)
@@ -698,22 +712,6 @@ class Aliens(Character):
 #Physical attacker movement
     def move(self):
         #------------------------------------------------------
-        self.no_right = None
-        self.no_left = None
-        self.no_up = None
-        self.no_down = None
-        gap = game.Tilesize / 2
-        gap = int(gap)
-        for a in GameManager.aliens_alive:
-            if a.name != self.name:
-                if self.pos_x + self.speed / 2 > a.pos_x - gap and self.pos_x + self.speed / 2 < a.pos_x:
-                    self.no_right = True
-                if self.pos_x - self.speed / 2 > a.pos_x and self.pos_x - self.speed / 2 < a.pos_x + gap:
-                    self.no_left = True
-                if self.pos_y - self.speed > a.pos_y and self.pos_y - self.speed < a.pos_y + gap:
-                    self.no_up = True
-                if self.pos_y + self.speed / 2 > a.pos_y - gap and self.pos_y + self.speed / 2 < a.pos_y:
-                    self.no_down = True
         if self.pos_x < game.Tilesize and self.no_right != True:
             self.pos_x += self.speed
             self.last_move = "right"
@@ -764,30 +762,30 @@ class Aliens(Character):
     def ranged_move(self):
         if self.door < 3 or self.door in range(5, 7): #Left and Right
             if self.pos_y != player.pos_y:
-               if self.pos_x < game.Tilesize:
+               if self.pos_x < game.Tilesize and self.no_right != True:
                    self.pos_x += self.speed
                    self.last_move = "right"
-               elif self.pos_x > game.Width - game.Tilesize:
+               elif self.pos_x > game.Width - game.Tilesize and self.no_left != True:
                    self.pos_x -= self.speed
                    self.last_move = "left"
-               elif self.pos_y < player.pos_y - self.speed:
+               elif self.pos_y < player.pos_y - self.speed and self.no_down != True:
                    self.pos_y += self.speed
                    self.last_move = "down"
-               elif self.pos_y > player.pos_y + self.speed:
+               elif self.pos_y > player.pos_y + self.speed and self.no_up != True:
                    self.pos_y -= self.speed
                    self.last_move = "up"
         elif self.door in range(3, 5) or self.door in range(7, 9): #Bottom and Top
             if self.pos_x != player.pos_x:
-                if self.pos_y < game.Tilesize:
+                if self.pos_y < game.Tilesize and self.no_down != True:
                     self.pos_y += self.speed
                     self.last_move = "down"
-                elif self.pos_y > game.Height - game.Tilesize:
+                elif self.pos_y > game.Height - game.Tilesize and self.no_up != True:
                     self.pos_y -= self.speed
                     self.last_move = "up"
-                elif self.pos_x < player.pos_x - self.speed:
+                elif self.pos_x < player.pos_x - self.speed and self.no_right != True:
                     self.pos_x += self.speed
                     self.last_move = "right"
-                elif self.pos_x > player.pos_x - self.speed:
+                elif self.pos_x > player.pos_x - self.speed and self.no_left != True:
                     self.pos_x -= self.speed
                     self.last_move = "left"
         if self.last_move == "up":
@@ -857,6 +855,8 @@ class GameManager():
         spawn_rate_total = len(shield.spawn_rate) + len(turret.spawn_rate) + len(armoured_wing.spawn_rate) + len(bomber.spawn_rate) + len(mosquito.spawn_rate) + len(sniper.spawn_rate)
         if spawn_rate_total == 100:
             aliens_needed = game.game_round * 3
+            if aliens_needed > 20:
+                aliens_needed = 20
             i = 1
             aliens_needed+= i
             while(aliens_needed > i):
@@ -885,8 +885,13 @@ class GameManager():
     def update_aliens():
         i = 0
         while(i < len(GameManager.aliens_alive)):
+            if "Shield" in GameManager.aliens_alive[i].name and GameManager.aliens_alive[i].health <= 100:
+                if GameManager.aliens_alive[i].changed == False:
+                    GameManager.aliens_alive[i].speed *= 2
+                    GameManager.aliens_alive[i].damage *= 2
+                    GameManager.aliens_alive[i].org_image = "Pygame_GroupProject\Assets\Aliens\\Normal\Shield.png"
+                    GameManager.aliens_alive[i].changed = True
             GameManager.aliens_alive[i].update_last_move()
-            #if GameManager.aliens_alive[i].can_move == True:
             if "Turret" in GameManager.aliens_alive[i].name or "Armoured-wing" in GameManager.aliens_alive[i].name:
                 GameManager.aliens_alive[i].ranged_move()
             elif "Sniper" in GameManager.aliens_alive[i].name:
@@ -895,7 +900,6 @@ class GameManager():
                 GameManager.aliens_alive[i].move()
             elif "Bomber" in GameManager.aliens_alive[i].name:
                 GameManager.aliens_alive[i].move()
-            #GameManager.aliens_alive[i].move()
             GameManager.aliens_alive[i].Collide()
             if GameManager.aliens_alive[i].health < 1:
                 GameManager.remove_alien(GameManager.aliens_alive[i].name)
@@ -917,6 +921,7 @@ class GameManager():
     @staticmethod
     def create_shield(showing):
         shield = Aliens("Shield", 200, 2, 20, 100, 100, player, 25, "Pygame_GroupProject\Assets\Aliens\\Normal\Shield_Armour.png", [aliens], showing)
+        shield.changed = False
         GameManager.Difficulty(shield)
         shield.convert_spawn_rate(True, None)
         return shield
