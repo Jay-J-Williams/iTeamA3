@@ -97,7 +97,7 @@ class Game:
         room = "Pygame_GroupProject\Assets\Room\Room.png"
         Room(room, self.Width, self.Height, background)
         global player
-        player = GameManager.create_player(rifle)
+        player = GameManager.create_player(pistol)
         global shield
         shield = GameManager.create_shield(False)
         global turret
@@ -116,14 +116,15 @@ class Game:
     #------------------------------------------------------
     def Run(self):
         self.screen.fill("Black")
-
         player.Update()
         GameManager.update_aliens()
         Bullet.Update()
+        GameManager.update_power_ups()
         GameManager.manage_rounds()
         hud.Update()
 
         background.draw(self.display_surface)
+        power_ups.draw(self.display_surface)
         entities.draw(self.display_surface)
         aliens.draw(self.display_surface)
         bullets.draw(self.display_surface)
@@ -208,7 +209,6 @@ class HUD():
             self.weapon = "Pygame_GroupProject/Assets/HUD/Shotgun.png"
         elif player.weapon == rifle:
             self.weapon = "Pygame_GroupProject/Assets/HUD/Rifle.png"
-        print(self.size)
         self.weapon = Sprite((self.weapon_width, 10), self.weapon, [hud_components], (self.size, self.size))
     #------------------------------------------------------
     def draw_powerUp(self):
@@ -216,13 +216,12 @@ class HUD():
 
         if player.powerUp == None:
             self.powerUp = "Pygame_GroupProject/Assets/HUD/Base.png"
-        elif player.powerUp == "adrenaline":
+        elif player.powerUp.name == "Adrenaline":
             self.powerUp = "Pygame_GroupProject/Assets/HUD/Adrenaline.png"
-        elif player.powerUp == "double_damage":
+        elif player.powerUp.name == "Double Damage":
             self.powerUp = "Pygame_GroupProject/Assets/HUD/DoubleDamage.png"
-        elif player.powerUp == "pest_control":
+        elif player.powerUp.name == "Pest Control":
             self.powerUp = "Pygame_GroupProject/Assets/HUD/PestControl.png"
-        print(self.size)
         self.powerUp = Sprite((self.powerUp_width, 10), self.powerUp, [hud_components], (self.size, self.size))
     #------------------------------------------------------
     def Update(self):
@@ -306,13 +305,13 @@ class Player(Character):
         #------------------------------------------------------
         if self.cooldown >= 100:
             if (keys[pygame.K_SPACE] or mouse_clicks[0]): # [0] = Left Click
-                if player.last_move == "up":
+                if self.last_move == "up":
                     bullet = Bullet((self.pos_x + (game.Tilesize / 2)), (self.pos_y - (game.Tilesize / 2)))
-                elif player.last_move == "down":
+                elif self.last_move == "down":
                     bullet = Bullet((self.pos_x + (game.Tilesize / 2)), (self.pos_y + (game.Tilesize / 2)))
-                elif player.last_move == "left":
+                elif self.last_move == "left":
                     bullet = Bullet((self.pos_x - (game.Tilesize / 2)), (self.pos_y + (game.Tilesize / 2)))
-                elif player.last_move == "right":
+                elif self.last_move == "right":
                     bullet = Bullet((self.pos_x + (game.Tilesize / 2)), (self.pos_y + (game.Tilesize / 2)))
                 self.cooldown = 0
                 Bulls.append(bullet)
@@ -355,7 +354,6 @@ class Bullet():
         self.hit = False
     #------------------------------------------------------
     def Move(self):
-        #try:                                             
         if self.direction == "up":
             self.y -= self.speed
         elif self.direction == "down":
@@ -388,29 +386,100 @@ class Bullet():
                 i += 1
 #--------------------------------------------------------------------------------------------------------
 class PowerUp:
-    def __init__(self, showing, pos_x, pos_y, image, spawn_rate):
-        self.size = game.Tilesize
+    def __init__(self, name, pos_x, pos_y, image):
+        self.size = (game.Tilesize, game.Tilesize)
+        self.name = name
         self.image = image
         self.group = power_ups
-        self.spawn_rate = spawn_rate
-        if self.showing == True:
-            self.char = Sprite((pos_x, pos_y), image, power_ups, self.size)
-            self.rect = self.char.rect
+        self.char = Sprite((pos_x, pos_y), image, [power_ups], self.size)
+        self.rect = self.char.rect
         power_ups_lst.append(self)
-        if len(power_ups_lst) == 1:
-            self.spawn_rate = list(len(spawn_rate + 1))
+
+    def use_ability(self):
+        if self.name == "Double Damage":
+            if (keys[pygame.K_LSHIFT]):
+                if GameManager.power_up_cooldown == 0:
+                    player.weapon.damage *= 2
+                    print("\n"+"Damage is "+str(player.weapon.damage)+"\n")
+                    GameManager.power_up_cooldown+= 1
+            elif GameManager.power_up_cooldown >= 100:
+                player.weapon.damage /= 2
+                print("\n"+"Damage is "+str(player.weapon.damage)+"\n")
+                GameManager.power_up_cooldown = 0
+                player.powerUp = None
+                del(self)
+
+        elif self.name == "Adrenaline":
+            if (keys[pygame.K_LSHIFT]):
+                if GameManager.power_up_cooldown == 0:
+                    player.speed *= 1.5
+                    print("\n"+"Speed is "+str(player.speed)+"\n")
+                    GameManager.power_up_cooldown+= 1
+            elif GameManager.power_up_cooldown >= 100:
+                player.speed *= 0.75
+                print("\n"+"Speed is "+str(player.speed)+"\n")
+                GameManager.power_up_cooldown = 0
+                player.powerUp = None
+                del(self)
+
+        elif self.name == "Pest Control":
+            for alien in GameManager.aliens_alive:
+                alien.char.kill()  
+                print("\n"+alien.name+" has been deleted\n")
+                GameManager.aliens_alive.remove(alien)
+                del(alien)
+            player.powerUp = None
+            del(self)
+
         else:
-            starting_point = power_ups_lst.index(self) - 1
-            starting_point = power_ups_lst[starting_point].spawn_rate[-1] + 1
-            end_point = self.spawn_rate + starting_point
+            if self.name == "Pistol":
+                if player.weapon != pistol:
+                    player.char.kill()
+                    image = "Pygame_GroupProject\Assets\Player\Player_Pistol.png"
+                    gc.collect()
+                    player.org_image = image
+                    player.weapon = pistol
+                    PowerUp.edit_player_sprite(image)
+                player.powerUp = None
 
+            elif self.name == "SMG":
+                if player.weapon != smg:
+                    player.char.kill()
+                    image = "Pygame_GroupProject\Assets\Player\Player_SMG.png"
+                    gc.collect()
+                    player.org_image = image
+                    player.weapon = smg
+                    PowerUp.edit_player_sprite(image)
+                player.powerUp = None
 
+            elif self.name == "Shotgun":
+                if player.weapon != shotgun:
+                    player.char.kill()
+                    image = "Pygame_GroupProject\Assets\Player\Player_Shotgun.png"
+                    gc.collect()
+                    player.org_image = image
+                    player.weapon = shotgun
+                    PowerUp.edit_player_sprite(image)
+                player.powerUp = None
 
-    def colide(self):
+            elif self.name == "Rifle":
+                if player.weapon != rifle:
+                    player.char.kill()
+                    image = "Pygame_GroupProject\Assets\Player\Player_Rifle.png"
+                    gc.collect()
+                    player.org_image = image
+                    player.weapon = rifle
+                    PowerUp.edit_player_sprite(image)
+                player.powerUp = None
+
+        gc.collect()
+
+    def collide(self):
         hit = pygame.sprite.spritecollide(self.char, entities, False)
 
         if hit:
-            player.powerUp = self
+            if player.powerUp == None:
+                player.powerUp = self
             self.char.kill()
             i = power_ups_lst.index(self)
             del(power_ups_lst[i])
@@ -419,14 +488,44 @@ class PowerUp:
 
     @staticmethod
     def random_spawn():
-        power_up_choice = random.randint(1, 4)
-        location_choice_width = random.randint(Game.Width + Game.Tilesize, Game.Width - Game.Tilesize)
-        if power_up_choice == 1:
-            double_damage = GameManager.create_shield(True)
-        elif power_up_choice == 2:
-            alien = GameManager.create_turret(True)
-        else:
-            alien = GameManager.create_mosquito(True)
+        will_spawn = random.randint(1, 5000)
+        if will_spawn == 100:
+            power_up_choice = random.randint(1, 7)
+            pos_choice_x = random.randint(game.Tilesize, game.Width - game.Tilesize)
+            pos_choice_y = random.randint(game.Tilesize, game.Height - game.Tilesize)
+            if power_up_choice == 1:
+                power_up = PowerUp("Double Damage", pos_choice_x, pos_choice_y, "Pygame_GroupProject\Assets\PowerUps\DoubleDamage.png")
+            elif power_up_choice == 2:
+                power_up = PowerUp("Adrenaline", pos_choice_x, pos_choice_y, "Pygame_GroupProject\Assets\PowerUps\Adrenaline.png")
+            elif power_up_choice == 3:
+                power_up = PowerUp("Pistol", pos_choice_x, pos_choice_y, "Pygame_GroupProject\Assets\HUD\Pistol.png")
+            elif power_up_choice == 4:
+                power_up = PowerUp("SMG", pos_choice_x, pos_choice_y, "Pygame_GroupProject\Assets\HUD\SMG.png")
+            elif power_up_choice == 5:
+                power_up = PowerUp("Shotgun", pos_choice_x, pos_choice_y, "Pygame_GroupProject\Assets\HUD\Shotgun.png")
+            elif power_up_choice == 6:
+                power_up = PowerUp("Rifle", pos_choice_x, pos_choice_y, "Pygame_GroupProject\Assets\HUD\Rifle.png")
+            else:
+                power_up = PowerUp("Pest Control", pos_choice_x, pos_choice_y, "Pygame_GroupProject\Assets\PowerUps\PestControl.png")
+            power_ups_lst.append(power_up)
+            del(power_up)
+            gc.collect()
+
+    @staticmethod
+    def edit_player_sprite(image: str):
+        player.org_image = image
+        if player.last_move == "down":
+            player.char = ImageTransformer(player.org_image, 0)
+            player.char = player.char.ReturnImage((player.pos_x, player.pos_y), player.group, player.size)
+        elif player.last_move == "up":
+            player.char = ImageTransformer(player.org_image, 180)
+            player.char = player.char.ReturnImage((player.pos_x, player.pos_y), player.group, player.size)
+        elif player.last_move == "right":
+            player.char = ImageTransformer(player.org_image, 90)
+            player.char = player.char.ReturnImage((player.pos_x, player.pos_y), player.group, player.size)
+        elif player.last_move == "left":
+            player.char = ImageTransformer(player.org_image, 270)
+            player.char = player.char.ReturnImage((player.pos_x, player.pos_y), player.group, player.size)
 #--------------------------------------------------------------------------------------------------------
 #--------------------------------------------------------------------------------------------------------
 
@@ -660,6 +759,7 @@ class Aliens(Character):
             self.char = ImageTransformer(self.org_image, 90)
 
         self.char = self.char.ReturnImage((self.pos_x, self.pos_y), [aliens], (game.Tilesize, game.Tilesize))
+
 #Ranged attacker movement
     def ranged_move(self):
         if self.door < 3 or self.door in range(5, 7): #Left and Right
@@ -722,6 +822,7 @@ class PhysicalAliens(Aliens):
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 class GameManager():
     aliens_alive = []
+    power_up_cooldown = 0
     def __init__(self):
         pass
 
@@ -776,6 +877,7 @@ class GameManager():
     def manage_rounds():
         if len(GameManager.aliens_alive) == 0:
             game.game_round += 1
+            player.heal(25)
             print("\n"+str(game.game_round)+"\n")
             GameManager.manage_spawns()
 
@@ -799,6 +901,17 @@ class GameManager():
                 GameManager.remove_alien(GameManager.aliens_alive[i].name)
             i += 1
 
+    @staticmethod
+    def update_power_ups():
+        i = 0
+        while(i < len(power_ups_lst)):
+            power_ups_lst[i].collide()
+            i+= 1
+        if player.powerUp != None:
+            player.powerUp.use_ability()
+        PowerUp.random_spawn()
+        if GameManager.power_up_cooldown > 0:
+            GameManager.power_up_cooldown+= 0.05
 
 #parameters - (health, speed, damage, pos_x, pos_y, target, spawn_rate, image, groups, game width, game height)
     @staticmethod
@@ -876,7 +989,7 @@ class GameManager():
 
         return player
 #----------------------------------------------------------------------------------------------------
-pistol = Weapon(20, 3, 30)
+pistol = Weapon(40, 3, 30)
 shotgun = Weapon(150, 1.5, 10)
 smg = Weapon(20, 10, 20)
 rifle = Weapon(40, 5, 50)
