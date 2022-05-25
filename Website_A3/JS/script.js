@@ -10,15 +10,12 @@ function myFunction() {
 
 $(document).ready(function(){
   $("#B1").click(function(){
-      $("#Adam").slideToggle("slow");
+      $("#One").slideToggle("slow");
   });
   $("#B2").click(function(){
-      $("#Daryl").slideToggle("slow");
+      $("#Two").slideToggle("slow");
   });
   $("#B3").click(function(){
-      $("#Jay").slideToggle("slow");
-  });
-  $("#B4").click(function(){
-      $("#James").slideToggle("slow");
+      $("#Three").slideToggle("slow");
   });
 });
