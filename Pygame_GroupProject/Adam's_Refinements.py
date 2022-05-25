@@ -15,9 +15,18 @@ rifle = [40, 5, 50]
 bullets = []
 #------------------------------------------------------
 difficulty = "Normal"
-width = 1280
-height = 720
-tilesize = 48
+video_info = pygame.display.Info()
+width, height = video_info.current_w, video_info.current_h
+
+if height < 1080:
+    tilesize = 48
+elif height >= 1080 and height < 1440:
+    tilesize = 64
+elif height >= 1440 and height < 2160:
+    tilesize = 96
+elif height >= 2160:
+    tilesize = 128
+
 FPS = 60
 #------------------------------------------------------
 screen = pygame.display.set_mode((width, height), pygame.FULLSCREEN)
@@ -51,44 +60,35 @@ class StartMenu():
     def __init__(self):
         self.running = True
         #------------------------------------------------------
-        self.start_left = tilesize * 11.5
-        self.start_right = tilesize * 13
-        self.start_up = tilesize * 9.5
-        self.start_down = tilesize * 10.5
+        self.start_left = tilesize * 12.5
+        self.start_right = tilesize * 14
+        self.start_up = tilesize * 10.5
+        self.start_down = tilesize * 11.5
         #------------------------------------------------------
-        self.easy_left = tilesize * 11.5
-        self.easy_right = tilesize * 12
+        self.easy_left = tilesize * 12.5
+        self.easy_right = tilesize * 13
         self.easy = "Pygame_GroupProject/Assets/Room/Easy.png"
         self.E = False
         #------------------------------------------------------
-        self.normal_left = tilesize * 12
-        self.normal_right = tilesize * 13.5
+        self.normal_left = tilesize * 13
+        self.normal_right = tilesize * 14.5
         self.normal = "Pygame_GroupProject/Assets/Room/Normal.png"
-        self.N = False
+        self.N = True
         #------------------------------------------------------
-        self.hard_left = tilesize * 13.5
-        self.hard_right = tilesize * 14
+        self.hard_left = tilesize * 14.5
+        self.hard_right = tilesize * 15
         self.hard = "Pygame_GroupProject/Assets/Room/Hard.png"
         self.H = False
         #------------------------------------------------------
-        self.diff_up = tilesize * 10.5
-        self.diff_down = tilesize * 11.5
-        #------------------------------------------------------
-        self.p720_left = tilesize * 11.5
-        self.p720_right = tilesize * 13
-        self.p720 = "Pygame_GroupProject/Assets/Room/720Res.png"
-        self.P7 = False
-        #------------------------------------------------------
-        self.p1080_left = tilesize * 13
-        self.p1080_right = tilesize * 15
-        self.p1080 = "Pygame_GroupProject/Assets/Room/1080Res.png"
-        self.P1 = False
-        #------------------------------------------------------
-        self.res_up = tilesize * 11.5
-        self.res_down = tilesize * 12.5
+        self.diff_up = tilesize * 11.5
+        self.diff_down = tilesize * 12.5
         #------------------------------------------------------
         self.diff = [self.E, self.N, self.H]
-        self.res = [self.P7, self.P1]
+
+        diff_x = (self.normal_left + self.normal_right) / 2
+        diff_y = (self.diff_up + self.diff_down) / 2
+        self.difficulty = Sprites((diff_x - 30, diff_y - 30), self.normal, [menu_tiles], (tilesize, tilesize))
+        self.diff_rect = self.difficulty.rect
     #------------------------------------------------------
     def Start(self):
         room = "Pygame_GroupProject/Assets/Room/Menu.png"
@@ -105,49 +105,43 @@ class StartMenu():
                     self.running = False
                 #------------------------------------------------------
             if mouse_pos[1] > self.diff_up and mouse_pos[1] < self.diff_down:
-                for d in self.diff:
-                    d = False
                     #------------------------------------------------------
                 if mouse_pos[0] > self.easy_left and mouse_pos[0] < self.easy_right:
+                    self.N = False
+                    self.H = False
                     self.E = True
                     #------------------------------------------------------
-                elif mouse_pos[0] > self.normal_left and mouse_pos[0] < self.normal_right:
-                    #------------------------------------------------------
+                elif mouse_pos[0] > self.normal_left and mouse_pos[0] < self.normal_right:   
+                    self.E = False
+                    self.H = False
                     self.N = True
+                    #------------------------------------------------------
                 elif mouse_pos[0] > self.hard_left and mouse_pos[0] < self.hard_right:
+                    self.E = False 
+                    self.N = False
                     self.H = True
                     #------------------------------------------------------
-            if mouse_pos[1] > self.res_up and mouse_pos[1] < self.res_down:
-                for r in self.res:
-                    r = False
-                    #------------------------------------------------------
-                if mouse_pos[0] > self.p720_left and mouse_pos[0] < self.p720_right:
-                    self.P7 = True
-                    #------------------------------------------------------
-                elif mouse_pos[0] > self.p1080_left and mouse_pos[0] < self.p1080_right:
-                    self.P1 = True
-                    #------------------------------------------------------
-        if keys[pygame.K_r]:
-            self.running = False
+                self.DiffChanger()
 
-        self.ImageChanger()
+        if keys[pygame.K_r]:
+            self.running = False   
     #------------------------------------------------------
-    def ImageChanger(self):
+    def DiffChanger(self):
         for d in self.diff:
             if d == True:
                 self.difficulty.kill()
-                pos_y = (self.diff_up + self.diff_down) / 2
+                pos_y = ((self.diff_up + self.diff_down) / 2) - 30
                 #------------------------------------------------------
                 if d == self.E:
-                    pos_x = (self.easy_left + self.easy_right) / 2
+                    pos_x = ((self.easy_left + self.easy_right) / 2) - 25
                     image = self.easy
                     #------------------------------------------------------
                 elif d == self.N:
-                    pos_x = (self.normal_left + self.normal_right) / 2
+                    pos_x = ((self.normal_left + self.normal_right) / 2) - 25
                     #------------------------------------------------------
                     image = self.normal
                 elif d == self.H:
-                    pos_x = (self.hard_left + self.hard_right) / 2
+                    pos_x = ((self.hard_left + self.hard_right) / 2) - 30
                     image = self.hard
                     #------------------------------------------------------
                 self.difficulty = Sprites((pos_x, pos_y), image, [menu_tiles], (tilesize, tilesize))
@@ -177,7 +171,6 @@ while run:
     else:
         run = False
 
+    gc.collect()
     pygame.display.update()
     clock.tick(FPS)
-
-print("Test_O_tesT")
