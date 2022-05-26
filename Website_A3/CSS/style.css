@@ -138,11 +138,18 @@
     border: 5px solid black;
     cursor: pointer;
   }
-  background-image
+  background-image { object-fit: cover; }
+
+  #Cred { text-align: end; }
+
+  table { background-color: darkblue; }
+
+  tr:hover { background-color: coral; }
+
+  tr
   {
-    object-fit: cover;
+    border: 2px solid black;
+    background-color: lightblue;
+    text-align: center;
   }
-  #Cred
-  {
-    text-align: end;
-  }
+
