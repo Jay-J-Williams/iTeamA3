@@ -19,12 +19,16 @@ width, height = video_info.current_w, video_info.current_h
 
 if height < 1080:
     tilesize = 48
+    speed_diff = 1
 elif height >= 1080 and height < 1440:
     tilesize = 64
+    speed_diff = 1.5
 elif height >= 1440 and height < 2160:
     tilesize = 96
+    speed_diff = 2
 elif height >= 2160:
     tilesize = 128
+    speed_diff = 3
 
 FPS = 60
 #------------------------------------------------------
@@ -230,7 +234,7 @@ class HUD():
 class Character():
     def __init__(self, health, speed, damage, pos_x, pos_y, image, group):
         self.health = health
-        self.speed = speed
+        self.speed = speed * speed_diff
         self.damage = damage
         self.pos_x = pos_x
         self.pos_y = pos_y
