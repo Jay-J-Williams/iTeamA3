@@ -887,9 +887,9 @@ class Aliens(Character):
                 #    elif player.pos_x < game.Width / 2:
                 #        self.pos_x += self.speed / 2
                 elif self.pos_x > player.pos_x - self.speed and self.pos_x < player.pos_x + self.speed:
-                    if self.pos_y < game.Height / 2 and no_down != True:
+                    if self.pos_y < game.Height / 2 and self.no_down != True:
                         self.last_move = "down"
-                    elif self.pos_y > game.Height / 2 and no_up != True:
+                    elif self.pos_y > game.Height / 2 and self.no_up != True:
                         self.last_move = "up"
                 elif self.pos_x < player.pos_x - self.speed and self.no_right != True:
                     self.pos_x += self.speed
