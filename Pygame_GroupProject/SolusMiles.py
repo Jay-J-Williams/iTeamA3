@@ -13,7 +13,6 @@ power_ups_lst = []
 Bulls = []
 alien_bulls = []
 
-difficulty = "normal"
 video_info = pygame.display.Info()
 width, height = video_info.current_w, video_info.current_h
 
@@ -57,6 +56,7 @@ class Menu():
         self.Width = width
         self.Tilesize = tilesize
 
+        self.difficulty = "normal"
         self.running = True
         #------------------------------------------------------
     def StartUp(self):
@@ -65,17 +65,16 @@ class Menu():
         #------------------------------------------------------
     def Update(self):
         keys = pygame.key.get_pressed()
-        global difficulty
         
         if keys[pygame.K_RETURN]:
             self.running = False
             game.running = True
         elif keys[pygame.K_e]:
-            difficulty = "easy"
+            self.difficulty = "easy"
         elif keys[pygame.K_n]:
-            difficulty = "normal"
+            self.difficulty = "normal"
         elif keys[pygame.K_h]:
-            difficulty = "hard"
+            self.difficulty = "hard"
     #------------------------------------------------------
     def Run(self):
         self.Update()
@@ -89,7 +88,6 @@ class Game:
         self.Width = width
         self.Tilesize = tilesize
 
-        self.difficulty = difficulty
         self.FPS = 60
         self.game_round = 0
         self.running = False
@@ -116,7 +114,6 @@ class Game:
         GameManager.manage_rounds()
     #------------------------------------------------------
     def Run(self):
-        self.difficulty = difficulty
         player.Update()
         GameManager.update_aliens()
         Bullet.Update()
@@ -1101,11 +1098,11 @@ class GameManager():
 
     @staticmethod
     def Difficulty(alien):
-        if game.difficulty == "Easy":
+        if menu.difficulty == "Easy":
             alien.health *= 0.75
             alien.speed *= 0.75
             alien.damage *= 0.75
-        elif game.difficulty == "Hard":
+        elif menu.difficulty == "Hard":
             alien.health *= 1.25
             alien.speed *= 1.25
             alien.damage *= 1.25
