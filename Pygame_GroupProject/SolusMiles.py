@@ -2,7 +2,7 @@ import pygame, sys, random, gc
 pygame.init()
 
 background = pygame.sprite.Group() #Room | For visible spawning
-menu_screen = pygame.sprite.Group() # For the menu
+menu_display = pygame.sprite.Group() # For the menu
 entities = pygame.sprite.Group() #Player/Aliens | For visible spawning
 aliens = pygame.sprite.Group() #Aliens | For collisions
 bullets = pygame.sprite.Group() #Bullets | For visible spawning
@@ -12,6 +12,25 @@ power_ups = pygame.sprite.Group()
 power_ups_lst = []
 Bulls = []
 alien_bulls = []
+
+difficulty = "normal"
+video_info = pygame.display.Info()
+width, height = video_info.current_w, video_info.current_h
+
+if height < 1080:
+    tilesize = 48
+elif height >= 1080 and height < 1440:
+    tilesize = 64
+elif height >= 1440 and height < 2160:
+    tilesize = 96
+elif height >= 2160:
+    tilesize = 128
+
+FPS = 60
+#------------------------------------------------------
+screen = pygame.display.set_mode((width, height), pygame.FULLSCREEN)
+display = pygame.display.get_surface()
+clock = pygame.time.Clock()
 
 class allErrors(Exception):
     pass
@@ -28,72 +47,48 @@ class entryErrors(allErrors):
 #--------------------------------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------------------------------
-class Menu:
-    def __init__(self, height):
+class Menu():
+    def __init__(self):
         self.Height = height
-
-        if self.Height == 720:
-            self.Width = 1280
-            self.size = 48
-        elif self.Height == 1080:
-            self.Width = 1920
-            self.size = 64 
-
-        self.difficulty = "Normal"
-
-        self.screen = pygame.display.set_mode((self.Width, self.Height), pygame.FULLSCREEN)
-        self.display_surface = pygame.display.get_surface()
-        self.FPS = 60
-        self.clock = pygame.time.Clock()
+        self.Width = width
+        self.Tilesize = tilesize
 
         self.running = True
-
+        #------------------------------------------------------
     def StartUp(self):
         room = "Pygame_GroupProject/Assets/Room/Menu.png"
-        Room(room, self.Width, self.Height, menu_screen)
-
+        Room(room, self.Width, self.Height, menu_display)
+        #------------------------------------------------------
     def Update(self):
         keys = pygame.key.get_pressed()
-
-        if keys[pygame.K_r]:
+        global difficulty
+        
+        if keys[pygame.K_RETURN]:
             self.running = False
             game.running = True
-
+        elif keys[pygame.K_e]:
+            difficulty = "easy"
+        elif keys[pygame.K_n]:
+            difficulty = "normal"
+        elif keys[pygame.K_h]:
+            difficulty = "hard"
+    #------------------------------------------------------
     def Run(self):
-        self.screen.fill("black")
         self.Update()
-        menu_screen.draw(self.display_surface)
-
-        pygame.display.update()
-        self.clock.tick(self.FPS)
+        menu_display.draw(display)
 #--------------------------------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------------------------------
 class Game:
-    def __init__(self, height, difficulty):
-        self.difficulty = difficulty
+    def __init__(self):
         self.Height = height
-        #------------------------------------------------------
-        if self.Height == 720:
-            self.Width = 1280
-            self.Tilesize = 43
-        #------------------------------------------------------
-        elif self.Height == 1080:
-            self.Width = 1920
-            self.Tilesize = 64
-        #------------------------------------------------------
-        else:
-            raise numErrors("Width must be either 1280 or 1920")
-        #------------------------------------------------------
+        self.Width = width
+        self.Tilesize = tilesize
 
+        self.difficulty = difficulty
         self.FPS = 60
         self.game_round = 0
-
-        self.screen = pygame.display.set_mode((self.Width, self.Height), pygame.FULLSCREEN)
-        self.display_surface = pygame.display.get_surface()
-
-        pygame.display.set_caption("Solus Miles")
-        self.clock = pygame.time.Clock()
+        self.running = False
     #------------------------------------------------------
     def Create_Map(self):
         room = "Pygame_GroupProject\Assets\Room\Room.png"
@@ -117,7 +112,7 @@ class Game:
         GameManager.manage_rounds()
     #------------------------------------------------------
     def Run(self):
-        self.screen.fill("Black")
+        self.difficulty = difficulty
         player.Update()
         GameManager.update_aliens()
         Bullet.Update()
@@ -125,16 +120,13 @@ class Game:
         GameManager.manage_rounds()
         hud.Update()
 
-        background.draw(self.display_surface)
-        power_ups.draw(self.display_surface)
-        entities.draw(self.display_surface)
-        aliens.draw(self.display_surface)
-        alien_bullets.draw(self.display_surface)
-        bullets.draw(self.display_surface)
-        hud_components.draw(self.display_surface)
-        
-        pygame.display.update()
-        self.clock.tick(self.FPS)
+        background.draw(display)
+        power_ups.draw(display)
+        entities.draw(display)
+        aliens.draw(display)
+        alien_bullets.draw(display)
+        bullets.draw(display)
+        hud_components.draw(display)
 #--------------------------------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------------------------------
@@ -654,8 +646,6 @@ class Aliens(Character):
         self.no_up = None
         self.no_down = None
         gap = self.size[0]
-        #gap = int(gap)
-        print(gap)
         for a in GameManager.aliens_alive:
             if a.name != self.name:
                 if self.pos_x + (gap + self.speed) >= a.pos_x and self.pos_x < a.pos_x:
@@ -1143,10 +1133,10 @@ shotgun = Weapon(150, 1.5, 10)
 smg = Weapon(20, 10, 20)
 rifle = Weapon(40, 5, 50)
 
-menu = Menu(720)
+menu = Menu()
 menu.StartUp()
 
-game = Game(720, "Normal")
+game = Game()
 game.Create_Map()
 
 #Press "r" to start the game. Note: this is where the menu will be
@@ -1162,3 +1152,6 @@ while True:
         menu.Run()
     elif game.running == True:
         game.Run()
+
+    pygame.display.update()
+    clock.tick(FPS)
