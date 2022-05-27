@@ -367,7 +367,7 @@ class Bullet():
     def __init__(self, x, y, last_move, creator, group = bullets):
         self.x = x
         self.y = y
-        self.speed = 5
+        self.speed = 5 * speed_diff
         self.creator = creator
         self.size = game.Tilesize * 0.2
         self.image = "Pygame_GroupProject\Assets\Bullet\Bullet.png"
@@ -649,19 +649,19 @@ class Aliens(Character):
         self.no_left = None
         self.no_up = None
         self.no_down = None
-        gap = self.size[0]
+        gap = self.size[0] * 1.5
         for a in GameManager.aliens_alive:
             if a.name != self.name:
-                if self.pos_x + (gap + self.speed) >= a.pos_x and self.pos_x < a.pos_x:
+                if self.pos_x + (gap) >= a.pos_x and self.pos_x < a.pos_x:
                     if self.pos_y >= a.pos_y - gap and self.pos_y <= a.pos_y + gap:
                         self.no_right = True
-                if self.pos_x - (gap + self.speed) <= a.pos_x and self.pos_x > a.pos_x:
+                if self.pos_x - (gap) <= a.pos_x and self.pos_x > a.pos_x:
                     if self.pos_y >= a.pos_y - gap and self.pos_y <= a.pos_y + gap:
                         self.no_left = True
-                if self.pos_y - (gap + self.speed) <= a.pos_y and self.pos_x > a.pos_x:
+                if self.pos_y - (gap) <= a.pos_y and self.pos_x > a.pos_x:
                     if self.pos_x >= a.pos_x - gap and self.pos_x <= a.pos_x + gap:
                         self.no_up = True
-                if self.pos_y + (gap + self.speed) >= a.pos_y and self.pos_x < a.pos_x:
+                if self.pos_y + (gap) >= a.pos_y and self.pos_x < a.pos_x:
                     if self.pos_x >= a.pos_x - gap and self.pos_x <= a.pos_x + gap:
                         self.no_down = True
 
@@ -856,9 +856,9 @@ class Aliens(Character):
                #     elif player.pos_x < game.Height / 2:
                #         self.pos_y -= self.speed / 2
                elif self.pos_y > player.pos_y - self.speed and self.pos_y < player.pos_y + self.speed:
-                   if self.pos_x < game.Width / 2:
+                   if self.pos_x < game.Width / 2 and self.no_right != True:
                        self.last_move = "right"
-                   elif self.pos_x > game.Width / 2:
+                   elif self.pos_x > game.Width / 2 and self.no_left != True:
                        self.last_move = "left"
                elif self.pos_y < player.pos_y - self.speed and self.no_down != True:
                    self.pos_y += self.speed
@@ -887,9 +887,9 @@ class Aliens(Character):
                 #    elif player.pos_x < game.Width / 2:
                 #        self.pos_x += self.speed / 2
                 elif self.pos_x > player.pos_x - self.speed and self.pos_x < player.pos_x + self.speed:
-                    if self.pos_y < game.Height / 2:
+                    if self.pos_y < game.Height / 2 and no_down != True:
                         self.last_move = "down"
-                    elif self.pos_y > game.Height / 2:
+                    elif self.pos_y > game.Height / 2 and no_up != True:
                         self.last_move = "up"
                 elif self.pos_x < player.pos_x - self.speed and self.no_right != True:
                     self.pos_x += self.speed
